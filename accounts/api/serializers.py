@@ -1,0 +1,63 @@
+from core.api.serializers import CustomeSerializer
+from accounts.models import UserProfile, Marchant, Store
+from django.contrib.auth import get_user_model
+from rest_framework import serializers
+
+User = get_user_model()
+
+
+class UserProfileSerializer(CustomeSerializer):
+
+    class Meta:
+        model = UserProfile
+        fields = [
+            "pk", 
+            "user", 
+            "username", 
+            "user_type", 
+            "fullname", 
+            "state",
+            "state_title",
+            "lga",
+            "lga_title",
+            "timestamp", 
+            "updated",
+            ]
+
+
+class MarchantSerializer(CustomeSerializer):
+
+    class Meta:
+        model = Marchant
+        fields = [
+            "pk", 
+            "title",
+            "logo", 
+            "hq_address", 
+            "state", 
+            "state_title", 
+            "lga", 
+            "lga_title",
+            "active", 
+            "timestamp", 
+            "updated",
+            ]
+
+
+class StoreSerializer(CustomeSerializer):
+
+    class Meta:
+        model = Store
+        fields = [
+            "pk",
+            "title",
+            "company",
+            "address",
+            "state",
+            "state_title",
+            "lga",
+            "lga_title",
+            "active",
+            "timestamp",
+            "updated",
+        ]
