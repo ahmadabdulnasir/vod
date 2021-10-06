@@ -20,6 +20,33 @@ class UserProfileSerializer(CustomeSerializer):
             "state_title",
             "lga",
             "lga_title",
+            "company",
+            "company_title",
+            "branch",
+            "branch_title",
+            "timestamp", 
+            "updated",
+            ]
+
+
+class UserProfileListSerializer(CustomeSerializer):
+
+    class Meta:
+        model = UserProfile
+        fields = [
+            "pk", 
+            "user", 
+            "username", 
+            "user_type", 
+            "fullname", 
+            # "state",
+            # "state_title",
+            # "lga",
+            # "lga_title",
+            # "company",
+            # "company_title",
+            # "branch",
+            # "branch_title",
             "timestamp", 
             "updated",
             ]

@@ -14,6 +14,7 @@ from django.contrib.auth.models import Group
 from .serializers import (
     MarchantSerializer,
     StoreSerializer,
+    UserProfileListSerializer,
     UserProfileSerializer, 
 )
 
@@ -173,42 +174,6 @@ class ChangePassword(APIView):
 
 
 
-class UsersProfileListAPIView(generics.ListAPIView):
-    serializer_class = UserProfileSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    queryset = UserProfile.objects.all()
-    def get_queryset(self, *args, **kwargs):
-        try:
-            qs = UserProfile.objects.all()
-            active = self.request.GET.get("active")
-            lga_pk = self.request.GET.get("lga_pk")
-            state_pk = self.request.GET.get("state_pk")
-            user_type = self.request.GET.get("user_type")
-            group_pk = self.request.GET.get("group_pk")
-            if active and active=='yes':
-                qs = qs.filter(active=True)
-            if active and active=='no':
-                qs = qs.filter(active=False)
-            if lga_pk:
-                qs = qs.filter(lga=lga_pk)
-            if state_pk:
-                qs = qs.filter(state=state_pk)
-            if user_type:
-                qs = qs.filter(user_type=user_type)
-            if group_pk:
-                group = get_object_or_404(Group,pk=group_pk)
-                group_users = group.user_set.all()
-                qs = qs.filter(user__in=group_users)
-            status_code = status.HTTP_200_OK
-        except Exception as exp:
-            status_code = status.HTTP_417_EXPECTATION_FAILED
-            raise APIException(
-                detail=f"An API Exception Occured!!!, Error: {exp}", code=status_code
-            )
-        return qs
-
-
-
 class ProfileCreateAPIView(generics.CreateAPIView):
     """
         Allows Creation of Profile  to User
@@ -229,6 +194,42 @@ class ProfileCreateAPIView(generics.CreateAPIView):
             return Response(dta, status=status.HTTP_201_CREATED, headers=headers)
         except Exception as exp:
             raise ValidationError({"detail": [f"Client Error: {exp}"]})
+
+
+class UsersProfileListAPIView(generics.ListAPIView):
+    serializer_class = UserProfileListSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = UserProfile.objects.all()
+
+    def get_queryset(self, *args, **kwargs):
+        try:
+            qs = UserProfile.objects.all()
+            active = self.request.GET.get("active")
+            lga_pk = self.request.GET.get("lga_pk")
+            state_pk = self.request.GET.get("state_pk")
+            user_type = self.request.GET.get("user_type")
+            group_pk = self.request.GET.get("group_pk")
+            if active and active == 'yes':
+                qs = qs.filter(active=True)
+            if active and active == 'no':
+                qs = qs.filter(active=False)
+            if lga_pk:
+                qs = qs.filter(lga=lga_pk)
+            if state_pk:
+                qs = qs.filter(state=state_pk)
+            if user_type:
+                qs = qs.filter(user_type=user_type)
+            if group_pk:
+                group = get_object_or_404(Group, pk=group_pk)
+                group_users = group.user_set.all()
+                qs = qs.filter(user__in=group_users)
+            status_code = status.HTTP_200_OK
+        except Exception as exp:
+            status_code = status.HTTP_417_EXPECTATION_FAILED
+            raise APIException(
+                detail=f"An API Exception Occured!!!, Error: {exp}", code=status_code
+            )
+        return qs
 
 
 class ProfileDetailsAPIView(generics.RetrieveAPIView):

@@ -8,6 +8,7 @@ from .views import (
     ProfileDetailsAPIView,
     ProfileUpdateAPIView,
     UsersProfileListAPIView,
+    MarchantListAPIView,
     BranchListAPIView,
     
 )
@@ -21,5 +22,6 @@ urlpatterns = [
     path("list/profile/", UsersProfileListAPIView.as_view()),
     path("details/profile/<pk>/", ProfileDetailsAPIView.as_view()),
     path("update/profile/<pk>/", ProfileUpdateAPIView.as_view()),
+    path("marchant/list/", MarchantListAPIView.as_view()),
     path("branch/list/", BranchListAPIView.as_view()),
 ]
