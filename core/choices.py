@@ -43,7 +43,8 @@ ETHNICITY_CHOICE = (
     # ("nupe", "Nupe"),
 )
 
-USER_TYPE_CHOICE = (("free_user", "Free User"), ("premium_user", "Premium User"), ("marchant", "marchant"), ("staff", "Staff"),
+USER_TYPE_CHOICE = (("free_user", "Free User"), ("premium_user", "Premium User"),
+                    ("marchant", "Marchant"), ("staff", "Staff"),
                     ("admin", "Admin"), ("super_admin", "Super Admin"))
 
 
@@ -74,7 +75,15 @@ TERMS = (
 
 POST_STATUS_CHOICE = (
     ("draft", "Draft"),
-    ("publish", "Publish"),
+    ("review", "Review"),
+    ("published", "Publish"),
+)
+
+COMMENT_STATUS_CHOICE = (
+    ("draft", "Draft"),
+    ("review", "Review"),
+    ("spam", "Spam"),
+    ("approved", "Approved"),
 )
 
 

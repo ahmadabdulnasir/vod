@@ -1,3 +1,4 @@
+from django.contrib.auth import models
 from core.location.models import LGA, State
 from accounts.models import  UserProfile, Marchant, Store
 from django.contrib.auth import authenticate, get_user_model
@@ -18,6 +19,8 @@ from .serializers import (
     UserProfileSerializer, 
 )
 
+from core.utils.varname.helpers import Wrapper
+
 User = get_user_model()
 
 class CreateAccountAPIView(APIView):
@@ -35,25 +38,28 @@ class CreateAccountAPIView(APIView):
         address = request.POST.get("address")
         user_type = request.POST.get("user_type")
         image = request.FILES.get("image")
-        if (
-            not username
-            or not password
-            or not first_name
-            or not last_name
-            or not image
-            or not email
-            or not phone_number
-            or not dob
-            or not state_pk
-            or not lga_pk
-            or not address
-            or not user_type
-        ):
+        error_list = []
+        required_info = {
+            "username" : username,
+            "password" : password,
+            "first_name" : first_name,
+            "last_name" : last_name,
+            # "image" : image,
+            "email" : email,
+            "phone_number" : phone_number,
+            # "dob" : dob,
+            # "state_pk" : state_pk,
+            # "lga_pk" : lga_pk,
+            # "address" : address,
+            # "user_type" : user_type,
+        }
+        for entry in required_info.keys():
+            if not required_info.get(entry):
+                error_list.append(f"Invalid Entry of: {entry}")
+        if  error_list:
             dta = {
-                "detail": """Fail to Create user, Non or Partial Data Received.
-                Please Provide all of: `username`, `password`, `first_name`, 
-                `last_name`, `email`, `phone_number`, `dob`, `state|lga`, `address`,
-                `group_pk`, `designation_pk`, `branch_pk`, `user_type`!!"""
+                "detail": "Fail to Create user, Non or Partial Data Received.",
+                "errors": error_list,
             }
             status_code = 406
             raise ValidationError(dta, status_code)
@@ -96,7 +102,7 @@ class CreateAccountAPIView(APIView):
                     "other_names": first_name,
                     "phone_number": phone_number,
                     "email": email,
-                    "dob": dob,
+                    "DOB": dob,
                     "state": state,
                     "lga": lga,
                     "address": address,
@@ -119,7 +125,7 @@ class CreateAccountAPIView(APIView):
                     "token": f"{token}",
                     "profile": profile_serializer.data,
                 }
-                status_code = 201
+                status_code = status.HTTP_201_CREATED
         return Response(dta, status=status_code)
 
 
@@ -149,17 +155,25 @@ class CustomObtainAuthToken(ObtainAuthToken):
             return JsonResponse(data)
 
 
+
 class ChangePassword(APIView):
     # permission_classes = [permissions.IsAuthenticated]
     def post(self, request, format=None):
-        user = get_object_or_404(User, username=request.user)
-        try:
-            if authenticate(
-                username=self.request.user.username,
-                password=self.request.POST.get("password"),
+        username = request.POST.get("username")
+        oldpassword = request.POST.get("oldpassword")
+        newpassword = request.POST.get("newpassword")
+        if (
+            not username
+            or not oldpassword
+            or not newpassword
             ):
-                # authenticate the user
-                user.set_password(self.request.POST.get("newpassword"))
+            response = {"detail": "Please Provide : username, oldpassword and newpassword", "code": 400}
+        try:
+            # authenticate the user
+            user = authenticate(username=username, password=oldpassword)
+            if user:
+                # user = get_object_or_404(User, username=username)
+                user.set_password(newpassword)
                 user.save()
                 response = {"detail": "Password changed", "code": 200}
             else:
@@ -206,7 +220,7 @@ class UsersProfileListAPIView(generics.ListAPIView):
             qs = UserProfile.objects.all()
             active = self.request.GET.get("active")
             lga_pk = self.request.GET.get("lga_pk")
-            state_pk = self.request.GET.get("state_pk")
+            state = self.request.GET.get("state")
             user_type = self.request.GET.get("user_type")
             group_pk = self.request.GET.get("group_pk")
             if active and active == 'yes':
@@ -215,8 +229,8 @@ class UsersProfileListAPIView(generics.ListAPIView):
                 qs = qs.filter(active=False)
             if lga_pk:
                 qs = qs.filter(lga=lga_pk)
-            if state_pk:
-                qs = qs.filter(state=state_pk)
+            if state:
+                qs = qs.filter(state=state)
             if user_type:
                 qs = qs.filter(user_type=user_type)
             if group_pk:
@@ -251,6 +265,68 @@ class ProfileUpdateAPIView(generics.UpdateAPIView):
     # permission_classes = [MyGenericViewset]
     queryset = UserProfile.objects.all()
     lookup_field = "pk"
+
+
+class UpdateAccountToMarchantAPIView(APIView):
+    """
+       Allows Upgrading Account to a Marchant Account
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    def post(self, request, format="json"):
+        # profile_pk = request.data.get("profile_pk")
+        title = request.data.get("title")
+        logo = request.data.get("logo")
+        hq_address = request.data.get("hq_address")
+        lga = request.data.get("lga")
+        state = request.data.get("state")
+        # active = request.data.get("active")
+        error_list = []
+        required_info = {
+            # "profile_pk": profile_pk,
+            "title": title,
+            "logo": logo,
+            "hq_address": hq_address,
+            "lga": lga,
+            "state": state,
+        }
+        for entry in required_info.keys():
+            if not required_info.get(entry):
+                error_list.append(f"Invalid Entry of: {entry}")
+        if error_list:
+            dta = {
+                "detail": "Fail to Upgrade Account, Non or Partial Data Received.",
+                "errors": error_list,
+            }
+            status_code = 406
+            raise ValidationError(dta, code=status_code)
+        
+        # profile = get_object_or_404(UserProfile, pk=profile_pk)
+        profile = request.user.profile
+        try:
+            profile_serializer = UserProfileSerializer(profile, context={'request': request})
+            marchant_data = Marchant(
+                title=title,
+                logo = logo,
+                hq_address = hq_address,
+                lga = f"{lga}".upper(),
+                state = f"{state}".upper()
+            )
+            marchant_data.save()
+            profile.user_type = "marchant"
+            profile.company = marchant_data
+            profile.save()
+            dta = {
+                "message": "Account Upgraded Successfully.",
+                "profile": profile_serializer.data,
+            }
+            
+            status_code = status.HTTP_200_OK
+        except Exception as exp:
+          msg = f"Error while upgrading profile for the user: {exp}"
+          raise ValidationError(
+              {"detail": f"{msg}"}
+          )
+        return Response(dta, status=status_code)
 
 
 class MarchantListAPIView(generics.ListAPIView):

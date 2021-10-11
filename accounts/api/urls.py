@@ -5,9 +5,10 @@ from .views import (
     CreateAccountAPIView,
     CustomObtainAuthToken,
     ProfileCreateAPIView,
+    UsersProfileListAPIView,
     ProfileDetailsAPIView,
     ProfileUpdateAPIView,
-    UsersProfileListAPIView,
+    UpdateAccountToMarchantAPIView,
     MarchantListAPIView,
     BranchListAPIView,
     
@@ -20,8 +21,10 @@ urlpatterns = [
     path("create-user/", CreateAccountAPIView.as_view()),
     path("create/profile/", ProfileCreateAPIView.as_view()),
     path("list/profile/", UsersProfileListAPIView.as_view()),
-    path("details/profile/<pk>/", ProfileDetailsAPIView.as_view()),
-    path("update/profile/<pk>/", ProfileUpdateAPIView.as_view()),
+    path("profile/details/<pk>/", ProfileDetailsAPIView.as_view()),
+    path("profile/update/<pk>/", ProfileUpdateAPIView.as_view()),
+    path("profile/upgrade-to-marchant/", UpdateAccountToMarchantAPIView.as_view()),
     path("marchant/list/", MarchantListAPIView.as_view()),
     path("branch/list/", BranchListAPIView.as_view()),
 ]
+

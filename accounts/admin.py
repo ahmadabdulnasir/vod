@@ -4,8 +4,8 @@ from .models import UserProfile, Marchant, Store
 # Register your models here.
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ["user", "fullname", "gender", "state_title",
-                    "lga_title", "company", "active"]
+    list_display = ["user", "fullname", "gender", "state",
+                    "company", "active"]
     list_filter = ["active", "gender", "company", "state"]
 
 
@@ -16,11 +16,11 @@ class BranchInline(admin.TabularInline):
 @admin.register(Marchant)
 class MarchantAdmin(admin.ModelAdmin):
     inlines = [BranchInline]
-    list_display = ["title", "lga", "state", "branches", "active"]
-    list_filter = ["active", "state", "lga"]
+    list_display = ["title", "state", "branches", "active"]
+    list_filter = ["active", "state",]
 
 @admin.register(Store)
 class StoreAdmin(admin.ModelAdmin):
-    list_display = ["title", "company", "lga", "state", "active"]
-    list_filter = ["active", "company", "state", "lga"]
+    list_display = ["title", "company", "state", "active"]
+    list_filter = ["active", "company", "state",]
 

@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "accounts",
     "errorHandler",
     "core.location",
+    "vod",
     # "audit",
     # third party
     "corsheaders",

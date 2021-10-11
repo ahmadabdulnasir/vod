@@ -14,13 +14,13 @@ class TimeStampedModel(models.Model):
         abstract = True
 
 
-class POSModel(models.Model):
+class VODModel(models.Model):
     """
     Abstract base model with fields for tracking object Marchant and Branch/Store
     """
 
     company = models.ForeignKey("accounts.Marchant", on_delete=models.CASCADE,)
-    branch = models.ForeignKey("accounts.Store", on_delete=models.CASCADE,)
+    branch = models.ForeignKey("accounts.Store", on_delete=models.CASCADE, blank=True, null=True)
 
     class Meta:
         abstract = True

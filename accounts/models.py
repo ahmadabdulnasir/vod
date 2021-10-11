@@ -1,6 +1,6 @@
 from django.db import models
 from django.db.models.query_utils import Q
-from core.abstract_models import POSModel, TimeStampedModel
+from core.abstract_models import TimeStampedModel
 from django.conf import settings
 from core.location.nigeria_states import NIGERIA_STATES
 from core.choices import (
@@ -28,16 +28,17 @@ class UserProfile(TimeStampedModel):
     user_type = models.CharField(
         max_length=50, choices=USER_TYPE_CHOICE, default="free_user"
     )
-    image = models.ImageField(upload_to=user_image_location)
+    image = models.ImageField(upload_to=user_image_location, blank=True, null=True,)
     surname = models.CharField(max_length=50)
     other_names = models.CharField(max_length=50)
     gender = models.CharField(max_length=15, choices=GENDER_CHOICE)
-    phone_number = models.CharField(max_length=15)
+    phone_number = models.CharField(max_length=15, blank=True, null=True,)
     email = models.EmailField(max_length=50)
-    DOB = models.DateField(help_text="Date of Birth")
+    DOB = models.DateField(help_text="Date of Birth", blank=True, null=True,)
     address = models.CharField(max_length=50)
-    lga = models.ForeignKey(LGA, blank=True, null=True, on_delete=models.SET_NULL, related_name="users")
-    state = models.ForeignKey(State, blank=True, null=True, on_delete=models.SET_NULL, related_name="users")
+    # lga = models.ForeignKey(LGA, blank=True, null=True, on_delete=models.SET_NULL, related_name="users")
+    # state = models.ForeignKey(State, blank=True, null=True, on_delete=models.SET_NULL, related_name="users")
+    state = models.CharField(max_length=50, blank=True, null=True, choices=NIGERIA_STATES)
     company = models.ForeignKey("accounts.Marchant", blank=True, null=True, on_delete=models.CASCADE, related_name="company_staffs")
     branch = models.ForeignKey("accounts.Store", blank=True, null=True,
                             on_delete=models.CASCADE, related_name="branch_staffs")
@@ -76,6 +77,18 @@ class UserProfile(TimeStampedModel):
     def get_email(self):
         return f"{self.email}"
 
+    def get_films_watched(self):
+        return 13
+
+    def get_plan(self):
+        return "Free (N0/Month)"
+        
+    def comments_counts(self):
+        return 112
+
+    def reviews_counts(self):
+        return 112
+
     def get_absolute_url(self):
         kwargs = {"pk": self.pk}
         url = reverse("accounts:admin-edit-user", kwargs=kwargs)
@@ -89,8 +102,10 @@ class Marchant(TimeStampedModel):
     title = models.CharField(max_length=50)
     logo = models.ImageField(upload_to=marchant_image_location)
     hq_address = models.CharField(max_length=250)
-    lga = models.ForeignKey(LGA, on_delete=models.PROTECT, related_name="marchants")
-    state = models.ForeignKey(State, on_delete=models.PROTECT, related_name="marchants")
+    # lga = models.ForeignKey(LGA, on_delete=models.PROTECT, related_name="marchants")
+    # state = models.ForeignKey(State, on_delete=models.PROTECT, related_name="marchants")
+    lga = models.CharField(max_length=50,)
+    state = models.CharField(max_length=50, choices=NIGERIA_STATES)
     active = models.BooleanField(default=False)
 
     class Meta:
@@ -117,8 +132,8 @@ class Store(TimeStampedModel):
     title = models.CharField(max_length=50)
     company = models.ForeignKey("accounts.Marchant", on_delete=models.CASCADE, related_name="stores")
     address = models.CharField(max_length=250)
-    lga = models.ForeignKey(LGA, on_delete=models.PROTECT)
-    state = models.ForeignKey(State, on_delete=models.PROTECT)
+    lga = models.CharField(max_length=50,)
+    state = models.CharField(max_length=50, choices=NIGERIA_STATES)
     active = models.BooleanField(default=False)
 
     class Meta:
