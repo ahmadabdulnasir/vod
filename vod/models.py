@@ -27,6 +27,12 @@ class Category(TimeStampedModel):
         verbose_name_plural = 'Categories'
         ordering = ["-updated"]
 
+    def save(self, *args, **kwargs):
+        # if getattr(self, '_title_changed', True):
+        #     small = rescale_image(self.image, width=100, height=100)
+        self.title = f"{self.title}".title()
+        super(Category, self).save(*args, **kwargs)
+
     def __str__(self) -> str:
         return f"{self.title}"
 
@@ -38,6 +44,12 @@ class Genre(TimeStampedModel):
         verbose_name = 'Genre'
         verbose_name_plural = 'Genres'
         ordering = ["-updated"]
+
+    def save(self, *args, **kwargs):
+        # if getattr(self, '_image_changed', True):
+        #     small = rescale_image(self.image, width=100, height=100)
+        self.title = f"{self.title}".title()
+        super(Genre, self).save(*args, **kwargs)
 
     def __str__(self) -> str:
         return f"{self.title}"
@@ -67,9 +79,9 @@ class Movie(TimeStampedModel, VODModel):
     uid = models.UUIDField(default=LongUniqueId)
     thumb = models.ImageField(upload_to=movie_thumb_locations)
     description = models.TextField()
-    genre = models.ManyToManyField(Genre)
+    genre = models.ManyToManyField(Genre, blank=True,)
     category = models.ForeignKey(Category, blank=True, null=True, on_delete=models.SET_NULL, related_name="movies")
-    posters = models.ManyToManyField(Poster)
+    posters = models.ManyToManyField(Poster, blank=True,)
     video = models.FileField(upload_to=movie_locations)
     status = models.CharField(max_length=25, choices=POST_STATUS_CHOICE)
 
@@ -78,6 +90,10 @@ class Movie(TimeStampedModel, VODModel):
         verbose_name_plural = 'Movies'
         ordering = ["-timestamp", "title"]
 
+    def category_title(self):
+        if self.category:
+            return f"{self.category}"
+            
     def __str__(self):
         return self.title
 

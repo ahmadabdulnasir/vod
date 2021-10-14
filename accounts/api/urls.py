@@ -27,4 +27,3 @@ urlpatterns = [
     path("marchant/list/", MarchantListAPIView.as_view()),
     path("branch/list/", BranchListAPIView.as_view()),
 ]
-

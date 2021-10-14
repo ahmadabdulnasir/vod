@@ -18,11 +18,12 @@ from django.urls import path, include
 from django.conf import settings
 
 urlpatterns = [
-    # path("admin/", admin.site.urls),
-    path("root/", admin.site.urls),
+    path("admin/", admin.site.urls),
+    # path("root/", admin.site.urls),
     # path("accounts/", include(("accounts.urls", "accounts"), namespace="accounts")),
     # path("", include(("accounts.urls", "accounts"), namespace="accounts")),
     path("accounts/api/", include("accounts.api.urls")),
+    path("vod/api/", include("vod.api.urls")),
     #path("audience/", include(("audience.urls", "audience"), namespace="audience")),
     # path("finance/", include(("finance.urls", "finance"), namespace="finance")),
     #url(r"^ckeditor/", include("ckeditor_uploader.urls")),
