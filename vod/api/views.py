@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth.models import Group
 
-from vod.models import Category, Genre
+from vod.models import Category, Genre, Poster
 from .serializers import (
     MovieSerializer,
     MovieListSerializer,
@@ -51,8 +51,8 @@ class MovieCreateAPIView(APIView):
         title = request.data.get("title")
         thumb = request.data.get("thumb")
         description = request.data.get("description")
-        genre = request.data.get("genre")
-        category = request.data.get("category")
+        genres = request.data.get("genres")
+        category_pk = request.data.get("category_pk")
         posters = request.data.get("posters")
         video = request.data.get("video")
         movie_status = request.data.get("status")
@@ -63,8 +63,8 @@ class MovieCreateAPIView(APIView):
             "title": title,
             "thumb": thumb,
             "description": description,
-            # "genre": genre,
-            "category": category,
+            # "genres": genres,
+            "category": category_pk,
             # "posters": posters,
             "video": video,
             "movie_status": movie_status,
@@ -75,14 +75,46 @@ class MovieCreateAPIView(APIView):
                 error_list.append(f"Invalid Entry of: {entry}")
         if error_list:
             dta = {
-                "detail": "Fail to Upload Movie, Non or Partial Data Received.",
+                "detail": "Fail to Upload Movie, None or Partial Data Received.",
                 "errors": error_list,
             }
             status_code = 406
             raise ValidationError(dta, code=status_code)
+        data = request.data.copy()
+        try:
+            category = Category.objects.get(pk=category_pk)
+        except Category.DoesNotExist as exp:
+            category = None
+        if isinstance(genres, list):
+            genres_to_add = Genre.objects.filter(pk__in=genres)
+        else:
+            genres_to_add = None
+        if isinstance(posters, list):
+            posters_to_add = []
+            for p in posters:
+                spam = Poster(
+                    title = p.get("title"),
+                    image = p.get("image"),
+                )
+                posters_to_add.append(spam)
+        else:
+            posters_to_add = None
+        try:
+            company = Marchant.objects.get(pk=company_pk)
+        except Marchant.DoesNotExist as exp:
+            company = None
+
+        # modifying Data
+        data["company"] = company
+        data["category"] = category
+        if genres_to_add:
+            data["genres"] = genres_to_add
+        if posters_to_add:
+            data["posters"] = posters_to_add
 
         try:
-            serializer = self.get_serializer(data=request.data)
+            # serializer = self.get_serializer(data=request.data)
+            serializer = self.get_serializer(data=data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             # 

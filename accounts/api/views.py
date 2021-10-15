@@ -33,8 +33,7 @@ class CreateAccountAPIView(APIView):
         # user_profile
         phone_number = request.POST.get("phone_number")
         dob = request.POST.get("dob")
-        state_pk = request.POST.get("state")
-        lga_pk = request.POST.get("lga")
+        state = request.POST.get("state")
         address = request.POST.get("address")
         user_type = request.POST.get("user_type")
         image = request.FILES.get("image")
@@ -42,13 +41,13 @@ class CreateAccountAPIView(APIView):
         required_info = {
             "username" : username,
             "password" : password,
-            "first_name" : first_name,
-            "last_name" : last_name,
+            # "first_name" : first_name,
+            # "last_name" : last_name,
             # "image" : image,
             "email" : email,
             "phone_number" : phone_number,
-            # "dob" : dob,
-            # "state_pk" : state_pk,
+            # "DOB" : dob,
+            # "state" : state,
             # "lga_pk" : lga_pk,
             # "address" : address,
             # "user_type" : user_type,
@@ -73,39 +72,38 @@ class CreateAccountAPIView(APIView):
                 raise ValidationError({"detail": f"{username} Already Exist Error: {exp}"})
             
             #  check for duplicate email
-            user_with_email = User.objects.filter(email=email)
-            if user_with_email.count() > 0:
+            user_with_email = User.objects.filter(email=email).exists() or UserProfile.objects.filter(email=email).exists()
+            if user_with_email:
+                user.delete()
                 raise ValidationError({"detail": f"User with email: {email} Already Exist!"})
             
             # check for state and lga validity
-            lga = None
-            state = None
-            try:
-                lga = get_object_or_404(LGA, pk=lga_pk)
-                state = get_object_or_404(State,pk=state_pk)
-            except Exception as exp:
-                raise ValidationError({"detail": "Invalid Entry for State and/or LGA."})
+            # lga = None
+            # state = None
+            # try:
+            #     lga = get_object_or_404(LGA, pk=lga_pk)
+            #     state = get_object_or_404(State,pk=state_pk)
+            # except Exception as exp:
+            #     raise ValidationError({"detail": "Invalid Entry for State and/or LGA."})
             
             user.set_password(password)
             user.email = email
             user.first_name = first_name
             user.last_name = last_name
             user.save()
-            # valid designation and branch
             
             try:
                 egg = {
                     "user": user,
-                    "user_type": user_type,
+                    # "user_type": user_type,
                     "image": image if image else None,
-                    "surname": last_name,
-                    "other_names": first_name,
+                    "first_name": first_name if first_name else None,
+                    "last_name": last_name if last_name else None,
                     "phone_number": phone_number,
                     "email": email,
-                    "DOB": dob,
-                    "state": state,
-                    "lga": lga,
-                    "address": address,
+                    "DOB": dob if dob else None,
+                    # "state": state,
+                    "address": address if address else None,
                 }
                 profile = UserProfile(**egg)               
                 profile.save()
@@ -219,7 +217,7 @@ class UsersProfileListAPIView(generics.ListAPIView):
         try:
             qs = UserProfile.objects.all()
             active = self.request.GET.get("active")
-            lga_pk = self.request.GET.get("lga_pk")
+            # lga_pk = self.request.GET.get("lga_pk")
             state = self.request.GET.get("state")
             user_type = self.request.GET.get("user_type")
             group_pk = self.request.GET.get("group_pk")
@@ -227,8 +225,8 @@ class UsersProfileListAPIView(generics.ListAPIView):
                 qs = qs.filter(active=True)
             if active and active == 'no':
                 qs = qs.filter(active=False)
-            if lga_pk:
-                qs = qs.filter(lga=lga_pk)
+            # if lga_pk:
+            #     qs = qs.filter(lga=lga_pk)
             if state:
                 qs = qs.filter(state=state)
             if user_type:

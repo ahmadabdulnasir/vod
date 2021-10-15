@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models.query_utils import Q
+from django.utils.translation import deactivate
 from core.abstract_models import TimeStampedModel
 from django.conf import settings
 from core.location.nigeria_states import NIGERIA_STATES
@@ -29,25 +30,25 @@ class UserProfile(TimeStampedModel):
         max_length=50, choices=USER_TYPE_CHOICE, default="free_user"
     )
     image = models.ImageField(upload_to=user_image_location, blank=True, null=True,)
-    surname = models.CharField(max_length=50)
-    other_names = models.CharField(max_length=50)
-    gender = models.CharField(max_length=15, choices=GENDER_CHOICE)
+    first_name = models.CharField(max_length=50, blank=True, null=True,)
+    last_name = models.CharField(max_length=50, blank=True, null=True,)
+    gender = models.CharField(max_length=15, choices=GENDER_CHOICE, default="others")
     phone_number = models.CharField(max_length=15, blank=True, null=True,)
     email = models.EmailField(max_length=50)
     DOB = models.DateField(help_text="Date of Birth", blank=True, null=True,)
-    address = models.CharField(max_length=50)
+    address = models.CharField(max_length=100, blank=True, null=True)
     # lga = models.ForeignKey(LGA, blank=True, null=True, on_delete=models.SET_NULL, related_name="users")
     # state = models.ForeignKey(State, blank=True, null=True, on_delete=models.SET_NULL, related_name="users")
     state = models.CharField(max_length=50, blank=True, null=True, choices=NIGERIA_STATES)
     company = models.ForeignKey("accounts.Marchant", blank=True, null=True, on_delete=models.CASCADE, related_name="company_staffs")
     branch = models.ForeignKey("accounts.Store", blank=True, null=True,
                             on_delete=models.CASCADE, related_name="branch_staffs")
-    active = models.BooleanField(default=False)
+    active = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = "User Profile"
         verbose_name_plural = "User Profiles"
-        ordering = ["-updated", "surname", "other_names"]
+        ordering = ["-updated", "first_name", "last_name"]
 
     def user_groups(self):
         return [g.name for g in self.user.groups.all()]
@@ -72,7 +73,7 @@ class UserProfile(TimeStampedModel):
         return f"{timezone.now().year-self.DOB.year}"
 
     def fullname(self):
-        return f"{self.surname}, {self.other_names}"
+        return f"{self.first_name} {self.last_name}"
 
     def get_email(self):
         return f"{self.email}"
@@ -84,6 +85,9 @@ class UserProfile(TimeStampedModel):
         return "Free (N0/Month)"
         
     def comments_counts(self):
+        return 112
+
+    def reviews_counts(self):
         return 112
 
     def reviews_counts(self):

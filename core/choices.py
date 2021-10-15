@@ -12,7 +12,7 @@ RELIGION_CHOICE = (
     ("others", "Others"),
 )
 
-GENDER_CHOICE = (("male", "Male"), ("female", "Female"))
+GENDER_CHOICE = (("male", "Male"), ("female", "Female"), ("others", "Others"))
 
 GUARDIAN_RELATION_WITH_STUDENT_CHOICE = (
     ("parent", "Parent"),

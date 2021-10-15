@@ -79,7 +79,7 @@ class Movie(TimeStampedModel, VODModel):
     uid = models.UUIDField(default=LongUniqueId)
     thumb = models.ImageField(upload_to=movie_thumb_locations)
     description = models.TextField()
-    genre = models.ManyToManyField(Genre, blank=True,)
+    genres = models.ManyToManyField(Genre, blank=True,)
     category = models.ForeignKey(Category, blank=True, null=True, on_delete=models.SET_NULL, related_name="movies")
     posters = models.ManyToManyField(Poster, blank=True,)
     video = models.FileField(upload_to=movie_locations)
@@ -93,7 +93,14 @@ class Movie(TimeStampedModel, VODModel):
     def category_title(self):
         if self.category:
             return f"{self.category}"
-            
+    def get_genres(self):
+        dta = [g.title for g in self.genres]
+        return dta
+        
+    def get_posters(self):
+        dta = [g.title for g in self.genres]
+        return dta
+
     def __str__(self):
         return self.title
 
