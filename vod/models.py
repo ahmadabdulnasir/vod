@@ -4,6 +4,8 @@ from core.abstract_models import TimeStampedModel, VODModel
 from core.utils.units import LongUniqueId, getUniqueId
 from core.choices import COMMENT_STATUS_CHOICE, POST_STATUS_CHOICE
 from django.utils.translation import ugettext_lazy as _
+from django.urls import reverse
+
 # Create your models here.
 
 def movie_locations(instance, filename):
@@ -90,7 +92,7 @@ class Movie(TimeStampedModel, VODModel):
 class MoviePoster(TimeStampedModel, VODModel):
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name="posters")
     title = models.CharField(max_length=50, blank=True, null=True)
-    image = models.ImageField()
+    image = models.ImageField(upload_to="posters")
     uid = models.UUIDField(default=LongUniqueId)
 
     class Meta:
@@ -109,7 +111,7 @@ class MoviePoster(TimeStampedModel, VODModel):
             "name": f"{self}",
             "uid": f"{self.uid}",
             "movie": f"{self.movie}",
-            "image": f"{self.image}",
+            "image": f"{self.image.url}",
         }
         return dta
 

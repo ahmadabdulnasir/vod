@@ -1,6 +1,5 @@
 from django.db import models
 from django.db.models.query_utils import Q
-from django.utils.translation import deactivate
 from core.abstract_models import TimeStampedModel
 from django.conf import settings
 from core.location.nigeria_states import NIGERIA_STATES
