@@ -5,7 +5,7 @@ from .models import UserProfile, Marchant, Store
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
     list_display = ["user", "fullname", "gender", "state",
-                    "company", "active"]
+                    "company", "profile_completed", "active"]
     list_filter = ["active", "gender", "company", "state"]
 
 
