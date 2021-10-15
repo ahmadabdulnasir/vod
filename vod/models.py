@@ -1,3 +1,7 @@
+from django.contrib.contenttypes.models import ContentType
+from django import urls as urlresolvers
+from django.utils.html import format_html
+from django.urls.exceptions import NoReverseMatch
 from django.db import models
 from django.db.models.fields import CharField
 from core.abstract_models import TimeStampedModel, VODModel
@@ -174,29 +178,92 @@ class SeasonEpisode(TimeStampedModel, VODModel):
         return self.title
 
 
-# class Comment(TimeStampedModel):
-#     content_type = models.ForeignKey(
-#         to="contenttypes.ContentType",
-#         on_delete=models.CASCADE,
-#         related_name="+",
-#         verbose_name=_("content type"),
-#     )
-#     object_pk = models.BigIntegerField(
-#         db_index=True, verbose_name=_("object pk")
-#     )
-#     object_id = models.BigIntegerField(
-#         blank=True, db_index=True, null=True, verbose_name=_("object id")
-#     )
-#     # video = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name='comments')
-#     author = models.ForeignKey("accounts.UserProfile", on_delete=models.CASCADE, related_name="comments")
-#     body = models.TextField(max_length=255)
-#     status = models.CharField(max_length=25, choices=COMMENT_STATUS_CHOICE)
+class Comment(TimeStampedModel):
+    content_type = models.ForeignKey(
+        to="contenttypes.ContentType",
+        on_delete=models.CASCADE,
+        related_name="+",
+        verbose_name=_("content type"),
+    )
+    object_pk = models.BigIntegerField(
+        db_index=True, verbose_name=_("object pk")
+    )
+    object_id = models.BigIntegerField(
+        blank=True, db_index=True, null=True, verbose_name=_("object id")
+    )
+    object_repr = models.CharField(max_length=255, verbose_name=_("object representation"), blank=True, null=True)
+    author = models.ForeignKey("accounts.UserProfile", on_delete=models.CASCADE, related_name="comments")
+    body = models.TextField(max_length=255)
+    status = models.CharField(max_length=25, choices=COMMENT_STATUS_CHOICE)
 
-#     # Metadata
-#     class Meta:
-#         verbose_name = 'Movie Comment'
-#         verbose_name_plural = 'Movies Comments'
-#         ordering = ["-updated"]
+    # Metadata
+    class Meta:
+        verbose_name = 'Comment'
+        verbose_name_plural = 'Comments'
+        ordering = ["-updated"]
 
-#     def __str__(self):
-#         return self.text
+    def resource_url(self):
+        app_label, model = self.content_type.app_label, self.content_type.model
+        viewname = "admin:%s_%s_change" % (app_label, model)
+        try:
+            args = [self.object_pk] if self.object_id is None else [self.object_id]
+            link = urlresolvers.reverse(viewname, args=args)
+        except NoReverseMatch:
+            return self.object_repr
+        else:
+            return format_html('<a href="{}">{}</a>', link, self.object_repr)
+
+    def save(self, *args, **kwargs):
+        ct = ContentType.objects.get_for_id(self.content_type.pk)
+        obj = ct.get_object_for_this_type(pk=self.object_id)
+        self.object_repr = f"{obj}"
+        super(Comment, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.author} Comment on: {self.object_repr}"
+
+
+
+class Review(TimeStampedModel):
+    content_type = models.ForeignKey(
+        to="contenttypes.ContentType",
+        on_delete=models.CASCADE,
+        related_name="+",
+        verbose_name=_("content type"),
+    )
+    object_pk = models.BigIntegerField(
+        db_index=True, verbose_name=_("object pk")
+    )
+    object_id = models.BigIntegerField(
+        blank=True, db_index=True, null=True, verbose_name=_("object id")
+    )
+    object_repr = models.CharField(max_length=255, verbose_name=_("object representation"))
+    author = models.ForeignKey("accounts.UserProfile", on_delete=models.CASCADE, related_name="reviews")
+    body = models.TextField(max_length=255)
+    status = models.CharField(max_length=25, choices=COMMENT_STATUS_CHOICE)
+
+    # Metadata
+    class Meta:
+        verbose_name = 'Review'
+        verbose_name_plural = 'Reviews'
+        ordering = ["-updated"]
+
+    def resource_url(self):
+        app_label, model = self.content_type.app_label, self.content_type.model
+        viewname = "admin:%s_%s_change" % (app_label, model)
+        try:
+            args = [self.object_pk] if self.object_id is None else [self.object_id]
+            link = urlresolvers.reverse(viewname, args=args)
+        except NoReverseMatch:
+            return self.object_repr
+        else:
+            return format_html('<a href="{}">{}</a>', link, self.object_repr)
+
+    def save(self, *args, **kwargs):
+        ct = ContentType.objects.get_for_id(self.content_type.pk)
+        obj = ct.get_object_for_this_type(pk=self.object_id)
+        self.object_repr = f"{obj}"
+        super(Comment, self).save(*args, **kwargs)
+        
+    def __str__(self):
+        return f"{self.author} Review on: {self.object_repr}"

@@ -74,7 +74,10 @@ class UserProfile(TimeStampedModel):
     def fullname(self):
         k1 = self.first_name if self.first_name else ""
         k2 = self.last_name if self.last_name else ""
-        return f"{k1} {k2}"
+        k = f"{k1} {k2}"
+        if k == " ":
+            return None
+        return k
 
     def get_email(self):
         return f"{self.email}"
@@ -86,13 +89,10 @@ class UserProfile(TimeStampedModel):
         return "Free (N0/Month)"
         
     def comments_counts(self):
-        return 112
+        return self.comments.counts()
 
     def reviews_counts(self):
-        return 112
-
-    def reviews_counts(self):
-        return 112
+        return self.reviews.counts()
 
     def profile_completed(self):
         gender_check = True if self.gender != "others" else False
@@ -106,7 +106,10 @@ class UserProfile(TimeStampedModel):
         return url
 
     def __str__(self):
-        return f"{self.fullname()}"
+        if self.fullname():
+            return f"{self.fullname()}"
+        else:
+            return f"{self.user}"
 
 
 class Marchant(TimeStampedModel):

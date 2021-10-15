@@ -1,7 +1,16 @@
 from django.contrib import admin
 
-from .models import Category, Genre, Movie, MoviePoster, Series, SeriesSeason, SeasonEpisode
-
+from .models import (
+    Category,
+    Genre,
+    Movie,
+    MoviePoster,
+    Series,
+    SeriesSeason,
+    SeasonEpisode,
+    Comment,
+    Review,
+)
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -97,3 +106,34 @@ class SeasonEpisodeAdmin(admin.ModelAdmin):
         'updated',
     )
     list_filter = ('timestamp', 'updated', 'company', 'season')
+
+
+
+#
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    readonly_fields = [
+        "author", "body",
+        "content_type", "object_pk", 
+        "object_id", "object_repr",
+    ]
+    list_display = ["author", "resource_url", "status", "timestamp", "updated"]
+    list_editable = ["status"]
+    list_filter = ["status", "timestamp", "updated"]
+
+
+@admin.register(Review)
+class ReviewAdmin(admin.ModelAdmin):
+    # readonly_fields = [
+    #     "author", "body",
+    #     "content_type", "object_pk", 
+    #     "object_id", "object_repr",
+    # ]
+    list_display = ["author", "resource_url", "status", "timestamp", "updated"]
+    list_editable = ["status"]
+    list_filter = ["status", "timestamp", "updated"]
+
+
+
+
+
