@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth.models import Group
 
-from vod.models import Category, Genre, Poster
+from vod.models import Category, Genre, Movie, Poster
 from .serializers import (
     MovieSerializer,
     MovieListSerializer,
@@ -131,11 +131,10 @@ class MovieCreateAPIView(APIView):
 class MovieListAPIView(generics.ListAPIView):
     serializer_class = MovieListSerializer
     permission_classes = [permissions.IsAuthenticated]
-    queryset = UserProfile.objects.all()
 
     def get_queryset(self, *args, **kwargs):
         try:
-            qs = UserProfile.objects.all()
+            qs = Movie.objects.all()
             active = self.request.GET.get("active")
             lga_pk = self.request.GET.get("lga_pk")
             state = self.request.GET.get("state")

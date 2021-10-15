@@ -39,6 +39,8 @@ class UserProfileSerializer(CustomeSerializer):
             ]
 
 
+
+
 class UserProfileListSerializer(CustomeSerializer):
 
     class Meta:

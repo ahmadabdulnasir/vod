@@ -37,7 +37,7 @@ class MovieListSerializer(CustomeSerializer):
             "uid",
             "thumb",
             "description",
-            "genre",
+            "get_genres",
             "category",
             "posters",
             "video",
