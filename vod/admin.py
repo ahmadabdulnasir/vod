@@ -112,11 +112,11 @@ class SeasonEpisodeAdmin(admin.ModelAdmin):
 #
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
-    readonly_fields = [
-        "author", "body",
-        "content_type", "object_pk", 
-        "object_id", "object_repr",
-    ]
+    # readonly_fields = [
+    #     "author", "body",
+    #     "content_type", "object_pk", 
+    #     "object_id", "object_repr",
+    # ]
     list_display = ["author", "resource_url", "status", "timestamp", "updated"]
     list_editable = ["status"]
     list_filter = ["status", "timestamp", "updated"]
