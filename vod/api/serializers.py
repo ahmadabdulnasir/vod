@@ -1,5 +1,5 @@
 from core.api.serializers import CustomeSerializer
-from vod.models import Category, Genre, Poster, Movie, Series, SeriesSeason, SeasonEpisode
+from vod.models import Category, Genre, Movie, MoviePoster, Series, SeriesSeason, SeasonEpisode
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
@@ -39,10 +39,10 @@ class MovieListSerializer(CustomeSerializer):
             "description",
             "get_genres",
             "category",
+            "category_title",
             "posters",
             "video",
             "status",
-            "category_title",
             "timestamp",
             "updated",
             ]
@@ -72,10 +72,10 @@ class GenreSerializer(CustomeSerializer):
             ]
 
 
-class PosterSerializer(CustomeSerializer):
+class MoviePosterSerializer(CustomeSerializer):
 
     class Meta:
-        model = Poster
+        model = MoviePoster
         fields = [
             "pk", 
             "title",

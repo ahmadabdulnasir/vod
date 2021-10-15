@@ -54,7 +54,41 @@ class Genre(TimeStampedModel):
     def __str__(self) -> str:
         return f"{self.title}"
 
-class Poster(TimeStampedModel, VODModel):
+
+class Movie(TimeStampedModel, VODModel):
+    title = models.CharField(max_length=250)
+    uid = models.UUIDField(default=LongUniqueId)
+    thumb = models.ImageField(upload_to=movie_thumb_locations)
+    description = models.TextField()
+    genres = models.ManyToManyField(Genre, blank=True,)
+    category = models.ForeignKey(Category, blank=True, null=True, on_delete=models.SET_NULL, related_name="movies")
+    # posters = models.ManyToManyField(Poster, blank=True,)
+    video = models.FileField(upload_to=movie_locations)
+    status = models.CharField(max_length=25, choices=POST_STATUS_CHOICE)
+
+    class Meta:
+        verbose_name = 'Movie'
+        verbose_name_plural = 'Movies'
+        ordering = ["-timestamp", "title"]
+
+    def category_title(self):
+        if self.category:
+            return f"{self.category}"
+
+    def get_genres(self):
+        dta = [g.title for g in self.genres.all()]
+        return dta
+        
+    def get_posters(self):
+        dta = [g.get_form_format() for g in self.posters.all()]
+        return dta
+
+    def __str__(self):
+        return self.title
+
+
+class MoviePoster(TimeStampedModel, VODModel):
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name="posters")
     title = models.CharField(max_length=50, blank=True, null=True)
     image = models.ImageField()
     uid = models.UUIDField(default=LongUniqueId)
@@ -70,41 +104,17 @@ class Poster(TimeStampedModel, VODModel):
             return self.title
         return self.uid
 
+    def get_form_format(self):
+        dta = {
+            "name": f"{self}",
+            "uid": f"{self.uid}",
+            "movie": f"{self.movie}",
+            "image": f"{self.image}",
+        }
+        return dta
+
     def __str__(self):
         return f"{self.name}"
-
-
-class Movie(TimeStampedModel, VODModel):
-    title = models.CharField(max_length=250)
-    uid = models.UUIDField(default=LongUniqueId)
-    thumb = models.ImageField(upload_to=movie_thumb_locations)
-    description = models.TextField()
-    genres = models.ManyToManyField(Genre, blank=True,)
-    category = models.ForeignKey(Category, blank=True, null=True, on_delete=models.SET_NULL, related_name="movies")
-    posters = models.ManyToManyField(Poster, blank=True,)
-    video = models.FileField(upload_to=movie_locations)
-    status = models.CharField(max_length=25, choices=POST_STATUS_CHOICE)
-
-    class Meta:
-        verbose_name = 'Movie'
-        verbose_name_plural = 'Movies'
-        ordering = ["-timestamp", "title"]
-
-    def category_title(self):
-        if self.category:
-            return f"{self.category}"
-    def get_genres(self):
-        dta = [g.title for g in self.genres.all()]
-        return dta
-        
-    def get_posters(self):
-        dta = [g.title for g in self.posters.all()]
-        return dta
-
-    def __str__(self):
-        return self.title
-
-
 
 class Series(TimeStampedModel, VODModel):
     title = models.CharField(max_length=250)
@@ -113,7 +123,7 @@ class Series(TimeStampedModel, VODModel):
     description = models.TextField()
     genre = models.ManyToManyField(Genre)
     category = models.ForeignKey(Category, blank=True, null=True, on_delete=models.SET_NULL, related_name="series")
-    posters = models.ManyToManyField(Poster)
+    # posters = models.ManyToManyField(Poster)
     status = models.CharField(max_length=25, choices=POST_STATUS_CHOICE)
 
     class Meta:
@@ -131,7 +141,7 @@ class SeriesSeason(TimeStampedModel, VODModel):
     uid = models.UUIDField(default=LongUniqueId)
     thumb = models.ImageField()
     description = models.TextField(blank=True, null=True)
-    posters = models.ManyToManyField(Poster, blank=True)
+    # posters = models.ManyToManyField(Poster, blank=True)
     status = models.CharField(max_length=25, choices=POST_STATUS_CHOICE)
 
     class Meta:
@@ -149,7 +159,7 @@ class SeasonEpisode(TimeStampedModel, VODModel):
     uid = models.UUIDField(default=LongUniqueId)
     thumb = models.ImageField(upload_to=episode_thumb_location)
     description = models.TextField(blank=True, null=True)
-    posters = models.ManyToManyField(Poster, blank=True)
+    # posters = models.ManyToManyField(Poster, blank=True)
     video = models.FileField(upload_to=episode_location)
     status = models.CharField(max_length=25, choices=POST_STATUS_CHOICE)
 

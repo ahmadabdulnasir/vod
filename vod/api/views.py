@@ -8,13 +8,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth.models import Group
 
-from vod.models import Category, Genre, Movie, Poster
+from vod.models import Category, Genre, Movie, MoviePoster
 from .serializers import (
     MovieSerializer,
     MovieListSerializer,
     CategorySerializer,
     GenreSerializer,
-    PosterSerializer,
+    MoviePosterSerializer,
     SeriesSerializer,
     SeriesSeasonSerializer,
     SeasonEpisodeSerializer,

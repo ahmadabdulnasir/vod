@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Category, Genre, Poster, Movie, Series, SeriesSeason, SeasonEpisode
+from .models import Category, Genre, Movie, MoviePoster, Series, SeriesSeason, SeasonEpisode
 
 
 @admin.register(Category)
@@ -15,19 +15,6 @@ class GenreAdmin(admin.ModelAdmin):
     list_filter = ('timestamp', 'updated')
 
 
-@admin.register(Poster)
-class PosterAdmin(admin.ModelAdmin):
-    list_display = (
-        'id',
-        'timestamp',
-        'updated',
-        'company',
-        'branch',
-        'title',
-        'image',
-        'uid',
-    )
-    list_filter = ('timestamp', 'updated', 'company', 'branch')
 
 
 @admin.register(Movie)
@@ -45,6 +32,18 @@ class MovieAdmin(admin.ModelAdmin):
         'updated',
     )
     list_filter = ('timestamp', 'updated', 'company', 'category')
+
+
+@admin.register(MoviePoster)
+class MoviePosterAdmin(admin.ModelAdmin):
+    list_display = (
+        '__str__',
+        'movie',
+        'company',
+        'timestamp',
+        'updated',
+    )
+    list_filter = ('timestamp', 'updated', 'company',)
 
 
 @admin.register(Series)
