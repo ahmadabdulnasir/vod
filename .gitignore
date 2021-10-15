@@ -28,3 +28,4 @@ docs/_static
 npm-debug.log
 setup.cfg
 pyproject.toml
+media
