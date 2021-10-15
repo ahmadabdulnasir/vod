@@ -34,11 +34,11 @@ class MovieAdmin(admin.ModelAdmin):
     inlines = (MoviePosterInline,)
     list_display = (
         'title',
-        'uid',
-        'thumb',
-        'description',
+        # 'uid',
+        # 'thumb',
+        # 'description',
         'category',
-        'video',
+        # 'video',
         'status',
         'company',
         'timestamp',
@@ -63,9 +63,9 @@ class MoviePosterAdmin(admin.ModelAdmin):
 class SeriesAdmin(admin.ModelAdmin):
     list_display = (
         'title',
-        'uid',
-        'thumb',
-        'description',
+        # 'uid',
+        # 'thumb',
+        # 'description',
         'category',
         'status',
         'company',
@@ -79,9 +79,9 @@ class SeriesAdmin(admin.ModelAdmin):
 class SeriesSeasonAdmin(admin.ModelAdmin):
     list_display = (
         'title',
-        'uid',
-        'thumb',
-        'description',
+        # 'uid',
+        # 'thumb',
+        # 'description',
         'status',
         'company',
         'series',
@@ -96,9 +96,9 @@ class SeasonEpisodeAdmin(admin.ModelAdmin):
     list_display = (
         'title',
         'uid',
-        'thumb',
-        'description',
-        'video',
+        # 'thumb',
+        # 'description',
+        # 'video',
         'status',
         'company',
         'season',
@@ -124,11 +124,11 @@ class CommentAdmin(admin.ModelAdmin):
 
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
-    # readonly_fields = [
-    #     "author", "body",
-    #     "content_type", "object_pk", 
-    #     "object_id", "object_repr",
-    # ]
+    readonly_fields = [
+        "author", "body",
+        "content_type", "object_pk", 
+        "object_id", "object_repr",
+    ]
     list_display = ["author", "resource_url", "status", "timestamp", "updated"]
     list_editable = ["status"]
     list_filter = ["status", "timestamp", "updated"]
