@@ -263,7 +263,7 @@ class Review(TimeStampedModel):
         ct = ContentType.objects.get_for_id(self.content_type.pk)
         obj = ct.get_object_for_this_type(pk=self.object_id)
         self.object_repr = f"{obj}"
-        super(Comment, self).save(*args, **kwargs)
+        super(Review, self).save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.author} Review on: {self.object_repr}"
