@@ -94,8 +94,8 @@ class MoviePoster(TimeStampedModel, VODModel):
     uid = models.UUIDField(default=LongUniqueId)
 
     class Meta:
-        verbose_name = 'Poster'
-        verbose_name_plural = 'Posters'
+        verbose_name = 'Movie Poster'
+        verbose_name_plural = 'Movies Posters'
         ordering = ["-updated"]
 
     @property

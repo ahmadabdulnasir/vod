@@ -15,10 +15,14 @@ class GenreAdmin(admin.ModelAdmin):
     list_filter = ('timestamp', 'updated')
 
 
+class MoviePosterInline(admin.StackedInline):
+    model = MoviePoster
+    extra = 0
 
 
 @admin.register(Movie)
 class MovieAdmin(admin.ModelAdmin):
+    inlines = (MoviePosterInline,)
     list_display = (
         'title',
         'uid',
