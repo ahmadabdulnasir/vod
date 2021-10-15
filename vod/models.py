@@ -237,7 +237,7 @@ class Review(TimeStampedModel):
     object_id = models.BigIntegerField(
         blank=True, db_index=True, null=True, verbose_name=_("object id")
     )
-    object_repr = models.CharField(max_length=255, verbose_name=_("object representation"))
+    object_repr = models.CharField(max_length=255, verbose_name=_("object representation"), blank=True, null=True)
     author = models.ForeignKey("accounts.UserProfile", on_delete=models.CASCADE, related_name="reviews")
     body = models.TextField(max_length=255)
     status = models.CharField(max_length=25, choices=COMMENT_STATUS_CHOICE)
@@ -264,6 +264,6 @@ class Review(TimeStampedModel):
         obj = ct.get_object_for_this_type(pk=self.object_id)
         self.object_repr = f"{obj}"
         super(Comment, self).save(*args, **kwargs)
-        
+
     def __str__(self):
         return f"{self.author} Review on: {self.object_repr}"
