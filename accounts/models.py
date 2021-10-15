@@ -73,7 +73,9 @@ class UserProfile(TimeStampedModel):
         return f"{timezone.now().year-self.DOB.year}"
 
     def fullname(self):
-        return f"{self.first_name} {self.last_name}"
+        k1 = self.first_name if self.first_name else ""
+        k2 = self.last_name if self.last_name else ""
+        return f"{k1} {k2}"
 
     def get_email(self):
         return f"{self.email}"
@@ -92,6 +94,12 @@ class UserProfile(TimeStampedModel):
 
     def reviews_counts(self):
         return 112
+
+    def profile_completed(self):
+        gender_check = True if self.gender != "others" else False
+        check = bool(
+            self.image and self.first_name and self.last_name and self.DOB and self.address and self.state and gender_check)
+        return check
 
     def get_absolute_url(self):
         kwargs = {"pk": self.pk}
