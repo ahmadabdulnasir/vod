@@ -166,11 +166,10 @@ class MovieListAPIView(generics.ListAPIView):
 class MovieSearchAPIView(generics.ListAPIView):
     serializer_class = MovieListSerializer
     permission_classes = [permissions.IsAuthenticated]
-    queryset = UserProfile.objects.all()
 
     def get_queryset(self, *args, **kwargs):
         try:
-            qs = UserProfile.objects.all()
+            qs = Movie.objects.all()
             active = self.request.GET.get("active")
             lga_pk = self.request.GET.get("lga_pk")
             status_code = status.HTTP_200_OK
@@ -188,7 +187,7 @@ class MovieDetailsAPIView(generics.RetrieveAPIView):
     """
     serializer_class = MovieSerializer
     permission_classes = [permissions.IsAuthenticated]
-    queryset = UserProfile.objects.all()
+    queryset = Movie.objects.all()
     lookup_field = "pk"
 
 
