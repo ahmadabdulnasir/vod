@@ -94,11 +94,11 @@ class Movie(TimeStampedModel, VODModel):
         if self.category:
             return f"{self.category}"
     def get_genres(self):
-        dta = [g.title for g in self.genres]
+        dta = [g.title for g in self.genres.all()]
         return dta
         
     def get_posters(self):
-        dta = [g.title for g in self.genres]
+        dta = [g.title for g in self.posters.all()]
         return dta
 
     def __str__(self):
