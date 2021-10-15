@@ -89,10 +89,10 @@ class UserProfile(TimeStampedModel):
         return "Free (N0/Month)"
         
     def comments_counts(self):
-        return self.comments.counts()
+        return self.comments.all().count()
 
     def reviews_counts(self):
-        return self.reviews.counts()
+        return self.reviews.all().count()
 
     def profile_completed(self):
         gender_check = True if self.gender != "others" else False
