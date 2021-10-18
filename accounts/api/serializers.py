@@ -23,6 +23,7 @@ class UserProfileSerializer(CustomeSerializer):
             "get_email",
             "get_films_watched",
             "get_plan",
+            "subscribtion_date",
             "comments_counts",
             "reviews_counts",
             "state",
@@ -37,7 +38,6 @@ class UserProfileSerializer(CustomeSerializer):
             "timestamp", 
             "updated",
             ]
-
 
 
 
@@ -79,6 +79,8 @@ class MarchantSerializer(CustomeSerializer):
             # "state_title", 
             "lga", 
             # "lga_title",
+            "get_plan",
+            "subscribtion_date",
             "active", 
             "timestamp", 
             "updated",
@@ -113,6 +115,7 @@ class SubscriptionPlanSerializer(CustomeSerializer):
             "name",
             "price",
             "duration",
+            "plan_type",
             "active",
             "timestamp",
             "updated",

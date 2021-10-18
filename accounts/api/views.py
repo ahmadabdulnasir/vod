@@ -278,6 +278,7 @@ class UpdateAccountToMarchantAPIView(APIView):
         hq_address = request.data.get("hq_address")
         lga = request.data.get("lga")
         state = request.data.get("state")
+        subscription_plan_pk = request.data.get("subscription_plan_pk")
         # active = request.data.get("active")
         error_list = []
         required_info = {
@@ -287,6 +288,7 @@ class UpdateAccountToMarchantAPIView(APIView):
             "hq_address": hq_address,
             "lga": lga,
             "state": state,
+            "subscription_plan": subscription_plan,
         }
         for entry in required_info.keys():
             if not required_info.get(entry):
@@ -298,7 +300,22 @@ class UpdateAccountToMarchantAPIView(APIView):
             }
             status_code = 406
             raise ValidationError(dta, code=status_code)
-        
+        # Validate subscription_plan
+        plan_error_list = []
+        try:
+            subscription_plan = SubscriptionPlan.objects.get(pk=subscription_plan_pk)
+        except SubscriptionPlan.DoesNotExist as exp:
+            plan_error_list.append(exp)
+        except Exception as exp:
+            plan_error_list.append(exp)
+        finally:
+            if plan_error_list:
+                status_code = 406
+                dta = {
+                    "detail": "Fail to Upgrade Account, Invalid Subscription Plan.",
+                    "errors": error_list,
+                }
+                raise ValidationError(dta, code=status_code)
         # profile = get_object_or_404(UserProfile, pk=profile_pk)
         profile = request.user.profile
         try:
@@ -349,10 +366,13 @@ class SubscriptionPlanListAPIView(generics.ListAPIView):
         try:
             qs = SubscriptionPlan.objects.all()
             active = self.request.GET.get("active")
+            plan_type = self.request.GET.get("plan_type")
             if active and active == 'yes':
                 qs = qs.filter(active=True)
             if active and active == 'no':
                 qs = qs.filter(active=False)
+            if plan_type and plan_type in []:
+                qs = qs.filter(plan_type=plan_type)
             status_code = status.HTTP_200_OK
         except Exception as exp:
             status_code = status.HTTP_417_EXPECTATION_FAILED

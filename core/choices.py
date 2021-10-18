@@ -95,6 +95,12 @@ DURATION_CHOICE = (
     ("unlimitted", "Unlimitted"),
 )
 
+
+PLAN_TYPE_CHOICE = (
+    ("users", "Users"),
+    ("marchants", "Marchants"),
+)
+
 def boot():
     pass
 

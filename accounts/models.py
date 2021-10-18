@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.deletion import SET_NULL
 from django.db.models.query_utils import Q
 from core.abstract_models import TimeStampedModel
 from django.conf import settings
@@ -6,6 +7,7 @@ from core.location.nigeria_states import NIGERIA_STATES
 from core.choices import (
     DURATION_CHOICE,
     GENDER_CHOICE,
+    PLAN_TYPE_CHOICE,
     USER_TYPE_CHOICE
 )
 from django.utils import timezone, timesince
@@ -43,6 +45,9 @@ class UserProfile(TimeStampedModel):
     company = models.ForeignKey("accounts.Marchant", blank=True, null=True, on_delete=models.CASCADE, related_name="company_staffs")
     branch = models.ForeignKey("accounts.Store", blank=True, null=True,
                             on_delete=models.CASCADE, related_name="branch_staffs")
+    plan = models.OneToOneField("SubscriptionPlan", limit_choices_to=Q(
+        plan_type="users"), related_name="users", on_delete=models.SET_NULL, blank=True, null=True)
+    subscribtion_date = models.DateField(blank=True, null=True)
     active = models.BooleanField(default=True)
 
     class Meta:
@@ -87,7 +92,11 @@ class UserProfile(TimeStampedModel):
         return 13
 
     def get_plan(self):
-        return "Free (N0/Month)"
+        if self.plan:
+            dta = self.plan.get_form_format()
+        else:
+            "Free (N0/Month)"
+        return dta
         
     def comments_counts(self):
         return self.comments.all().count()
@@ -121,6 +130,9 @@ class Marchant(TimeStampedModel):
     # state = models.ForeignKey(State, on_delete=models.PROTECT, related_name="marchants")
     lga = models.CharField(max_length=50,)
     state = models.CharField(max_length=50, choices=NIGERIA_STATES)
+    plan = models.OneToOneField("SubscriptionPlan", limit_choices_to=Q(
+        plan_type="marchants"), related_name="marchants", on_delete=models.SET_NULL, blank=True, null=True)
+    subscribtion_date = models.DateField(blank=True, null=True)
     active = models.BooleanField(default=False)
 
     class Meta:
@@ -128,16 +140,15 @@ class Marchant(TimeStampedModel):
         verbose_name_plural = "Marchants"
         ordering = ["-updated",]
 
-    def state_title(self):
-        if self.state:
-            return f"{self.state.title}"
-
-    def lga_title(self):
-        if self.lga:
-            return f"{self.lga.title}"
-
     def branches(self):
         return self.stores.all().count()
+
+    def get_plan(self):
+        if self.plan:
+            dta = self.plan.get_form_format()
+        else:
+            "Free (N0/Month)"
+        return dta
 
     def __str__(self):
         return f"{self.title}"
@@ -196,6 +207,7 @@ class SubscriptionPlan(TimeStampedModel):
     name = models.CharField(max_length=50)
     price = models.FloatField(default=0.0, validators=[MinValueValidator(1000.0)])
     duration = models.CharField(max_length=20, choices=DURATION_CHOICE)
+    plan_type = models.CharField(max_length=20, choices=PLAN_TYPE_CHOICE, default="users")
     active = models.BooleanField(default=True)
 
     class Meta:
@@ -209,9 +221,9 @@ class SubscriptionPlan(TimeStampedModel):
             "name": self.name,
             "price": self.price,
             "duration": self.get_duration_display(),
+            "plan_type": self.get_plan_type_display(),
             "active": self.active,
         }
 
     def __str__(self):
         return f"{self.name} (₦{self.price}/{self.duration})"
-
