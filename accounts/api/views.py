@@ -21,6 +21,7 @@ from .serializers import (
 )
 
 from core.utils.varname.helpers import Wrapper
+from django.utils import timezone
 
 User = get_user_model()
 
@@ -272,6 +273,7 @@ class UpdateAccountToMarchantAPIView(APIView):
     """
     permission_classes = [permissions.IsAuthenticated]
     def post(self, request, format="json"):
+        today = timezone.now()
         # profile_pk = request.data.get("profile_pk")
         title = request.data.get("title")
         logo = request.data.get("logo")
@@ -288,7 +290,7 @@ class UpdateAccountToMarchantAPIView(APIView):
             "hq_address": hq_address,
             "lga": lga,
             "state": state,
-            "subscription_plan": subscription_plan,
+            "subscription_plan": subscription_plan_pk,
         }
         for entry in required_info.keys():
             if not required_info.get(entry):
@@ -325,7 +327,9 @@ class UpdateAccountToMarchantAPIView(APIView):
                 logo = logo,
                 hq_address = hq_address,
                 lga = f"{lga}".upper(),
-                state = f"{state}".upper()
+                state = f"{state}".upper(),
+                plan = subscription_plan,
+                subscribtion_date = today.date()
             )
             marchant_data.save()
             profile.user_type = "marchant"
@@ -371,7 +375,7 @@ class SubscriptionPlanListAPIView(generics.ListAPIView):
                 qs = qs.filter(active=True)
             if active and active == 'no':
                 qs = qs.filter(active=False)
-            if plan_type and plan_type in []:
+            if plan_type and plan_type in ["users", "marchants"]:
                 qs = qs.filter(plan_type=plan_type)
             status_code = status.HTTP_200_OK
         except Exception as exp:
