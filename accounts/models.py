@@ -4,6 +4,7 @@ from core.abstract_models import TimeStampedModel
 from django.conf import settings
 from core.location.nigeria_states import NIGERIA_STATES
 from core.choices import (
+    DURATION_CHOICE,
     GENDER_CHOICE,
     USER_TYPE_CHOICE
 )
@@ -187,3 +188,30 @@ class UserWallet(TimeStampedModel):
 
     def __str__(self):
         return f"{self.profile} --> ₦ {self.balance}"
+
+
+class SubscriptionPlan(TimeStampedModel):
+    """This model define types of subcriptions available on the platform
+    """
+    name = models.CharField(max_length=50)
+    price = models.FloatField(default=0.0, validators=[MinValueValidator(1000.0)])
+    duration = models.CharField(max_length=20, choices=DURATION_CHOICE)
+    active = models.BooleanField(default=True)
+
+    class Meta:
+        verbose_name = "Subscription Plan"
+        verbose_name_plural = "Subscriptions Plans"
+        ordering = ["-timestamp"]
+
+    def get_form_format(self):
+        dta = {
+            "pk": self.pk,
+            "name": self.name,
+            "price": self.price,
+            "duration": self.get_duration_display(),
+            "active": self.active,
+        }
+
+    def __str__(self):
+        return f"{self.name} (₦{self.price}/{self.duration})"
+

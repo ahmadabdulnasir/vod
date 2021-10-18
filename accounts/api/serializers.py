@@ -1,5 +1,5 @@
 from core.api.serializers import CustomeSerializer
-from accounts.models import UserProfile, Marchant, Store
+from accounts.models import UserProfile, Marchant, Store, SubscriptionPlan
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
@@ -98,6 +98,21 @@ class StoreSerializer(CustomeSerializer):
             # "state_title",
             "lga",
             # "lga_title",
+            "active",
+            "timestamp",
+            "updated",
+        ]
+
+
+class SubscriptionPlanSerializer(CustomeSerializer):
+
+    class Meta:
+        model = SubscriptionPlan
+        fields = [
+            "pk",
+            "name",
+            "price",
+            "duration",
             "active",
             "timestamp",
             "updated",

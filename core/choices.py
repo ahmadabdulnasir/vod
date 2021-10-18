@@ -86,6 +86,14 @@ COMMENT_STATUS_CHOICE = (
     ("approved", "Approved"),
 )
 
+DURATION_CHOICE = (
+    ("daily", "Daily"),
+    ("weekly", "Weekly"),
+    ("monthly", "Monthly"),
+    ("quarterly", "Quarterly"),
+    ("yearly", "Yearly"),
+    ("unlimitted", "Unlimitted"),
+)
 
 def boot():
     pass

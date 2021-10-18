@@ -1,6 +1,6 @@
 from django.contrib.auth import models
 from core.location.models import LGA, State
-from accounts.models import  UserProfile, Marchant, Store
+from accounts.models import  SubscriptionPlan, UserProfile, Marchant, Store
 from django.contrib.auth import authenticate, get_user_model
 from django.db.utils import IntegrityError
 from django.http import JsonResponse
@@ -15,6 +15,7 @@ from django.contrib.auth.models import Group
 from .serializers import (
     MarchantSerializer,
     StoreSerializer,
+    SubscriptionPlanSerializer,
     UserProfileListSerializer,
     UserProfileSerializer, 
 )
@@ -211,7 +212,7 @@ class ProfileCreateAPIView(generics.CreateAPIView):
 class UsersProfileListAPIView(generics.ListAPIView):
     serializer_class = UserProfileListSerializer
     permission_classes = [permissions.IsAuthenticated]
-    queryset = UserProfile.objects.all()
+    # queryset = UserProfile.objects.all()
 
     def get_queryset(self, *args, **kwargs):
         try:
@@ -337,4 +338,26 @@ class BranchListAPIView(generics.ListAPIView):
     serializer_class = StoreSerializer
     # permission_classes = [permissions.IsAuthenticated]
     queryset = Store.objects.all()
+
+
+class SubscriptionPlanListAPIView(generics.ListAPIView):
+    serializer_class = SubscriptionPlanSerializer
+    # permission_classes = [permissions.IsAuthenticated]
+    # queryset = SubscriptionPlan.objects.all()
+
+    def get_queryset(self, *args, **kwargs):
+        try:
+            qs = SubscriptionPlan.objects.all()
+            active = self.request.GET.get("active")
+            if active and active == 'yes':
+                qs = qs.filter(active=True)
+            if active and active == 'no':
+                qs = qs.filter(active=False)
+            status_code = status.HTTP_200_OK
+        except Exception as exp:
+            status_code = status.HTTP_417_EXPECTATION_FAILED
+            raise APIException(
+                detail=f"An API Exception Occured!!!, Error: {exp}", code=status_code
+            )
+        return qs
 

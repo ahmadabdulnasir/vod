@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import UserProfile, Marchant, Store
+from .models import UserProfile, Marchant, Store, SubscriptionPlan
 
 # Register your models here.
 @admin.register(UserProfile)
@@ -23,4 +23,9 @@ class MarchantAdmin(admin.ModelAdmin):
 class StoreAdmin(admin.ModelAdmin):
     list_display = ["title", "company", "state", "active"]
     list_filter = ["active", "company", "state",]
+
+@admin.register(SubscriptionPlan)
+class SubscriptionPlanAdmin(admin.ModelAdmin):
+    list_display = ["name", "price", "duration", "active", "updated"]
+    list_filter = ["active", "duration", "timestamp", "updated" ]
 

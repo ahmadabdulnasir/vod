@@ -11,6 +11,7 @@ from .views import (
     UpdateAccountToMarchantAPIView,
     MarchantListAPIView,
     BranchListAPIView,
+    SubscriptionPlanListAPIView,
     
 )
 
@@ -26,4 +27,5 @@ urlpatterns = [
     path("profile/upgrade-to-marchant/", UpdateAccountToMarchantAPIView.as_view()),
     path("marchant/list/", MarchantListAPIView.as_view()),
     path("branch/list/", BranchListAPIView.as_view()),
+    path("subscription-plan/list/", SubscriptionPlanListAPIView.as_view()),
 ]
