@@ -267,6 +267,78 @@ class ProfileUpdateAPIView(generics.UpdateAPIView):
     lookup_field = "pk"
 
 
+class UpgradeUserAccountAPIView(APIView):
+    """
+       Allows Upgrading an Account to a Premium User Account
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    def post(self, request, format="json"):
+        today = timezone.now()
+        subscription_plan_pk = request.data.get("subscription_plan_pk")
+        # active = request.data.get("active")
+        error_list = []
+        required_info = {
+            # "profile_pk": profile_pk,
+            "subscription_plan": subscription_plan_pk,
+        }
+        for entry in required_info.keys():
+            if not required_info.get(entry):
+                error_list.append(f"Invalid Entry of: {entry}")
+        if error_list:
+            dta = {
+                "detail": "Fail to Upgrade Account, Non or Partial Data Received.",
+                "errors": error_list,
+            }
+            status_code = 406
+            raise ValidationError(dta, code=status_code)
+        # Validate subscription_plan
+        plan_error_list = []
+        try:
+            subscription_plan = SubscriptionPlan.objects.get(pk=subscription_plan_pk)
+            assert(subscription_plan.plan_type == "users")
+        except SubscriptionPlan.DoesNotExist as exp:
+            plan_error_list.append(exp)
+        except Exception as exp:
+            plan_error_list.append(exp)
+        finally:
+            if plan_error_list:
+                status_code = 406
+                dta = {
+                    "detail": "Fail to Upgrade Account, Invalid Subscription Plan.",
+                    "errors": error_list,
+                }
+                raise ValidationError(dta, code=status_code)
+        # profile = get_object_or_404(UserProfile, pk=profile_pk)
+        profile = request.user.profile
+        profile_serializer = UserProfileSerializer(profile, context={'request': request})
+        if not profile.profile_completed():
+            status_code = 406
+            dta = {
+                "detail": "Fail to Upgrade Account, Please Complete your Profile First.",
+                "errors": ["Incomplete Profile"],
+                "profile": profile_serializer.data
+            }
+            raise ValidationError(dta, code=status_code)
+        try:
+            profile.user_type = "premium_user"
+            # print(subscription_plan)
+            profile.plan = subscription_plan
+            profile.subscribtion_date = today.date()
+            profile.save()
+            dta = {
+                "message": "Account Upgraded Successfully.",
+                "profile": profile_serializer.data,
+            }
+            
+            status_code = status.HTTP_200_OK
+        except Exception as exp:
+          msg = f"Error while upgrading profile for the user: {exp}"
+          raise ValidationError(
+              {"detail": f"{msg}"}
+          )
+        return Response(dta, status=status_code)
+
+
 class UpdateAccountToMarchantAPIView(APIView):
     """
        Allows Upgrading Account to a Marchant Account

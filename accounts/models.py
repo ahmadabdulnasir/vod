@@ -95,7 +95,7 @@ class UserProfile(TimeStampedModel):
         if self.plan:
             dta = self.plan.get_form_format()
         else:
-            "Free (N0/Month)"
+            dta = "Free (N0/Month)"
         return dta
         
     def comments_counts(self):
@@ -147,7 +147,7 @@ class Marchant(TimeStampedModel):
         if self.plan:
             dta = self.plan.get_form_format()
         else:
-            "Free (N0/Month)"
+            dta = "Free (N0/Month)"
         return dta
 
     def __str__(self):
@@ -224,6 +224,7 @@ class SubscriptionPlan(TimeStampedModel):
             "plan_type": self.get_plan_type_display(),
             "active": self.active,
         }
+        return dta
 
     def __str__(self):
         return f"{self.name} (₦{self.price}/{self.duration})"
