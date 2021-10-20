@@ -24,6 +24,7 @@ class UserProfileSerializer(CustomeSerializer):
             "get_films_watched",
             "get_plan",
             "subscribtion_date",
+            "subscription_status",
             "comments_counts",
             "reviews_counts",
             "state",

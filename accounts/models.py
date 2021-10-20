@@ -1,5 +1,4 @@
 from django.db import models
-from django.db.models.deletion import SET_NULL
 from django.db.models.query_utils import Q
 from core.abstract_models import TimeStampedModel
 from django.conf import settings
@@ -14,6 +13,7 @@ from django.utils import timezone, timesince
 from django.urls import reverse
 from django.core.validators import MinValueValidator
 from core.location.models import State, LGA
+from core.utils.helpers import get_duration_as_days
 # Create your models here.
 
 
@@ -109,6 +109,27 @@ class UserProfile(TimeStampedModel):
         check = bool(
             self.image and self.first_name and self.last_name and self.DOB and self.address and self.state and gender_check)
         return check
+
+    def subscription_status(self):
+        today = timezone.now()
+        plan_check = True if self.plan else False
+        subscribtion_date_check = True if self.subscribtion_date else False
+        egg = get_duration_as_days()
+        
+        if plan_check and subscribtion_date_check:
+            days_difference = today - self.subscribtion_date
+            duration = egg.get(self.plan.duration)
+            expiry_check = True if (days_difference.days < duration) else False
+        else:
+            expiry_check = False
+        check = bool(
+            plan_check and subscribtion_date_check and expiry_check
+            )
+        if check:
+            dta = "Active"
+        else:
+            dta = "Expired"
+        return dta
 
     def get_absolute_url(self):
         kwargs = {"pk": self.pk}

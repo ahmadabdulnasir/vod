@@ -38,7 +38,18 @@ def validateAccountNumber(num):
             return False
     except Exception:
         return False
-        
+
+def get_duration_as_days() -> dict:
+    egg = {
+        "daily": 1,
+        "weekly": 7,
+        "monthly": 30,
+        "quarterly": 90,
+        "yearly": 365,
+        "unlimitted": float("inf")
+    }
+    return egg
+
 def boot():
     pass
 
