@@ -117,7 +117,7 @@ class UserProfile(TimeStampedModel):
         egg = get_duration_as_days()
         
         if plan_check and subscribtion_date_check:
-            days_difference = today - self.subscribtion_date
+            days_difference = today.date() - self.subscribtion_date
             duration = egg.get(self.plan.duration)
             expiry_check = True if (days_difference.days < duration) else False
         else:
