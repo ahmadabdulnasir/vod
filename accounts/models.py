@@ -117,12 +117,12 @@ class UserProfile(TimeStampedModel):
             self.image and self.first_name and self.last_name and 
             self.DOB and self.address and self.state and gender_check
             )
-        if self.user_type == "marchant":
-            if self.company:
-                marchant_check = self.company.data_completed()
-            else:
-                marchant_check = False
-            check = bool(check and marchant_check)
+        # if self.user_type == "marchant":
+        #     if self.company:
+        #         marchant_check = self.company.data_completed()
+        #     else:
+        #         marchant_check = False
+        #     check = bool(check and marchant_check)
         return check
 
     def subscription_status(self):
