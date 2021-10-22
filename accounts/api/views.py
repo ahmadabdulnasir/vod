@@ -347,25 +347,25 @@ class UpdateAccountToMarchantAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     def post(self, request, format="json"):
         today = timezone.now()
-        title = request.POST.get("title")
-        logo = request.POST.get("logo")
-        hq_address = request.POST.get("hq_address")
-        lga = request.POST.get("lga")
-        state = request.POST.get("state")
-        subscription_plan_pk = request.POST.get("subscription_plan_pk")
+        title = request.data.get("title")
+        logo = request.data.get("logo")
+        hq_address = request.data.get("hq_address")
+        lga = request.data.get("lga")
+        state = request.data.get("state")
+        subscription_plan_pk = request.data.get("subscription_plan_pk")
         # spam_profile_data = request.data.get("profile")
         # active = request.data.get("active")
         # Getting Profile Data
-        profile = request.user.profile
-        image = request.FILES.get("image") #, profile.image)
-        first_name = request.POST.get("first_name", profile.first_name)
-        last_name = request.POST.get("last_name", profile.last_name)
-        gender = request.POST.get("gender", profile.gender)
-        phone_number = request.POST.get("phone_number", profile.phone_number)
-        email = request.POST.get("email", profile.email)
-        DOB = request.POST.get("DOB", profile.DOB)
-        address = request.POST.get("address", profile.address)
-        state = request.POST.get("state", profile.state)
+        # profile = request.user.profile
+        # image = request.FILES.get("image") #, profile.image)
+        # first_name = request.POST.get("first_name", profile.first_name)
+        # last_name = request.POST.get("last_name", profile.last_name)
+        # gender = request.POST.get("gender", profile.gender)
+        # phone_number = request.POST.get("phone_number", profile.phone_number)
+        # email = request.POST.get("email", profile.email)
+        # DOB = request.POST.get("DOB", profile.DOB)
+        # address = request.POST.get("address", profile.address)
+        # state = request.POST.get("state", profile.state)
         error_list = []
         required_info = {
             # "profile_pk": profile_pk,
@@ -376,15 +376,15 @@ class UpdateAccountToMarchantAPIView(APIView):
             "state": state,
             "subscription_plan": subscription_plan_pk,
             # "profile": spam_profile_data,
-            "image": image,
-            "first_name": first_name,
-            "last_name": last_name,
-            "gender": gender,
-            "phone_number": phone_number,
-            "email": email,
-            "DOB": DOB,
-            "address": address,
-            "state": state,
+            # "image": image,
+            # "first_name": first_name,
+            # "last_name": last_name,
+            # "gender": gender,
+            # "phone_number": phone_number,
+            # "email": email,
+            # "DOB": DOB,
+            # "address": address,
+            # "state": state,
         }
         for entry in required_info.keys():
             if not required_info.get(entry):
@@ -430,18 +430,20 @@ class UpdateAccountToMarchantAPIView(APIView):
         profile = request.user.profile
         try:
             profile_serializer = UserProfileSerializer(profile, context={'request': request})
-            marchant_data = Marchant(
-                title=title,
-                logo = logo,
-                hq_address = hq_address,
-                lga = f"{lga}".upper(),
-                state = f"{state}".upper(),
-                plan = subscription_plan,
-                subscribtion_date = today.date()
-            )
-            marchant_data.save()
+            if not profile.company:
+                marchant_data = Marchant(
+                    title=title,
+                    logo = logo,
+                    hq_address = hq_address,
+                    lga = f"{lga}".upper(),
+                    state = f"{state}".upper(),
+                    plan = subscription_plan,
+                    subscribtion_date = today.date()
+                )
+                marchant_data.save()
+                profile.company = marchant_data
+            # marchant_data = profile.company
             profile.user_type = "marchant"
-            profile.company = marchant_data
             profile.save()
             dta = {
                 "message": "Account Upgraded Successfully.",
