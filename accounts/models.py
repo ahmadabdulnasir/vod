@@ -45,7 +45,7 @@ class UserProfile(TimeStampedModel):
     company = models.ForeignKey("accounts.Marchant", blank=True, null=True, on_delete=models.CASCADE, related_name="company_staffs")
     branch = models.ForeignKey("accounts.Store", blank=True, null=True,
                             on_delete=models.CASCADE, related_name="branch_staffs")
-    plan = models.OneToOneField("SubscriptionPlan", limit_choices_to=Q(
+    plan = models.ForeignKey("SubscriptionPlan", limit_choices_to=Q(
         plan_type="users"), related_name="users", on_delete=models.SET_NULL, blank=True, null=True)
     subscribtion_date = models.DateField(blank=True, null=True)
     active = models.BooleanField(default=True)
