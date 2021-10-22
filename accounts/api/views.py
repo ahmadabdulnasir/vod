@@ -338,7 +338,7 @@ class UpgradeUserAccountAPIView(APIView):
         #   raise ValidationError(
         #       {"detail": f"{msg}"}
         #   )
-        # return Response(dta, status=status_code)
+        return Response(dta, status=status_code)
 
 
 class UpdateAccountToMarchantAPIView(APIView):
