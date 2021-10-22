@@ -7,7 +7,7 @@ class UserProfileAdmin(admin.ModelAdmin):
     list_display = ["user", "fullname", "gender", "state", "user_type",
                     "company", "profile_completed", "plan", "subscribtion_date", "active"]
     list_filter = ["active", "gender",  "user_type", "company", "state"]
-    search_fields = ["user__username", "first_name", "last_name"]
+    search_fields = ["user__username", "first_name", "last_name", "email"]
 
 
 class BranchInline(admin.TabularInline):
