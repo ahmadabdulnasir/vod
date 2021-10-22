@@ -296,12 +296,14 @@ class UpgradeUserAccountAPIView(APIView):
         try:
             subscription_plan = SubscriptionPlan.objects.get(pk=subscription_plan_pk)
             assert(subscription_plan.plan_type == "users")
+            print(f"Plan OK. {subscription_plan}")
         except SubscriptionPlan.DoesNotExist as exp:
             plan_error_list.append(exp)
         except Exception as exp:
             plan_error_list.append(exp)
         finally:
             if plan_error_list:
+                print(f"Error: {plan_error_list}")
                 status_code = 406
                 dta = {
                     "detail": "Fail to Upgrade Account, Invalid Subscription Plan.",
@@ -319,24 +321,24 @@ class UpgradeUserAccountAPIView(APIView):
                 "profile": profile_serializer.data
             }
             raise ValidationError(dta, code=status_code)
-        try:
-            profile.user_type = "premium_user"
-            # print(subscription_plan)
-            profile.plan = subscription_plan
-            profile.subscribtion_date = today.date()
-            profile.save()
-            dta = {
-                "message": "Account Upgraded Successfully.",
-                "profile": profile_serializer.data,
-            }
-            
-            status_code = status.HTTP_200_OK
-        except Exception as exp:
-          msg = f"Error while upgrading profile for the user: {exp}"
-          raise ValidationError(
-              {"detail": f"{msg}"}
-          )
-        return Response(dta, status=status_code)
+        # try:
+        profile.user_type = "premium_user"
+        # print(subscription_plan)
+        profile.plan = subscription_plan
+        profile.subscribtion_date = today.date()
+        profile.save()
+        dta = {
+            "message": "Account Upgraded Successfully.",
+            "profile": profile_serializer.data,
+        }
+        
+        status_code = status.HTTP_200_OK
+        # except Exception as exp:
+        #   msg = f"Error while upgrading profile for the user: {exp}"
+        #   raise ValidationError(
+        #       {"detail": f"{msg}"}
+        #   )
+        # return Response(dta, status=status_code)
 
 
 class UpdateAccountToMarchantAPIView(APIView):
@@ -346,14 +348,15 @@ class UpdateAccountToMarchantAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     def post(self, request, format="json"):
         today = timezone.now()
-        # profile_pk = request.data.get("profile_pk")
         title = request.data.get("title")
         logo = request.data.get("logo")
         hq_address = request.data.get("hq_address")
         lga = request.data.get("lga")
         state = request.data.get("state")
         subscription_plan_pk = request.data.get("subscription_plan_pk")
+        spam_profile_data = request.data.get("profile")
         # active = request.data.get("active")
+        
         error_list = []
         required_info = {
             # "profile_pk": profile_pk,
@@ -363,6 +366,7 @@ class UpdateAccountToMarchantAPIView(APIView):
             "lga": lga,
             "state": state,
             "subscription_plan": subscription_plan_pk,
+            "profile": spam_profile_data,
         }
         for entry in required_info.keys():
             if not required_info.get(entry):
@@ -374,10 +378,24 @@ class UpdateAccountToMarchantAPIView(APIView):
             }
             status_code = 406
             raise ValidationError(dta, code=status_code)
+        # Getting Profile Data
+        profile = request.user.profile
+        profile_data = {
+            "image": spam_profile_data.get("image", profile.image),
+            "first_name": spam_profile_data.get("first_name", profile.first_name),
+            "last_name": spam_profile_data.get("last_name", profile.last_name),
+            "gender": spam_profile_data.get("gender", profile.gender),
+            "phone_number": spam_profile_data.get("phone_number", profile.phone_number),
+            "email": spam_profile_data.get("email", profile.email),
+            "DOB": spam_profile_data.get("DOB", profile.DOB),
+            "address": spam_profile_data.get("address", profile.address),
+            "state": spam_profile_data.get("state", profile.state),
+        }
         # Validate subscription_plan
         plan_error_list = []
         try:
             subscription_plan = SubscriptionPlan.objects.get(pk=subscription_plan_pk)
+            assert(subscription_plan.plan_type == "marchants")
         except SubscriptionPlan.DoesNotExist as exp:
             plan_error_list.append(exp)
         except Exception as exp:

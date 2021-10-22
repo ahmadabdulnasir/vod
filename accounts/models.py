@@ -95,7 +95,14 @@ class UserProfile(TimeStampedModel):
         if self.plan:
             dta = self.plan.get_form_format()
         else:
-            dta = "Free (N0/Month)"
+            dta = {
+                "pk": -9,
+                "name": "Free Plan",
+                "price": 0.0,
+                "duration": None,
+                "plan_type": None,
+                "active": True,
+            }
         return dta
         
     def comments_counts(self):
@@ -108,6 +115,12 @@ class UserProfile(TimeStampedModel):
         gender_check = True if self.gender != "others" else False
         check = bool(
             self.image and self.first_name and self.last_name and self.DOB and self.address and self.state and gender_check)
+        if self.user_type == "marchant":
+            if self.marchant:
+                marchant_check = self.marchant.data_completed()
+            else:
+                marchant_check = False
+            check = bool(check and marchant_check)
         return check
 
     def subscription_status(self):
@@ -154,7 +167,7 @@ class Marchant(TimeStampedModel):
     plan = models.OneToOneField("SubscriptionPlan", limit_choices_to=Q(
         plan_type="marchants"), related_name="marchants", on_delete=models.SET_NULL, blank=True, null=True)
     subscribtion_date = models.DateField(blank=True, null=True)
-    active = models.BooleanField(default=False)
+    active = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = "Marchant"
@@ -168,8 +181,23 @@ class Marchant(TimeStampedModel):
         if self.plan:
             dta = self.plan.get_form_format()
         else:
-            dta = "Free (N0/Month)"
+            dta = {
+                "pk": -9,
+                "name": "Free Plan (Marchant)",
+                "price": 0.0,
+                "duration": None,
+                "plan_type": None,
+                "active": True,
+            }
         return dta
+
+    def data_completed(self):
+        check = bool(
+            self.title and self.logo and self.logo and self.hq_address
+            and self.lga and self.state and self.active
+
+        )
+        return check
 
     def __str__(self):
         return f"{self.title}"
