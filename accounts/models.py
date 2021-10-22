@@ -114,10 +114,12 @@ class UserProfile(TimeStampedModel):
     def profile_completed(self):
         gender_check = True if self.gender != "others" else False
         check = bool(
-            self.image and self.first_name and self.last_name and self.DOB and self.address and self.state and gender_check)
+            self.image and self.first_name and self.last_name and 
+            self.DOB and self.address and self.state and gender_check
+            )
         if self.user_type == "marchant":
-            if self.marchant:
-                marchant_check = self.marchant.data_completed()
+            if self.company:
+                marchant_check = self.company.data_completed()
             else:
                 marchant_check = False
             check = bool(check and marchant_check)
