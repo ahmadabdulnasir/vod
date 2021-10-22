@@ -187,7 +187,6 @@ class ChangePassword(APIView):
             return JsonResponse(response)
 
 
-
 class ProfileCreateAPIView(generics.CreateAPIView):
     """
         Allows Creation of Profile  to User
@@ -348,15 +347,25 @@ class UpdateAccountToMarchantAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     def post(self, request, format="json"):
         today = timezone.now()
-        title = request.data.get("title")
-        logo = request.data.get("logo")
-        hq_address = request.data.get("hq_address")
-        lga = request.data.get("lga")
-        state = request.data.get("state")
-        subscription_plan_pk = request.data.get("subscription_plan_pk")
-        spam_profile_data = request.data.get("profile")
+        title = request.POST.get("title")
+        logo = request.POST.get("logo")
+        hq_address = request.POST.get("hq_address")
+        lga = request.POST.get("lga")
+        state = request.POST.get("state")
+        subscription_plan_pk = request.POST.get("subscription_plan_pk")
+        # spam_profile_data = request.data.get("profile")
         # active = request.data.get("active")
-        
+        # Getting Profile Data
+        profile = request.user.profile
+        image = request.FILES.get("image") #, profile.image)
+        first_name = request.POST.get("first_name", profile.first_name)
+        last_name = request.POST.get("last_name", profile.last_name)
+        gender = request.POST.get("gender", profile.gender)
+        phone_number = request.POST.get("phone_number", profile.phone_number)
+        email = request.POST.get("email", profile.email)
+        DOB = request.POST.get("DOB", profile.DOB)
+        address = request.POST.get("address", profile.address)
+        state = request.POST.get("state", profile.state)
         error_list = []
         required_info = {
             # "profile_pk": profile_pk,
@@ -366,7 +375,16 @@ class UpdateAccountToMarchantAPIView(APIView):
             "lga": lga,
             "state": state,
             "subscription_plan": subscription_plan_pk,
-            "profile": spam_profile_data,
+            # "profile": spam_profile_data,
+            "image": image,
+            "first_name": first_name,
+            "last_name": last_name,
+            "gender": gender,
+            "phone_number": phone_number,
+            "email": email,
+            "DOB": DOB,
+            "address": address,
+            "state": state,
         }
         for entry in required_info.keys():
             if not required_info.get(entry):
@@ -380,17 +398,17 @@ class UpdateAccountToMarchantAPIView(APIView):
             raise ValidationError(dta, code=status_code)
         # Getting Profile Data
         profile = request.user.profile
-        profile_data = {
-            "image": spam_profile_data.get("image", profile.image),
-            "first_name": spam_profile_data.get("first_name", profile.first_name),
-            "last_name": spam_profile_data.get("last_name", profile.last_name),
-            "gender": spam_profile_data.get("gender", profile.gender),
-            "phone_number": spam_profile_data.get("phone_number", profile.phone_number),
-            "email": spam_profile_data.get("email", profile.email),
-            "DOB": spam_profile_data.get("DOB", profile.DOB),
-            "address": spam_profile_data.get("address", profile.address),
-            "state": spam_profile_data.get("state", profile.state),
-        }
+        # profile_data = {
+        #     "image": spam_profile_data.get("image", profile.image),
+        #     "first_name": spam_profile_data.get("first_name", profile.first_name),
+        #     "last_name": spam_profile_data.get("last_name", profile.last_name),
+        #     "gender": spam_profile_data.get("gender", profile.gender),
+        #     "phone_number": spam_profile_data.get("phone_number", profile.phone_number),
+        #     "email": spam_profile_data.get("email", profile.email),
+        #     "DOB": spam_profile_data.get("DOB", profile.DOB),
+        #     "address": spam_profile_data.get("address", profile.address),
+        #     "state": spam_profile_data.get("state", profile.state),
+        # }
         # Validate subscription_plan
         plan_error_list = []
         try:

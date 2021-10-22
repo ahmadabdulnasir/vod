@@ -92,7 +92,7 @@ class MovieCreateAPIView(APIView):
         if isinstance(posters, list):
             posters_to_add = []
             for p in posters:
-                spam = Poster(
+                spam = MoviePoster(
                     title = p.get("title"),
                     image = p.get("image"),
                 )
@@ -130,7 +130,7 @@ class MovieCreateAPIView(APIView):
 
 class MovieListAPIView(generics.ListAPIView):
     serializer_class = MovieListSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self, *args, **kwargs):
         try:
@@ -165,7 +165,7 @@ class MovieListAPIView(generics.ListAPIView):
 
 class MovieSearchAPIView(generics.ListAPIView):
     serializer_class = MovieListSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self, *args, **kwargs):
         try:
