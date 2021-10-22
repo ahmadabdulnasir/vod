@@ -159,7 +159,7 @@ class UserProfile(TimeStampedModel):
 
 
 class Marchant(TimeStampedModel):
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=50, unique=True)
     logo = models.ImageField(upload_to=marchant_image_location)
     hq_address = models.CharField(max_length=250)
     # lga = models.ForeignKey(LGA, on_delete=models.PROTECT, related_name="marchants")
@@ -175,6 +175,10 @@ class Marchant(TimeStampedModel):
         verbose_name = "Marchant"
         verbose_name_plural = "Marchants"
         ordering = ["-updated",]
+
+    def save(self, *args, **kwargs):
+        self.title = f"{self.title}".title()
+        super(Marchant, self).save(*args, **kwargs)
 
     def branches(self):
         return self.stores.all().count()
@@ -265,6 +269,7 @@ class SubscriptionPlan(TimeStampedModel):
         verbose_name = "Subscription Plan"
         verbose_name_plural = "Subscriptions Plans"
         ordering = ["-timestamp"]
+
 
     def get_form_format(self):
         dta = {

@@ -342,6 +342,7 @@ class UpgradeUserAccountAPIView(APIView):
         #   )
         return Response(dta, status=status_code)
 
+
 class CreateUpdateMarchantAccountAPIView(APIView):
     """
        Allows Create/Update Marchant Account
@@ -350,7 +351,7 @@ class CreateUpdateMarchantAccountAPIView(APIView):
     def post(self, request, format="json"):
         today = timezone.now()
         title = request.POST.get("title")
-        logo = request.POST.get("logo")
+        logo = request.FILES.get("logo")
         hq_address = request.POST.get("hq_address")
         lga = request.POST.get("lga")
         state = request.POST.get("state")
@@ -397,6 +398,8 @@ class CreateUpdateMarchantAccountAPIView(APIView):
                 marchant_data.save()
 
             # marchant_data = profile.company
+            # marchant_data.plan = subscription_plan
+            marchant_data.subscribtion_date = today.date()
             profile.user_type = "marchant"
             profile.save()
             dta = {
