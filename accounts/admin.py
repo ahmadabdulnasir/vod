@@ -4,9 +4,10 @@ from .models import UserProfile, Marchant, Store, SubscriptionPlan
 # Register your models here.
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ["user", "fullname", "gender", "state",
+    list_display = ["user", "fullname", "gender", "state", "user_type",
                     "company", "profile_completed", "plan", "subscribtion_date", "active"]
-    list_filter = ["active", "gender", "company", "state"]
+    list_filter = ["active", "gender",  "user_type", "company", "state"]
+    search_fields = ["user__username", "first_name", "last_name"]
 
 
 class BranchInline(admin.TabularInline):
