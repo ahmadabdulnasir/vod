@@ -470,7 +470,7 @@ class UpdateAccountToMarchantAPIView(APIView):
             }
             raise ValidationError(dta, code=status_code)
         marchant_data = profile.company
-        marchant_data.plan = subscription_plan,
+        marchant_data.plan = subscription_plan
         marchant_data.subscribtion_date = today.date()
         profile.user_type = "marchant"
         profile.save()
