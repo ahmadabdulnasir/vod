@@ -71,6 +71,7 @@ class Movie(TimeStampedModel, VODModel):
     # posters = models.ManyToManyField(Poster, blank=True,)
     video = models.FileField(upload_to=movie_locations)
     status = models.CharField(max_length=25, choices=POST_STATUS_CHOICE)
+    uploaded_by = models.ForeignKey("accounts.UserProfile", on_delete=models.PROTECT, related_name="uploaded_movies")
 
     class Meta:
         verbose_name = 'Movie'

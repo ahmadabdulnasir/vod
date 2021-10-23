@@ -69,6 +69,7 @@ class MovieCreateAPIView(APIView):
             "video": video,
             "movie_status": movie_status,
             "company_pk": company_pk,
+            "uploaded_by": request.user.profile,
         }
         for entry in required_info.keys():
             if not required_info.get(entry):

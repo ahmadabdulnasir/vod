@@ -22,6 +22,7 @@ class MovieSerializer(CustomeSerializer):
             "video",
             "status",
             "category_title",
+            "uploaded_by",
             "timestamp", 
             "updated",
             ]
