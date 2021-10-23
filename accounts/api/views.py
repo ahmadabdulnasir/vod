@@ -384,7 +384,8 @@ class CreateUpdateMarchantAccountAPIView(APIView):
                     lga=f"{lga}".upper(),
                     state=f"{state}".upper(),
                     # plan=subscription_plan,
-                    # subscribtion_date=today.date()
+                    # subscribtion_date=today.date(),
+                    created_by=profile,
                 )
                 marchant_data.save()
                 profile.company = marchant_data

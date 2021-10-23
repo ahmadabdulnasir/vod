@@ -169,6 +169,7 @@ class Marchant(TimeStampedModel):
     plan = models.OneToOneField("SubscriptionPlan", limit_choices_to=Q(
         plan_type="marchants"), related_name="marchants", on_delete=models.SET_NULL, blank=True, null=True)
     subscribtion_date = models.DateField(blank=True, null=True)
+    created_by = models.ForeignKey(UserProfile, on_delete=models.SET_NULL, blank=True, null=True)
     active = models.BooleanField(default=True)
 
     class Meta:
