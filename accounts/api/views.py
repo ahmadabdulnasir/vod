@@ -424,44 +424,10 @@ class UpdateAccountToMarchantAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     def post(self, request, format="json"):
         today = timezone.now()
-        # title = request.data.get("title")
-        # logo = request.data.get("logo")
-        # hq_address = request.data.get("hq_address")
-        # lga = request.data.get("lga")
-        # state = request.data.get("state")
         subscription_plan_pk = request.data.get("subscription_plan_pk")
-        # spam_profile_data = request.data.get("profile")
-        # active = request.data.get("active")
-        # Getting Profile Data
-        # profile = request.user.profile
-        # image = request.FILES.get("image") #, profile.image)
-        # first_name = request.POST.get("first_name", profile.first_name)
-        # last_name = request.POST.get("last_name", profile.last_name)
-        # gender = request.POST.get("gender", profile.gender)
-        # phone_number = request.POST.get("phone_number", profile.phone_number)
-        # email = request.POST.get("email", profile.email)
-        # DOB = request.POST.get("DOB", profile.DOB)
-        # address = request.POST.get("address", profile.address)
-        # state = request.POST.get("state", profile.state)
         error_list = []
         required_info = {
-            # "profile_pk": profile_pk,
-            # "title": title,
-            # "logo": logo,
-            # "hq_address": hq_address,
-            # "lga": lga,
-            # "state": state,
             "subscription_plan": subscription_plan_pk,
-            # "profile": spam_profile_data,
-            # "image": image,
-            # "first_name": first_name,
-            # "last_name": last_name,
-            # "gender": gender,
-            # "phone_number": phone_number,
-            # "email": email,
-            # "DOB": DOB,
-            # "address": address,
-            # "state": state,
         }
         for entry in required_info.keys():
             if not required_info.get(entry):
@@ -475,17 +441,6 @@ class UpdateAccountToMarchantAPIView(APIView):
             raise ValidationError(dta, code=status_code)
         # Getting Profile Data
         profile = request.user.profile
-        # profile_data = {
-        #     "image": spam_profile_data.get("image", profile.image),
-        #     "first_name": spam_profile_data.get("first_name", profile.first_name),
-        #     "last_name": spam_profile_data.get("last_name", profile.last_name),
-        #     "gender": spam_profile_data.get("gender", profile.gender),
-        #     "phone_number": spam_profile_data.get("phone_number", profile.phone_number),
-        #     "email": spam_profile_data.get("email", profile.email),
-        #     "DOB": spam_profile_data.get("DOB", profile.DOB),
-        #     "address": spam_profile_data.get("address", profile.address),
-        #     "state": spam_profile_data.get("state", profile.state),
-        # }
         # Validate subscription_plan
         plan_error_list = []
         try:
@@ -505,42 +460,31 @@ class UpdateAccountToMarchantAPIView(APIView):
                 raise ValidationError(dta, code=status_code)
         # profile = get_object_or_404(UserProfile, pk=profile_pk)
         profile = request.user.profile
-        try:
-            profile_serializer = UserProfileSerializer(profile, context={'request': request})
-            if not profile.company:
-                status_code = 406
-                dta = {
-                    "detail": "Fail to Upgrade Account, User Has no Company Profile.",
-                    # "errors": error_list,
-                }
-                raise ValidationError(dta, code=status_code)
-                # marchant_data = Marchant(
-                #     title=title,
-                #     logo = logo,
-                #     hq_address = hq_address,
-                #     lga = f"{lga}".upper(),
-                #     state = f"{state}".upper(),
-                #     plan = subscription_plan,
-                #     subscribtion_date = today.date()
-                # )
-                # marchant_data.save()
-                # profile.company = marchant_data
-            marchant_data = profile.company
-            marchant_data.plan = subscription_plan,
-            marchant_data.subscribtion_date = today.date()
-            profile.user_type = "marchant"
-            profile.save()
+        # try:
+        profile_serializer = UserProfileSerializer(profile, context={'request': request})
+        if not profile.company:
+            status_code = 406
             dta = {
-                "message": "Account Upgraded Successfully.",
-                "profile": profile_serializer.data,
+                "detail": "Fail to Upgrade Account, User Has no Company Profile.",
+                # "errors": error_list,
             }
-            
-            status_code = status.HTTP_200_OK
-        except Exception as exp:
-          msg = f"Error while upgrading profile for the user: {exp}"
-          raise ValidationError(
-              {"detail": f"{msg}"}
-          )
+            raise ValidationError(dta, code=status_code)
+        marchant_data = profile.company
+        marchant_data.plan = subscription_plan,
+        marchant_data.subscribtion_date = today.date()
+        profile.user_type = "marchant"
+        profile.save()
+        dta = {
+            "message": "Account Upgraded Successfully.",
+            "profile": profile_serializer.data,
+        }
+        
+        status_code = status.HTTP_200_OK
+        # except Exception as exp:
+        #   msg = f"Error while upgrading profile for the user: {exp}"
+        #   raise ValidationError(
+        #       {"detail": f"{msg}"}
+        #   )
         return Response(dta, status=status_code)
 
 
