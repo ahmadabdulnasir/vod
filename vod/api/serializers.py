@@ -20,12 +20,15 @@ class MovieSerializer(CustomeSerializer):
             "get_posters",
             "category",
             "video",
+            "video_link",
             "status",
+            "access_level",
             "category_title",
-            "uploaded_by",
+            # "uploaded_by",
             "timestamp", 
             "updated",
             ]
+        # read_only_fields = ["uploaded_by",]
 
 
 class MovieListSerializer(CustomeSerializer):
@@ -44,6 +47,7 @@ class MovieListSerializer(CustomeSerializer):
             # "posters",
             "video",
             "status",
+            "access_level",
             "timestamp",
             "updated",
             ]

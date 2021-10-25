@@ -6,7 +6,7 @@ from django.db import models
 from django.db.models.fields import CharField
 from core.abstract_models import TimeStampedModel, VODModel
 from core.utils.units import LongUniqueId, getUniqueId
-from core.choices import COMMENT_STATUS_CHOICE, POST_STATUS_CHOICE
+from core.choices import ACCESS_LEVEL_CHOICE, COMMENT_STATUS_CHOICE, POST_STATUS_CHOICE
 from django.utils.translation import ugettext_lazy as _
 from django.urls import reverse
 
@@ -69,8 +69,10 @@ class Movie(TimeStampedModel, VODModel):
     genres = models.ManyToManyField(Genre, blank=True,)
     category = models.ForeignKey(Category, blank=True, null=True, on_delete=models.SET_NULL, related_name="movies")
     # posters = models.ManyToManyField(Poster, blank=True,)
-    video = models.FileField(upload_to=movie_locations)
+    video = models.FileField(upload_to=movie_locations, blank=True, null=True)
+    video_link = models.URLField(blank=True, null=True)
     status = models.CharField(max_length=25, choices=POST_STATUS_CHOICE)
+    access_level = models.CharField(max_length=20, choices=ACCESS_LEVEL_CHOICE)
     uploaded_by = models.ForeignKey("accounts.UserProfile", on_delete=models.PROTECT, related_name="uploaded_movies")
 
 

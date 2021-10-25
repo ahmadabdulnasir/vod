@@ -101,6 +101,12 @@ PLAN_TYPE_CHOICE = (
     ("marchants", "Marchants"),
 )
 
+ACCESS_LEVEL_CHOICE = (
+    ("free", "Free"),
+    ("premium", "Premium"),
+    ("exclusive", "Exclusive"),
+)
+
 def boot():
     pass
 

@@ -46,18 +46,20 @@ class MovieCreateAPIView(generics.CreateAPIView):
 
 
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        data = request.data #.copy()
+        # print(type(data))
+        serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
+        
         # Adding genres
-        spam = serializer.instance
-        genres_pks = request.data.get("genres").split(',')
+        # spam = serializer.instance
+        genres_pks = request.data.get("genres", "0").split(',')
+        # print(genres_pks)
         try:
             genres_pks = list(map(int, genres_pks))
         except Exception as exp:
             # Delete the instance, because we have save it above befor adding genres
-            spam.delete()
+            # spam.delete()
             return Response(
                 data={
                     "detail": f"Invalid Selections of Genres. Error: {exp}",
@@ -66,18 +68,25 @@ class MovieCreateAPIView(generics.CreateAPIView):
             )
         if len(genres_pks) > 0:
             genres = Genre.objects.filter(pk__in=genres_pks)
-            spam.genres.add(*genres)
-        spam.save()
+            # print(genres)
+            # data.update({"genres":genres})
+            # spam.genres.add(*genres)
+        else:
+            genres = []
+        # spam.save()
+        self.perform_create(serializer, genres)
+        headers = self.get_success_headers(serializer.data)
         dta = {
             "detail": "Movie Upload Success",
             "data": serializer.data,
         }
         return Response(dta, status=status.HTTP_201_CREATED, headers=headers)
 
-    def perform_create(self, serializer):
+    def perform_create(self, serializer, genres):
         return serializer.save(
             uploaded_by=self.request.user.profile,
-            company=self.request.user.profile,
+            company=self.request.user.profile.company,
+            genres=genres
         )
 
 # class MovieCreateAPIView(APIView):
@@ -180,12 +189,19 @@ class MovieListAPIView(generics.ListAPIView):
             status_ = self.request.GET.get("status")
             for_user = self.request.GET.get("for_user")
             for_user_company = self.request.GET.get("for_user_company")
-            if status:
+            access_level = self.request.GET.get("access_level")
+            suggested = self.request.GET.get("suggested")
+            if status_:
                 qs = qs.filter(status=status_)
             if for_user and for_user == 'yes':
                 qs = qs.filter(uploaded_by=user.profile)
             if for_user_company and user.profile.company:
                 qs = qs.filter(company=user.profile.company)
+            if access_level:
+                qs = qs.filter(access_level=access_level)
+            if suggested:
+                pass
+                # qs = qs.filter(access_level=access_level)
            
             status_code = status.HTTP_200_OK
         except Exception as exp:
