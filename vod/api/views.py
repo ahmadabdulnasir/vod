@@ -177,11 +177,11 @@ class MovieListAPIView(generics.ListAPIView):
         try:
             user = self.request.user
             qs = Movie.objects.all()
-            status = self.request.GET.get("status")
+            status_ = self.request.GET.get("status")
             for_user = self.request.GET.get("for_user")
             for_user_company = self.request.GET.get("for_user_company")
             if status:
-                qs = qs.filter(status=status)
+                qs = qs.filter(status=status_)
             if for_user and for_user == 'yes':
                 qs = qs.filter(uploaded_by=user.profile)
             if for_user_company and user.profile.company:
