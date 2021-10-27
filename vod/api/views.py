@@ -248,7 +248,7 @@ class MovieUpdateAPIView(generics.UpdateAPIView):
     serializer_class = MovieSerializer
     permission_classes = [permissions.IsAuthenticated]
     # permission_classes = [MyGenericViewset]
-    queryset = UserProfile.objects.all()
+    queryset = Movie.objects.all()
     lookup_field = "pk"
 
 
