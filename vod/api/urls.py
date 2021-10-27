@@ -1,16 +1,8 @@
 from django.urls import path
 
-from .views import (
-    CategoryListAPIView,
-    GenreListAPIView,
-    MovieCreateAPIView,
-    MovieListAPIView,
-    MovieSearchAPIView,
-    MovieDetailsAPIView,
-    MovieUpdateAPIView,
-    
-)
-
+from .views import (CategoryListAPIView, GenreListAPIView, MovieCreateAPIView,
+                    MovieDetailsAPIView, MovieListAPIView, MovieSearchAPIView,
+                    MovieUpdateAPIView)
 
 urlpatterns = [
     path("category/list/", CategoryListAPIView.as_view()),

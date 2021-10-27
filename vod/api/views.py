@@ -89,6 +89,7 @@ class MovieCreateAPIView(generics.CreateAPIView):
             genres=genres
         )
 
+
 # class MovieCreateAPIView(APIView):
 #     """
 #         Allows Upload of a Movie
@@ -188,18 +189,18 @@ class MovieListAPIView(generics.ListAPIView):
             qs = Movie.objects.all()
             status_ = self.request.GET.get("status")
             for_user = self.request.GET.get("for_user")
-            for_user_company = self.request.GET.get("for_user_company")
+            for_company = self.request.GET.get("for_company")
             access_level = self.request.GET.get("access_level")
             suggested = self.request.GET.get("suggested")
             if status_:
                 qs = qs.filter(status=status_)
-            if for_user and for_user == 'yes':
+            if for_user and for_user == 'yes' and user.is_authenticated:
                 qs = qs.filter(uploaded_by=user.profile)
-            if for_user_company and user.profile.company:
-                qs = qs.filter(company=user.profile.company)
+            if for_company:
+                qs = qs.filter(company=for_company)
             if access_level:
                 qs = qs.filter(access_level=access_level)
-            if suggested:
+            if suggested and suggested == "yes":
                 pass
                 # qs = qs.filter(access_level=access_level)
            
