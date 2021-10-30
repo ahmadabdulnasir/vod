@@ -24,9 +24,8 @@ def episode_location(instance, filename):
 def episode_thumb_location(instance, filename):
     return f"series/{instance.season.series.title}/{instance.season.title}/{instance.title}/thumb/{filename}"
 
-
 class Category(TimeStampedModel):
-    title = models.CharField(max_length=50,)
+    title = models.CharField(max_length=50, unique=True)
     uid = models.CharField(default=getUniqueId, unique=True, max_length=10)
 
     class Meta:
@@ -44,7 +43,7 @@ class Category(TimeStampedModel):
         return f"{self.title}"
 
 class Genre(TimeStampedModel):
-    title = models.CharField(max_length=50,)
+    title = models.CharField(max_length=50, unique=True)
     uid = models.CharField(default=getUniqueId, unique=True, max_length=10)
 
     class Meta:
