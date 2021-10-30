@@ -25,16 +25,103 @@ from .serializers import (
 from core.permissions.api_permissions import HasActiveCompany
 
 
+class CategoryCreateAPIView(generics.CreateAPIView):
+    """
+        Allow Authenticated User to Create a Category
+    """
+    serializer_class = CategorySerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        try:
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            dta = {
+                "detail": "Save Success",
+                "data": serializer.data,
+            }
+            return Response(dta, status=status.HTTP_201_CREATED, headers=headers)
+        except Exception as exp:
+            raise ValidationError({"detail": f"Error: {exp}"})
+
+    def perform_create(self, serializer):
+        return serializer.save()
+
 class CategoryListAPIView(generics.ListAPIView):
+    """
+       List All Categories
+    """
     serializer_class = CategorySerializer
     # permission_classes = [permissions.IsAuthenticated]
     queryset = Category.objects.all()
 
+class CategoryDeleteAPIView(generics.DestroyAPIView):
+    """
+        Allow Authenticated User to Delete a Category
+    """
+    serializer_class = CategorySerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Category.objects.all()
+    lookup_field = "pk"
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        title = f"{instance}"
+        self.perform_destroy(instance)
+        dta = {"detail": f"Category {title} Delete Success"}
+        return Response(dta, status=status.HTTP_200_OK)
+
+
+class GenreCreateAPIView(generics.CreateAPIView):
+    """
+        Allow Authenticated User to Create a Genre
+    """
+    serializer_class = GenreSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        try:
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            dta = {
+                "detail": "Save Success",
+                "data": serializer.data,
+            }
+            return Response(dta, status=status.HTTP_201_CREATED, headers=headers)
+        except Exception as exp:
+            raise ValidationError({"detail": f"Error: {exp}"})
+
+    def perform_create(self, serializer):
+        return serializer.save()
 
 class GenreListAPIView(generics.ListAPIView):
+    """
+        List all Genre
+    """
     serializer_class = GenreSerializer
     # permission_classes = [permissions.IsAuthenticated]
     queryset = Genre.objects.all()
+
+class GenreDeleteAPIView(generics.DestroyAPIView):
+    """
+        Allow Authenticated User to Delete a Genre
+    """
+    serializer_class = GenreSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Genre.objects.all()
+    lookup_field = "pk"
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        title = f"{instance}"
+        self.perform_destroy(instance)
+        dta = {"detail": f"Genre {title} Delete Success"}
+        return Response(dta, status=status.HTTP_200_OK)
+
 
 
 class MovieCreateAPIView(generics.CreateAPIView):
@@ -43,7 +130,6 @@ class MovieCreateAPIView(generics.CreateAPIView):
     """
     serializer_class = MovieSerializer
     permission_classes = [permissions.IsAuthenticated, HasActiveCompany]
-
 
     def create(self, request, *args, **kwargs):
         data = request.data #.copy()
