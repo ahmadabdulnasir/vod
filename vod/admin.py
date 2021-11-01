@@ -14,13 +14,13 @@ from .models import (
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('id', 'timestamp', 'updated', 'title', 'uid')
+    list_display = ('title', 'uid', 'timestamp', 'updated', )
     list_filter = ('timestamp', 'updated')
 
 
 @admin.register(Genre)
 class GenreAdmin(admin.ModelAdmin):
-    list_display = ('id', 'timestamp', 'updated', 'title', 'uid')
+    list_display = ('title', 'uid', 'timestamp', 'updated',)
     list_filter = ('timestamp', 'updated')
 
 
