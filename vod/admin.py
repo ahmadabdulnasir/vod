@@ -16,12 +16,17 @@ from .models import (
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('title', 'uid', 'timestamp', 'updated', )
     list_filter = ('timestamp', 'updated')
+    search_fields = ("title",)
+    date_hierarchy = "timestamp"
 
 
 @admin.register(Genre)
 class GenreAdmin(admin.ModelAdmin):
     list_display = ('title', 'uid', 'timestamp', 'updated',)
     list_filter = ('timestamp', 'updated')
+    search_fields = ("title",)
+    date_hierarchy = "timestamp"
+
 
 
 class MoviePosterInline(admin.StackedInline):
@@ -45,6 +50,8 @@ class MovieAdmin(admin.ModelAdmin):
         'updated',
     )
     list_filter = ('timestamp', 'updated', 'company', 'category')
+    search_fields = ("title", "description")
+    date_hierarchy = "timestamp"
 
 
 @admin.register(MoviePoster)
@@ -73,6 +80,8 @@ class SeriesAdmin(admin.ModelAdmin):
         'updated',
     )
     list_filter = ('timestamp', 'updated', 'company', 'category')
+    search_fields = ("title",)
+    date_hierarchy = "timestamp"
 
 
 @admin.register(SeriesSeason)
@@ -89,6 +98,8 @@ class SeriesSeasonAdmin(admin.ModelAdmin):
         'updated',
     )
     list_filter = ('timestamp', 'updated', 'company', 'series')
+    search_fields = ("title",)
+    date_hierarchy = "timestamp"
 
 
 @admin.register(SeasonEpisode)
@@ -106,6 +117,8 @@ class SeasonEpisodeAdmin(admin.ModelAdmin):
         'updated',
     )
     list_filter = ('timestamp', 'updated', 'company', 'season')
+    search_fields = ("title",)
+    date_hierarchy = "timestamp"
 
 
 
