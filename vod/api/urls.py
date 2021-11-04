@@ -1,17 +1,21 @@
 from django.urls import path
 
 from .views import (
-    CategoryCreateAPIView, CategoryListAPIView, CategoryDeleteAPIView,
-    GenreCreateAPIView, GenreListAPIView, GenreDeleteAPIView,
+    CategoryCreateAPIView,CategoryDetailsAPIView, CategoryUpdateAPIView, CategoryListAPIView, CategoryDeleteAPIView,
+    GenreCreateAPIView, GenreDetailsAPIView, GenreUpdateAPIView, GenreListAPIView, GenreDeleteAPIView,
     MovieCreateAPIView, MovieDetailsAPIView, MovieListAPIView, 
     MovieSearchAPIView, MovieUpdateAPIView
     )
 
 urlpatterns = [
     path("category/create/", CategoryCreateAPIView.as_view()),
+    path("category/details/<pk>/", CategoryDetailsAPIView.as_view()),
+    path("category/update/<pk>/", CategoryUpdateAPIView.as_view()),
     path("category/list/", CategoryListAPIView.as_view()),
     path("category/delete/<pk>/", CategoryDeleteAPIView.as_view()),
     path("genre/create/", GenreCreateAPIView.as_view()),
+    path("genre/details/<pk>/", GenreDetailsAPIView.as_view()),
+    path("genre/update/<pk>/", GenreUpdateAPIView.as_view()),
     path("genre/list/", GenreListAPIView.as_view()),
     path("genre/delete/<pk>/", GenreDeleteAPIView.as_view()),
     path("movie/create/", MovieCreateAPIView.as_view()),

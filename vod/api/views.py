@@ -49,6 +49,25 @@ class CategoryCreateAPIView(generics.CreateAPIView):
     def perform_create(self, serializer):
         return serializer.save()
 
+class CategoryDetailsAPIView(generics.RetrieveAPIView):
+    """
+       Return Details of Category
+    """
+    serializer_class = CategorySerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Category.objects.all()
+    lookup_field = "pk"
+
+class CategoryUpdateAPIView(generics.UpdateAPIView):
+    """
+       Allow Updating Category
+    """
+    serializer_class = CategorySerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Category.objects.all()
+    lookup_field = "pk"
+
+
 class CategoryListAPIView(generics.ListAPIView):
     """
        List All Categories
@@ -98,6 +117,26 @@ class GenreCreateAPIView(generics.CreateAPIView):
     def perform_create(self, serializer):
         return serializer.save()
 
+
+class GenreUpdateAPIView(generics.RetrieveAPIView):
+    """
+        Return Details of Genre
+    """
+    serializer_class = GenreSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Genre.objects.all()
+    lookup_field = "pk"
+
+class GenreUpdateAPIView(generics.UpdateAPIView):
+    """
+       Allow Updating Genre
+    """
+    serializer_class = GenreSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Genre.objects.all()
+    lookup_field = "pk"
+
+
 class GenreListAPIView(generics.ListAPIView):
     """
         List all Genre
@@ -121,8 +160,6 @@ class GenreDeleteAPIView(generics.DestroyAPIView):
         self.perform_destroy(instance)
         dta = {"detail": f"Genre {title} Delete Success"}
         return Response(dta, status=status.HTTP_200_OK)
-
-
 
 class MovieCreateAPIView(generics.CreateAPIView):
     """
