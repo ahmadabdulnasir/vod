@@ -118,7 +118,7 @@ class GenreCreateAPIView(generics.CreateAPIView):
         return serializer.save()
 
 
-class GenreUpdateAPIView(generics.RetrieveAPIView):
+class GenreDetailsAPIView(generics.RetrieveAPIView):
     """
         Return Details of Genre
     """
