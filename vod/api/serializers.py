@@ -6,6 +6,35 @@ from rest_framework import serializers
 User = get_user_model()
 
 
+class CategorySerializer(CustomeSerializer):
+
+    class Meta:
+        model = Category
+        fields = [
+            "pk",
+            "title",
+            "description",
+            "status",
+            "timestamp",
+            "updated",
+        ]
+
+
+class GenreSerializer(CustomeSerializer):
+
+    class Meta:
+        model = Genre
+        fields = [
+            "pk",
+            "title",
+            "description",
+            "status",
+            "timestamp",
+            "updated",
+        ]
+
+
+
 class MovieSerializer(CustomeSerializer):
 
     class Meta:
@@ -49,30 +78,6 @@ class MovieListSerializer(CustomeSerializer):
             "status",
             "access_level",
             "timestamp",
-            "updated",
-            ]
-
-
-class CategorySerializer(CustomeSerializer):
-
-    class Meta:
-        model = Category
-        fields = [
-            "pk",
-            "title",
-            "timestamp",
-            "updated",
-        ]
-
-
-class GenreSerializer(CustomeSerializer):
-
-    class Meta:
-        model = Genre
-        fields = [
-            "pk", 
-            "title",
-            "timestamp", 
             "updated",
             ]
 

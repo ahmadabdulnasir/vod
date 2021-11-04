@@ -27,6 +27,8 @@ def episode_thumb_location(instance, filename):
 class Category(TimeStampedModel):
     title = models.CharField(max_length=50, unique=True)
     uid = models.CharField(default=getUniqueId, unique=True, max_length=10)
+    description = models.TextField(blank=True, null=True)
+    status = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = 'Category'
@@ -45,6 +47,8 @@ class Category(TimeStampedModel):
 class Genre(TimeStampedModel):
     title = models.CharField(max_length=50, unique=True)
     uid = models.CharField(default=getUniqueId, unique=True, max_length=10)
+    description = models.TextField(blank=True, null=True)
+    status = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = 'Genre'
@@ -271,3 +275,14 @@ class Review(TimeStampedModel):
 
     def __str__(self):
         return f"{self.author} Review on: {self.object_repr}"
+
+
+
+## ADS | Sliders
+
+# class TaggedItem(TimeStampedModel):
+#     tag = models.SlugField()
+#     limit = models.Q(app_label = 'app', model = 'a') | models.Q(app_label = 'app', model = 'b') | models.Q(app_label = 'app2', model = 'c')
+#     content_type = models.ForeignKey(ContentType, limit_choices_to = limit)
+#     object_id = models.PositiveIntegerField()
+#     content_object = generic.GenericForeignKey('content_type', 'object_id')
