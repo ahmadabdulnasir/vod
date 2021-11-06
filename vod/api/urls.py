@@ -9,9 +9,9 @@ from .views import (
 
 urlpatterns = [
     path("category/create/", CategoryCreateAPIView.as_view()),
+    path("category/list/", CategoryListAPIView.as_view()),
     path("category/details/<pk>/", CategoryDetailsAPIView.as_view()),
     path("category/update/<pk>/", CategoryUpdateAPIView.as_view()),
-    path("category/list/", CategoryListAPIView.as_view()),
     path("category/delete/<pk>/", CategoryDeleteAPIView.as_view()),
     path("genre/create/", GenreCreateAPIView.as_view()),
     path("genre/details/<pk>/", GenreDetailsAPIView.as_view()),

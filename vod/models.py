@@ -64,7 +64,6 @@ class Genre(TimeStampedModel):
     def __str__(self) -> str:
         return f"{self.title}"
 
-
 class Movie(TimeStampedModel, VODModel):
     title = models.CharField(max_length=250)
     uid = models.UUIDField(default=LongUniqueId)
@@ -99,7 +98,6 @@ class Movie(TimeStampedModel, VODModel):
 
     def __str__(self):
         return self.title
-
 
 class MoviePoster(TimeStampedModel, VODModel):
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name="posters")
@@ -148,7 +146,6 @@ class Series(TimeStampedModel, VODModel):
     def __str__(self):
         return self.title
 
-
 class SeriesSeason(TimeStampedModel, VODModel):
     series = models.ForeignKey(Series, on_delete=models.CASCADE, related_name="seasons")
     title = models.CharField(max_length=250)
@@ -165,7 +162,6 @@ class SeriesSeason(TimeStampedModel, VODModel):
 
     def __str__(self):
         return self.title
-
 
 class SeasonEpisode(TimeStampedModel, VODModel):
     season = models.ForeignKey(SeriesSeason, on_delete=models.CASCADE, related_name="episodes")
@@ -185,7 +181,7 @@ class SeasonEpisode(TimeStampedModel, VODModel):
     def __str__(self):
         return self.title
 
-
+# 
 class Comment(TimeStampedModel):
     content_type = models.ForeignKey(
         to="contenttypes.ContentType",
@@ -230,8 +226,6 @@ class Comment(TimeStampedModel):
     def __str__(self):
         return f"{self.author} Comment on: {self.object_repr}"
 
-
-
 class Review(TimeStampedModel):
     content_type = models.ForeignKey(
         to="contenttypes.ContentType",
@@ -275,7 +269,6 @@ class Review(TimeStampedModel):
 
     def __str__(self):
         return f"{self.author} Review on: {self.object_repr}"
-
 
 
 ## ADS | Sliders

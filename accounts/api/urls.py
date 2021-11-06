@@ -13,7 +13,11 @@ from .views import (
     UpdateAccountToMarchantAPIView,
     MarchantListAPIView,
     BranchListAPIView,
+    SubscriptionPlanCreateAPIView,
     SubscriptionPlanListAPIView,
+    SubscriptionPlanDetailsAPIView,
+    SubscriptionPlanUpdateAPIView,
+    SubscriptionPlanDeleteAPIView,
     
 )
 
@@ -31,5 +35,9 @@ urlpatterns = [
     path("profile/upgrade-to-marchant/", UpdateAccountToMarchantAPIView.as_view()),
     path("marchant/list/", MarchantListAPIView.as_view()),
     path("branch/list/", BranchListAPIView.as_view()),
+    path("subscription-plan/create/", SubscriptionPlanCreateAPIView.as_view()),
     path("subscription-plan/list/", SubscriptionPlanListAPIView.as_view()),
+    path("subscription-plan/details/<pk>/", SubscriptionPlanDetailsAPIView.as_view()),
+    path("subscription-plan/update/<pk>/", SubscriptionPlanUpdateAPIView.as_view()),
+    path("subscription-plan/delete/<pk>/", SubscriptionPlanDeleteAPIView.as_view()),
 ]

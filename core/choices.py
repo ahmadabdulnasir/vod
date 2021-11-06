@@ -92,7 +92,7 @@ DURATION_CHOICE = (
     ("monthly", "Monthly"),
     ("quarterly", "Quarterly"),
     ("yearly", "Yearly"),
-    ("unlimitted", "Unlimitted"),
+    ("unlimited", "Unlimited"),
 )
 
 
