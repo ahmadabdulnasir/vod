@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth.models import Group
 
-from vod.models import Category, Genre, Movie, MoviePoster
+from vod.models import Category, Genre, Movie, MoviePoster, Promotion
 from .serializers import (
     MovieSerializer,
     MovieListSerializer,
@@ -18,6 +18,7 @@ from .serializers import (
     SeriesSerializer,
     SeriesSeasonSerializer,
     SeasonEpisodeSerializer,
+    PromotionSerializer,
      
 )
 
@@ -49,6 +50,14 @@ class CategoryCreateAPIView(generics.CreateAPIView):
     def perform_create(self, serializer):
         return serializer.save()
 
+class CategoryListAPIView(generics.ListAPIView):
+    """
+       List All Categories
+    """
+    serializer_class = CategorySerializer
+    # permission_classes = [permissions.IsAuthenticated]
+    queryset = Category.objects.all()
+
 class CategoryDetailsAPIView(generics.RetrieveAPIView):
     """
        Return Details of Category
@@ -66,15 +75,6 @@ class CategoryUpdateAPIView(generics.UpdateAPIView):
     permission_classes = [permissions.IsAuthenticated]
     queryset = Category.objects.all()
     lookup_field = "pk"
-
-
-class CategoryListAPIView(generics.ListAPIView):
-    """
-       List All Categories
-    """
-    serializer_class = CategorySerializer
-    # permission_classes = [permissions.IsAuthenticated]
-    queryset = Category.objects.all()
 
 class CategoryDeleteAPIView(generics.DestroyAPIView):
     """
@@ -117,6 +117,13 @@ class GenreCreateAPIView(generics.CreateAPIView):
     def perform_create(self, serializer):
         return serializer.save()
 
+class GenreListAPIView(generics.ListAPIView):
+    """
+        List all Genre
+    """
+    serializer_class = GenreSerializer
+    # permission_classes = [permissions.IsAuthenticated]
+    queryset = Genre.objects.all()
 
 class GenreDetailsAPIView(generics.RetrieveAPIView):
     """
@@ -136,15 +143,6 @@ class GenreUpdateAPIView(generics.UpdateAPIView):
     queryset = Genre.objects.all()
     lookup_field = "pk"
 
-
-class GenreListAPIView(generics.ListAPIView):
-    """
-        List all Genre
-    """
-    serializer_class = GenreSerializer
-    # permission_classes = [permissions.IsAuthenticated]
-    queryset = Genre.objects.all()
-
 class GenreDeleteAPIView(generics.DestroyAPIView):
     """
         Allow Authenticated User to Delete a Genre
@@ -160,6 +158,7 @@ class GenreDeleteAPIView(generics.DestroyAPIView):
         self.perform_destroy(instance)
         dta = {"detail": f"Genre {title} Delete Success"}
         return Response(dta, status=status.HTTP_200_OK)
+
 
 class MovieCreateAPIView(generics.CreateAPIView):
     """
@@ -376,3 +375,75 @@ class MovieUpdateAPIView(generics.UpdateAPIView):
 
 
 
+## ADS | Promotions
+
+
+class PromotionCreateAPIView(generics.CreateAPIView):
+    """
+        Allow Authenticated User to Create a Promotion
+    """
+    serializer_class = PromotionSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        try:
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            dta = {
+                "detail": "Save Success",
+                "data": serializer.data,
+            }
+            return Response(dta, status=status.HTTP_201_CREATED, headers=headers)
+        except Exception as exp:
+            raise ValidationError({"detail": f"Error: {exp}"})
+
+    def perform_create(self, serializer):
+        return serializer.save()
+
+
+class PromotionListAPIView(generics.ListAPIView):
+    """
+        List all Promotion
+    """
+    serializer_class = PromotionSerializer
+    # permission_classes = [permissions.IsAuthenticated]
+    queryset = Promotion.objects.all()
+
+
+class PromotionDetailsAPIView(generics.RetrieveAPIView):
+    """
+        Return Details of Promotion
+    """
+    serializer_class = PromotionSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Promotion.objects.all()
+    lookup_field = "pk"
+
+
+class PromotionUpdateAPIView(generics.UpdateAPIView):
+    """
+       Allow Updating Promotion
+    """
+    serializer_class = PromotionSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Promotion.objects.all()
+    lookup_field = "pk"
+
+
+class PromotionDeleteAPIView(generics.DestroyAPIView):
+    """
+        Allow Authenticated User to Delete a Promotion
+    """
+    serializer_class = PromotionSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Promotion.objects.all()
+    lookup_field = "pk"
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        title = f"{instance}"
+        self.perform_destroy(instance)
+        dta = {"detail": f"Promotion {title} Delete Success"}
+        return Response(dta, status=status.HTTP_200_OK)

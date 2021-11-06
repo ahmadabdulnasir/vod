@@ -1,15 +1,17 @@
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
+
 from django import urls as urlresolvers
+from django.core.exceptions import ValidationError
 from django.utils.html import format_html
 from django.urls.exceptions import NoReverseMatch
 from django.db import models
-from django.db.models.fields import CharField
 from core.abstract_models import TimeStampedModel, VODModel
 from core.utils.units import LongUniqueId, getUniqueId
-from core.choices import ACCESS_LEVEL_CHOICE, COMMENT_STATUS_CHOICE, POST_STATUS_CHOICE
+from core.choices import ACCESS_LEVEL_CHOICE, COMMENT_STATUS_CHOICE, POST_STATUS_CHOICE, PROMOTION_TYPE_CHOICE
 from django.utils.translation import ugettext_lazy as _
 from django.urls import reverse
-
+from django.utils import timezone
 # Create your models here.
 
 def movie_locations(instance, filename):
@@ -181,7 +183,7 @@ class SeasonEpisode(TimeStampedModel, VODModel):
     def __str__(self):
         return self.title
 
-# 
+# Comments and Reviews
 class Comment(TimeStampedModel):
     content_type = models.ForeignKey(
         to="contenttypes.ContentType",
@@ -244,7 +246,6 @@ class Review(TimeStampedModel):
     body = models.TextField(max_length=255)
     status = models.CharField(max_length=25, choices=COMMENT_STATUS_CHOICE)
 
-    # Metadata
     class Meta:
         verbose_name = 'Review'
         verbose_name_plural = 'Reviews'
@@ -273,9 +274,36 @@ class Review(TimeStampedModel):
 
 ## ADS | Sliders
 
-# class TaggedItem(TimeStampedModel):
-#     tag = models.SlugField()
-#     limit = models.Q(app_label = 'app', model = 'a') | models.Q(app_label = 'app', model = 'b') | models.Q(app_label = 'app2', model = 'c')
-#     content_type = models.ForeignKey(ContentType, limit_choices_to = limit)
-#     object_id = models.PositiveIntegerField()
-#     content_object = generic.GenericForeignKey('content_type', 'object_id')
+class Promotion(TimeStampedModel):
+    # uid = models.SlugField(default=LongUniqueId)
+    uid = models.CharField(default=getUniqueId, unique=True, max_length=10)
+    type = models.CharField(max_length=10, choices=PROMOTION_TYPE_CHOICE)
+    limit = models.Q(app_label = 'vod', model='movie') | models.Q(app_label='vod', model='series')
+    content_type = models.ForeignKey(ContentType, limit_choices_to=limit, blank=True, null=True, on_delete=models.CASCADE)
+    object_id = models.BigIntegerField(verbose_name=_("PK of Movie or a Serie"), blank=True, null=True,)
+    content_object = GenericForeignKey('content_type', 'object_id')
+    poster = models.ImageField(upload_to="promotions", blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
+    active = models.BooleanField(default=True)
+
+    class Meta:
+        verbose_name = 'Promotion'
+        verbose_name_plural = 'Promotions'
+        ordering = ["-updated"]
+
+
+    def clean(self):
+        self.is_cleaned = True
+        if not (self.content_type and self.object_id) and not (self.poster):
+            raise ValidationError("You Must Provide (content_type and PK of Movie or a Serie) or a Poster Image")
+        super(Promotion, self).clean()
+
+    def save(self, *args, **kwargs):
+        if not self.is_cleaned:
+            self.full_clean()
+        super(Promotion, self).save(*args, **kwargs)
+
+    # def __str__(self):
+    #     return f"{self.uid}"

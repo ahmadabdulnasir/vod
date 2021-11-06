@@ -1,5 +1,5 @@
 from core.api.serializers import CustomeSerializer
-from vod.models import Category, Genre, Movie, MoviePoster, Series, SeriesSeason, SeasonEpisode
+from vod.models import Category, Genre, Movie, MoviePoster, Series, SeriesSeason, SeasonEpisode, Promotion
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
@@ -125,6 +125,25 @@ class SeasonEpisodeSerializer(CustomeSerializer):
         fields = [
             "pk", 
             "title",
+            "timestamp", 
+            "updated",
+            ]
+
+
+class PromotionSerializer(CustomeSerializer):
+
+    class Meta:
+        model = Promotion
+        fields = [
+            "pk",
+            "uid",
+            "type",
+            "object_id",
+            "poster",
+            "description",
+            "start_date",
+            "end_date",
+            "active",
             "timestamp", 
             "updated",
             ]

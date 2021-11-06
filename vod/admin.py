@@ -10,6 +10,7 @@ from .models import (
     SeasonEpisode,
     Comment,
     Review,
+    Promotion,
 )
 
 @admin.register(Category)
@@ -145,6 +146,15 @@ class ReviewAdmin(admin.ModelAdmin):
     list_display = ["author", "resource_url", "status", "timestamp", "updated"]
     list_editable = ["status"]
     list_filter = ["status", "timestamp", "updated"]
+
+
+@admin.register(Promotion)
+class PromotionAdmin(admin.ModelAdmin):
+    readonly_fields = ["uid", ]
+
+    list_display = ["uid", "start_date", "end_date", "type", "active", "timestamp", "updated"]
+    list_editable = ["active"]
+    list_filter = ["active", "type", "timestamp", "updated"]
 
 
 

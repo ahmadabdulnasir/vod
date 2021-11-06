@@ -107,6 +107,12 @@ ACCESS_LEVEL_CHOICE = (
     ("exclusive", "Exclusive"),
 )
 
+PROMOTION_TYPE_CHOICE = (
+    ("poster", "Poster"),
+    ("movie", "Movie"),
+    ("series", "Series"),
+)
+
 def boot():
     pass
 
