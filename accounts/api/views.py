@@ -480,11 +480,95 @@ class UpdateAccountToMarchantAPIView(APIView):
         #   )
         return Response(dta, status=status_code)
 
+
+class MarchantCreateAPIView(generics.CreateAPIView):
+    """
+        Allow Authenticated User to Create a Marchant
+    """
+    serializer_class = MarchantSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        try:
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            dta = {
+                "detail": "Save Success",
+                "data": serializer.data,
+            }
+            return Response(dta, status=status.HTTP_201_CREATED, headers=headers)
+        except Exception as exp:
+            raise ValidationError({"detail": f"Error: {exp}"})
+
+    def perform_create(self, serializer):
+        return serializer.save()
+
 class MarchantListAPIView(generics.ListAPIView):
+    """
+       List All Marchant
+    """
     serializer_class = MarchantSerializer
     # permission_classes = [permissions.IsAuthenticated]
-    queryset = Marchant.objects.all()
 
+    def get_queryset(self, *args, **kwargs):
+        try:
+            qs = Marchant.objects.all()
+            active = self.request.GET.get("active")
+            if active and active == 'yes':
+                qs = qs.filter(active=True)
+            if active and active == 'no':
+                qs = qs.filter(active=False)
+            status_code = status.HTTP_200_OK
+        except Exception as exp:
+            status_code = status.HTTP_417_EXPECTATION_FAILED
+            raise APIException(
+                detail=f"An API Exception Occured!!!, Error: {exp}", code=status_code
+            )
+        return qs
+
+class MarchantDetailsAPIView(generics.RetrieveAPIView):
+    """
+       Return Details of Marchant
+    """
+    serializer_class = MarchantSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Marchant.objects.all()
+    lookup_field = "pk"
+
+class MarchantUpdateAPIView(generics.UpdateAPIView):
+    """
+       Allow Updating Marchant
+    """
+    serializer_class = MarchantSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Marchant.objects.all()
+    lookup_field = "pk"
+
+    def perform_update(self, serializer):
+        serializer.save()
+        dta = {
+            "detail": "Update Success",
+            "data": serializer.data,
+        }
+        return Response(dta, status=status.HTTP_200_OK)
+
+class MarchantDeleteAPIView(generics.DestroyAPIView):
+    """
+        Allow Authenticated User to Delete a Marchant
+    """
+    serializer_class = MarchantSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Marchant.objects.all()
+    lookup_field = "pk"
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        title = f"{instance}"
+        self.perform_destroy(instance)
+        dta = {"detail": f"Marchant: {title} Delete Success"}
+        return Response(dta, status=status.HTTP_200_OK)
 
 class BranchListAPIView(generics.ListAPIView):
     serializer_class = StoreSerializer
@@ -518,35 +602,6 @@ class SubscriptionPlanCreateAPIView(generics.CreateAPIView):
     def perform_create(self, serializer):
         return serializer.save()
 
-
-class SubscriptionPlanDetailsAPIView(generics.RetrieveAPIView):
-    """
-       Return Details of SubscriptionPlan
-    """
-    serializer_class = SubscriptionPlanSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    queryset = SubscriptionPlan.objects.all()
-    lookup_field = "pk"
-
-
-class SubscriptionPlanUpdateAPIView(generics.UpdateAPIView):
-    """
-       Allow Updating SubscriptionPlan
-    """
-    serializer_class = SubscriptionPlanSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    queryset = SubscriptionPlan.objects.all()
-    lookup_field = "pk"
-
-    def perform_update(self, serializer):
-        serializer.save()
-        dta = {
-            "detail": "Update Success",
-            "data": serializer.data,
-        }
-        return Response(dta, status=status.HTTP_200_OK)
-
-
 class SubscriptionPlanListAPIView(generics.ListAPIView):
     """
        List All SubscriptionPlan
@@ -573,6 +628,31 @@ class SubscriptionPlanListAPIView(generics.ListAPIView):
             )
         return qs
 
+class SubscriptionPlanDetailsAPIView(generics.RetrieveAPIView):
+    """
+       Return Details of SubscriptionPlan
+    """
+    serializer_class = SubscriptionPlanSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = SubscriptionPlan.objects.all()
+    lookup_field = "pk"
+
+class SubscriptionPlanUpdateAPIView(generics.UpdateAPIView):
+    """
+       Allow Updating SubscriptionPlan
+    """
+    serializer_class = SubscriptionPlanSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = SubscriptionPlan.objects.all()
+    lookup_field = "pk"
+
+    def perform_update(self, serializer):
+        serializer.save()
+        dta = {
+            "detail": "Update Success",
+            "data": serializer.data,
+        }
+        return Response(dta, status=status.HTTP_200_OK)
 
 class SubscriptionPlanDeleteAPIView(generics.DestroyAPIView):
     """
