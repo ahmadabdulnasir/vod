@@ -295,15 +295,15 @@ class Promotion(TimeStampedModel):
 
 
     def clean(self):
-        self.is_cleaned = True
+        # self.is_cleaned = True
         if not (self.content_type and self.object_id) and not (self.poster):
             raise ValidationError("You Must Provide (content_type and PK of Movie or a Serie) or a Poster Image")
         super(Promotion, self).clean()
 
     def save(self, *args, **kwargs):
-        if not self.is_cleaned:
-            self.full_clean()
+        # if not self.is_cleaned:
+        self.full_clean()
         super(Promotion, self).save(*args, **kwargs)
 
-    # def __str__(self):
-    #     return f"{self.uid}"
+    def __str__(self):
+        return f"{self.type.title()} Promotion: {self.uid}"
