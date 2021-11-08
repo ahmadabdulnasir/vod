@@ -35,6 +35,7 @@ class CreateAccountAPIView(APIView):
         # user_profile
         phone_number = request.POST.get("phone_number")
         dob = request.POST.get("dob")
+        gender = request.POST.get("gender")
         state = request.POST.get("state")
         address = request.POST.get("address")
         user_type = request.POST.get("user_type")
@@ -49,6 +50,7 @@ class CreateAccountAPIView(APIView):
             "email" : email,
             "phone_number" : phone_number,
             # "DOB" : dob,
+            # "gender" : gender,
             # "state" : state,
             # "lga_pk" : lga_pk,
             # "address" : address,
@@ -110,6 +112,12 @@ class CreateAccountAPIView(APIView):
                     # "state": state,
                     "address": address if address else None,
                 }
+                if user_type:
+                    egg["user_type"] = user_type
+                if state:
+                    egg["state"] = state
+                if gender:
+                    egg["gender"] = gender
                 profile = UserProfile(**egg)               
                 profile.save()
             except Exception as exp:
