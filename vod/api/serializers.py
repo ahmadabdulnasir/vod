@@ -137,15 +137,15 @@ class PromotionSerializer(CustomeSerializer):
         fields = [
             "pk",
             "uid",
+            "title",
             "type",
             "object_id",
             "poster",
             "description",
+            "location",
             "start_date",
             "end_date",
             "active",
             "timestamp", 
             "updated",
             ]
-
-

@@ -113,6 +113,13 @@ PROMOTION_TYPE_CHOICE = (
     ("series", "Series"),
 )
 
+PROMOTION_LOCATION_CHOICE = (
+    ("main_home_slider", "Main Home Slider"),
+    ("home_slider", "Home Slider"),
+    ("breadcrumb_slider", "Breadcrumb Slider"),
+    ("login_page", "Login Page"),
+)
+
 def boot():
     pass
 

@@ -8,7 +8,7 @@ from django.urls.exceptions import NoReverseMatch
 from django.db import models
 from core.abstract_models import TimeStampedModel, VODModel
 from core.utils.units import LongUniqueId, getUniqueId
-from core.choices import ACCESS_LEVEL_CHOICE, COMMENT_STATUS_CHOICE, POST_STATUS_CHOICE, PROMOTION_TYPE_CHOICE
+from core.choices import ACCESS_LEVEL_CHOICE, COMMENT_STATUS_CHOICE, POST_STATUS_CHOICE, PROMOTION_LOCATION_CHOICE, PROMOTION_TYPE_CHOICE
 from django.utils.translation import ugettext_lazy as _
 from django.urls import reverse
 from django.utils import timezone
@@ -276,14 +276,16 @@ class Review(TimeStampedModel):
 
 class Promotion(TimeStampedModel):
     # uid = models.SlugField(default=LongUniqueId)
+    title = models.CharField(max_length=50, blank=True, null=True)
     uid = models.CharField(default=getUniqueId, unique=True, max_length=10)
     type = models.CharField(max_length=10, choices=PROMOTION_TYPE_CHOICE)
     limit = models.Q(app_label = 'vod', model='movie') | models.Q(app_label='vod', model='series')
     content_type = models.ForeignKey(ContentType, limit_choices_to=limit, blank=True, null=True, on_delete=models.CASCADE)
     object_id = models.BigIntegerField(verbose_name=_("PK of Movie or a Serie"), blank=True, null=True,)
     content_object = GenericForeignKey('content_type', 'object_id')
-    poster = models.ImageField(upload_to="promotions", blank=True, null=True)
+    poster = models.ImageField(upload_to="promotions",)
     description = models.TextField(blank=True, null=True)
+    location = models.CharField(max_length=50, choices=PROMOTION_LOCATION_CHOICE)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     active = models.BooleanField(default=True)
@@ -296,6 +298,7 @@ class Promotion(TimeStampedModel):
 
     def clean(self):
         # self.is_cleaned = True
+        # TODO: rewrite logic
         if not (self.content_type and self.object_id) and not (self.poster):
             raise ValidationError("You Must Provide (content_type and PK of Movie or a Serie) or a Poster Image")
         super(Promotion, self).clean()
