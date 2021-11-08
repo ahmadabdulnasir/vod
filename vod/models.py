@@ -135,7 +135,7 @@ class Series(TimeStampedModel, VODModel):
     uid = models.UUIDField(default=LongUniqueId)
     thumb = models.ImageField()
     description = models.TextField()
-    genre = models.ManyToManyField(Genre)
+    genres = models.ManyToManyField(Genre, blank=True,)
     category = models.ForeignKey(Category, blank=True, null=True, on_delete=models.SET_NULL, related_name="series")
     # posters = models.ManyToManyField(Poster)
     status = models.CharField(max_length=25, choices=POST_STATUS_CHOICE)
@@ -147,14 +147,22 @@ class Series(TimeStampedModel, VODModel):
         verbose_name_plural = 'Series'
         ordering = ["-timestamp", "title"]
 
+    def category_title(self):
+        if self.category:
+            return f"{self.category}"
+
+    def get_genres(self):
+        dta = [g.title for g in self.genres.all()]
+        return dta
+
+    def number_of_episodes(self):
+        return self.episodes.all().count()
+
     def get_episodes(self):
         dta = {
             episode.get_form_format() for episode in self.episodes.all().order_by("pk")
         }
         return dta
-        
-    def number_of_episodes(self):
-        return self.episodes.all().count()
 
     def __str__(self):
         return self.title

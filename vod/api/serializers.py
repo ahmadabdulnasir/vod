@@ -114,8 +114,8 @@ class SeriesDetailsSerializer(CustomeSerializer):
             "uid",
             "thumb",
             "description",
-            "genre"
-            "get_genre",
+            "genres",
+            "get_genres",
             "category",
             "category_title",
             "status",
@@ -136,8 +136,8 @@ class SeriesListSerializer(CustomeSerializer):
             "uid",
             "thumb",
             "description",
-            "genre"
-            "get_genre",
+            "genres",
+            "get_genres",
             "category",
             "category_title",
             "status",

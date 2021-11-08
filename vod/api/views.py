@@ -412,23 +412,47 @@ class SeriesCreateAPIView(generics.CreateAPIView):
     serializer_class = SeriesDetailsSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    permission_classes = [permissions.IsAuthenticated, HasActiveCompany]
+
     def create(self, request, *args, **kwargs):
+        data = request.data  # .copy()
+        _p = data.pop("genres")
+        # Adding genres
+        genres_pks = request.data.get("genres", "0").split(',')
         try:
-            serializer = self.get_serializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
-            self.perform_create(serializer)
-            headers = self.get_success_headers(serializer.data)
-            dta = {
-                "detail": "Save Success",
-                "data": serializer.data,
-            }
-            return Response(dta, status=status.HTTP_201_CREATED, headers=headers)
+            genres_pks = list(map(int, genres_pks))
         except Exception as exp:
-            raise ValidationError({"detail": f"Error: {exp}"})
+            return Response(
+                data={
+                    "detail": f"Invalid Selections of Genres. Error: {exp}",
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        if len(genres_pks) > 0:
+            genres = Genre.objects.filter(pk__in=genres_pks)
+        else:
+            genres = []
+        # data["genres"] = genres
+        print(genres)
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
 
-    def perform_create(self, serializer):
-        return serializer.save()
+        # spam.save()
+        self.perform_create(serializer, genres)
+        headers = self.get_success_headers(serializer.data)
+        dta = {
+            "detail": "Series Created Successfuly",
+            "data": serializer.data,
+        }
+        return Response(dta, status=status.HTTP_201_CREATED, headers=headers)
 
+
+    def perform_create(self, serializer, genres):
+        return serializer.save(
+            created_by=self.request.user.profile,
+            company=self.request.user.profile.company,
+            genres=genres
+        )
 
 class SeriesListAPIView(generics.ListAPIView):
     """
