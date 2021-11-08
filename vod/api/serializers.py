@@ -46,6 +46,7 @@ class GenreSerializer(CustomeSerializer):
 
 
 class MovieDetailsSerializer(CustomeSerializer):
+    genres = GenreSerializer(read_only=True, many=True)
 
     class Meta:
         model = Movie
@@ -55,6 +56,7 @@ class MovieDetailsSerializer(CustomeSerializer):
             "uid",
             "thumb",
             "description",
+            "genres",
             "get_genres",
             "get_posters",
             "category",
@@ -105,6 +107,7 @@ class MoviePosterSerializer(CustomeSerializer):
 
 
 class SeriesDetailsSerializer(CustomeSerializer):
+    genres = GenreSerializer(read_only=True, many=True)
 
     class Meta:
         model = Series

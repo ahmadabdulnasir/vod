@@ -416,7 +416,7 @@ class SeriesCreateAPIView(generics.CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         data = request.data  # .copy()
-        _p = data.pop("genres")
+        # _p = data.pop("genres")
         # Adding genres
         genres_pks = request.data.get("genres", "0").split(',')
         try:
@@ -432,8 +432,6 @@ class SeriesCreateAPIView(generics.CreateAPIView):
             genres = Genre.objects.filter(pk__in=genres_pks)
         else:
             genres = []
-        # data["genres"] = genres
-        print(genres)
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
 
