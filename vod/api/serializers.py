@@ -1,5 +1,15 @@
 from core.api.serializers import CustomeSerializer
-from vod.models import Category, Genre, Movie, MoviePoster, Series, SeriesSeason, SeasonEpisode, Promotion
+from vod.models import (
+    Category, 
+    Genre, 
+    Movie,
+    MoviePoster,
+    Series, 
+    # SeriesSeason,
+    # SeasonEpisode, 
+    SeriesEpisode,
+    Promotion
+)
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
@@ -35,7 +45,7 @@ class GenreSerializer(CustomeSerializer):
 
 
 
-class MovieSerializer(CustomeSerializer):
+class MovieDetailsSerializer(CustomeSerializer):
 
     class Meta:
         model = Movie
@@ -94,37 +104,87 @@ class MoviePosterSerializer(CustomeSerializer):
             ]
 
 
-class SeriesSerializer(CustomeSerializer):
+class SeriesDetailsSerializer(CustomeSerializer):
+
+    class Meta:
+        model = Series
+        fields = [
+            "pk",
+            "title",
+            "uid",
+            "thumb",
+            "description",
+            "genre"
+            "get_genre",
+            "category",
+            "category_title",
+            "status",
+            "access_level",
+            "number_of_episodes",
+            "get_episodes",
+            "timestamp",
+            "updated",
+        ]
+
+class SeriesListSerializer(CustomeSerializer):
 
     class Meta:
         model = Series
         fields = [
             "pk", 
             "title",
+            "uid",
+            "thumb",
+            "description",
+            "genre"
+            "get_genre",
+            "category",
+            "category_title",
+            "status",
+            "access_level",
+            "number_of_episodes",
             "timestamp", 
             "updated",
             ]
 
 
-class SeriesSeasonSerializer(CustomeSerializer):
-
-    class Meta:
-        model = SeriesSeason
-        fields = [
-            "pk", 
-            "title",
-            "timestamp", 
-            "updated",
-            ]
 
 
+# class SeriesSeasonSerializer(CustomeSerializer):
+
+#     class Meta:
+#         model = SeriesSeason
+#         fields = [
+#             "pk", 
+#             "title",
+#             "timestamp", 
+#             "updated",
+#             ]
+
+
+# class SeasonEpisodeSerializer(CustomeSerializer):
+
+#     class Meta:
+#         model = SeasonEpisode
+#         fields = [
+#             "pk", 
+#             "title",
+#             "timestamp", 
+#             "updated",
+#             ]
 class SeasonEpisodeSerializer(CustomeSerializer):
 
     class Meta:
-        model = SeasonEpisode
+        model = SeriesEpisode
         fields = [
             "pk", 
+            "series",
             "title",
+            "uid",
+            "thumb",
+            "description",
+            "video",
+            "status",
             "timestamp", 
             "updated",
             ]

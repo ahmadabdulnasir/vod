@@ -6,8 +6,7 @@ from .models import (
     Movie,
     MoviePoster,
     Series,
-    SeriesSeason,
-    SeasonEpisode,
+    SeriesEpisode,
     Comment,
     Review,
     Promotion,
@@ -72,26 +71,26 @@ class SeriesAdmin(admin.ModelAdmin):
     list_display = (
         'title',
         # 'uid',
-        # 'thumb',
-        # 'description',
         'category',
         'status',
+        'access_level',
+        'number_of_episodes',
         'company',
         'timestamp',
         'updated',
     )
-    list_filter = ('timestamp', 'updated', 'company', 'category')
+    list_filter = ('timestamp', 'updated', 'access_level', 'company', 'category')
     search_fields = ("title",)
     date_hierarchy = "timestamp"
 
 
-@admin.register(SeriesSeason)
+
+
+
+# @admin.register(SeriesSeason)
 class SeriesSeasonAdmin(admin.ModelAdmin):
     list_display = (
         'title',
-        # 'uid',
-        # 'thumb',
-        # 'description',
         'status',
         'company',
         'series',
@@ -103,7 +102,7 @@ class SeriesSeasonAdmin(admin.ModelAdmin):
     date_hierarchy = "timestamp"
 
 
-@admin.register(SeasonEpisode)
+# @admin.register(SeasonEpisode)
 class SeasonEpisodeAdmin(admin.ModelAdmin):
     list_display = (
         'title',
@@ -118,6 +117,22 @@ class SeasonEpisodeAdmin(admin.ModelAdmin):
         'updated',
     )
     list_filter = ('timestamp', 'updated', 'company', 'season')
+    search_fields = ("title",)
+    date_hierarchy = "timestamp"
+
+
+@admin.register(SeriesEpisode)
+class SeriesEpisodeAdmin(admin.ModelAdmin):
+    list_display = (
+        'uid',
+        'series',
+        'title',
+        'status',
+        'company',
+        'timestamp',
+        'updated',
+    )
+    list_filter = ('timestamp', 'updated', 'company', 'series')
     search_fields = ("title",)
     date_hierarchy = "timestamp"
 

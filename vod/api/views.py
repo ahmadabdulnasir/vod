@@ -8,16 +8,26 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth.models import Group
 
-from vod.models import Category, Genre, Movie, MoviePoster, Promotion
+from vod.models import (
+    Category,
+    Genre,
+    Movie,
+    MoviePoster,
+    Series,
+    SeriesEpisode,
+    Promotion
+)
+
 from .serializers import (
-    MovieSerializer,
-    MovieListSerializer,
     CategorySerializer,
     GenreSerializer,
+    MovieDetailsSerializer,
+    MovieListSerializer,
     MoviePosterSerializer,
-    SeriesSerializer,
-    SeriesSeasonSerializer,
-    SeasonEpisodeSerializer,
+    SeriesDetailsSerializer,
+    SeriesListSerializer,
+    # SeriesSeasonSerializer,
+    # SeasonEpisodeSerializer,
     PromotionSerializer,
      
 )
@@ -159,12 +169,13 @@ class GenreDeleteAPIView(generics.DestroyAPIView):
         dta = {"detail": f"Genre {title} Delete Success"}
         return Response(dta, status=status.HTTP_200_OK)
 
+### Movie
 
 class MovieCreateAPIView(generics.CreateAPIView):
     """
         Allows Upload of a Movie
     """
-    serializer_class = MovieSerializer
+    serializer_class = MovieDetailsSerializer
     permission_classes = [permissions.IsAuthenticated, HasActiveCompany]
 
     def create(self, request, *args, **kwargs):
@@ -216,7 +227,7 @@ class MovieCreateAPIView(generics.CreateAPIView):
 #     """
 #         Allows Upload of a Movie
 #     """
-#     serializer_class = MovieSerializer
+#     serializer_class = MovieDetailsSerializer
 #     permission_classes = [permissions.IsAuthenticated, HasActiveCompany]
 
 #     def post(self, request, format="json"):
@@ -357,7 +368,7 @@ class MovieDetailsAPIView(generics.RetrieveAPIView):
     """
        Shows details of a Movie
     """
-    serializer_class = MovieSerializer
+    serializer_class = MovieDetailsSerializer
     permission_classes = [permissions.IsAuthenticated]
     queryset = Movie.objects.all()
     lookup_field = "pk"
@@ -367,13 +378,104 @@ class MovieUpdateAPIView(generics.UpdateAPIView):
     """
        Allows updating of all or parts of Movie.
     """
-    serializer_class = MovieSerializer
+    serializer_class = MovieDetailsSerializer
     permission_classes = [permissions.IsAuthenticated]
-    # permission_classes = [MyGenericViewset]
     queryset = Movie.objects.all()
     lookup_field = "pk"
 
 
+class MovieDeleteAPIView(generics.DestroyAPIView):
+    """
+        Allow Authenticated User to Delete a Movie
+    """
+    serializer_class = MovieDetailsSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Movie.objects.all()
+    lookup_field = "pk"
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        title = f"{instance}"
+        self.perform_destroy(instance)
+        dta = {"detail": f"Movie {title} Delete Success"}
+        return Response(dta, status=status.HTTP_200_OK)
+
+### ./Movie
+
+### Series
+
+
+class SeriesCreateAPIView(generics.CreateAPIView):
+    """
+        Allow Authenticated User to Create a Series
+    """
+    serializer_class = SeriesDetailsSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        try:
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            dta = {
+                "detail": "Save Success",
+                "data": serializer.data,
+            }
+            return Response(dta, status=status.HTTP_201_CREATED, headers=headers)
+        except Exception as exp:
+            raise ValidationError({"detail": f"Error: {exp}"})
+
+    def perform_create(self, serializer):
+        return serializer.save()
+
+
+class SeriesListAPIView(generics.ListAPIView):
+    """
+        List all Series
+    """
+    serializer_class = SeriesListSerializer
+    # permission_classes = [permissions.IsAuthenticated]
+    queryset = Series.objects.all()
+
+
+class SeriesDetailsAPIView(generics.RetrieveAPIView):
+    """
+        Return Details of Series
+    """
+    serializer_class = SeriesDetailsSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Series.objects.all()
+    lookup_field = "pk"
+
+
+class SeriesUpdateAPIView(generics.UpdateAPIView):
+    """
+       Allow Updating Series
+    """
+    serializer_class = SeriesDetailsSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Series.objects.all()
+    lookup_field = "pk"
+
+
+class SeriesDeleteAPIView(generics.DestroyAPIView):
+    """
+        Allow Authenticated User to Delete a Series
+    """
+    serializer_class = SeriesDetailsSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Series.objects.all()
+    lookup_field = "pk"
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        title = f"{instance}"
+        self.perform_destroy(instance)
+        dta = {"detail": f"Series {title} Delete Success"}
+        return Response(dta, status=status.HTTP_200_OK)
+
+### ./Series
 
 ## ADS | Promotions
 

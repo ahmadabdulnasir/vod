@@ -21,10 +21,10 @@ def movie_thumb_locations(instance, filename):
     return f"movies/{instance.title}/thumb/{filename}"
 
 def episode_location(instance, filename):
-    return f"series/{instance.series.title}/{instance.title}/video/{filename}"
+    return f"series/{instance.season.series.title}/{instance.season.title}/{instance.title}/video/{filename}"
     
 def episode_thumb_location(instance, filename):
-    return f"series/{instance.series.title}/{instance.title}/thumb/{filename}"
+    return f"series/{instance.season.series.title}/{instance.season.title}/{instance.title}/thumb/{filename}"
 
 class Category(TimeStampedModel):
     title = models.CharField(max_length=50, unique=True)
@@ -139,29 +139,34 @@ class Series(TimeStampedModel, VODModel):
     category = models.ForeignKey(Category, blank=True, null=True, on_delete=models.SET_NULL, related_name="series")
     # posters = models.ManyToManyField(Poster)
     status = models.CharField(max_length=25, choices=POST_STATUS_CHOICE)
-    access_level = models.CharField(max_length=20, choices=ACCESS_LEVEL_CHOICE)
-    created_by = models.ForeignKey("accounts.UserProfile", on_delete=models.PROTECT, related_name="created_series")
 
     class Meta:
         verbose_name = 'Series'
         verbose_name_plural = 'Series'
         ordering = ["-timestamp", "title"]
 
-    def get_episodes(self):
-        dta = {
-            episode.get_form_format() for episode in self.episodes.all().order_by("pk")
-        }
-        return dta
-        
-    def number_of_episodes(self):
-        return self.episodes.all().count()
+    def __str__(self):
+        return self.title
+
+class SeriesSeason(TimeStampedModel, VODModel):
+    series = models.ForeignKey(Series, on_delete=models.CASCADE, related_name="seasons")
+    title = models.CharField(max_length=250)
+    uid = models.UUIDField(default=LongUniqueId)
+    thumb = models.ImageField()
+    description = models.TextField(blank=True, null=True)
+    # posters = models.ManyToManyField(Poster, blank=True)
+    status = models.CharField(max_length=25, choices=POST_STATUS_CHOICE)
+
+    class Meta:
+        verbose_name = 'Series Season'
+        verbose_name_plural = 'Series Seasons'
+        ordering = ["-timestamp", "title"]
 
     def __str__(self):
         return self.title
 
-
-class SeriesEpisode(TimeStampedModel, VODModel):
-    series = models.ForeignKey(Series, on_delete=models.CASCADE, related_name="episodes")
+class SeasonEpisode(TimeStampedModel, VODModel):
+    season = models.ForeignKey(SeriesSeason, on_delete=models.CASCADE, related_name="episodes")
     title = models.CharField(max_length=250)
     uid = models.UUIDField(default=LongUniqueId)
     thumb = models.ImageField(upload_to=episode_thumb_location)
@@ -169,23 +174,11 @@ class SeriesEpisode(TimeStampedModel, VODModel):
     # posters = models.ManyToManyField(Poster, blank=True)
     video = models.FileField(upload_to=episode_location)
     status = models.CharField(max_length=25, choices=POST_STATUS_CHOICE)
-    # access_level = models.CharField(max_length=20, choices=ACCESS_LEVEL_CHOICE)
-    uploaded_by = models.ForeignKey("accounts.UserProfile", on_delete=models.PROTECT, related_name="uploaded_episodes")
-
 
     class Meta:
-        verbose_name = 'Series Episode'
-        verbose_name_plural = 'Series Episodes'
+        verbose_name = 'Season Episode'
+        verbose_name_plural = 'Season Episodes'
         ordering = ["-timestamp", "title"]
-
-    def get_form_format(self):
-        dta = {
-            "pk": self.pk,
-            "title": self.title,
-            "thumb": self.thumb.url,
-            "status": self.status,
-        }
-        return dta
 
     def __str__(self):
         return self.title
