@@ -479,7 +479,9 @@ class SeriesUpdateAPIView(generics.UpdateAPIView):
     permission_classes = [permissions.IsAuthenticated]
     queryset = Series.objects.all()
     lookup_field = "pk"
-
+    
+    def perform_update(self, serializer):
+        serializer.save()
 
 class SeriesDeleteAPIView(generics.DestroyAPIView):
     """

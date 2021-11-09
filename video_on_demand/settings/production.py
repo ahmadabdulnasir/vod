@@ -13,6 +13,10 @@ ALLOWED_HOSTS += [
     "www.vod.edu.ng",
     "vod.dabolinux.com",
     "www.vod.dabolinuxcom",
+    "backend.arewacinema.com",
+    "www.backend.arewacinema.com",
+    "api.arewacinema.com",
+    "www.api.arewacinema.com",
     "vod.com.ng",
     "www.vod.com.ng",
 ]
