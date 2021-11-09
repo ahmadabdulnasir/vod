@@ -1,3 +1,4 @@
+from google.oauth2 import service_account
 from .base import *
 from .dbconf import POSTGRESDB, MANGODB
 
@@ -40,3 +41,14 @@ STATIC_URL = "/vodstatic/"
 STATICFILES_DIRS = (os.path.join(PROJECT_ROOT, "static"),)
 MEDIA_URL = "/vodmedia/"
 MEDIA_ROOT = os.path.join(PROJECT_ROOT, "media")
+
+
+# Google cloud for images
+DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+GS_PROJECT_ID = 'arewacinema'
+GS_BUCKET_NAME = 'arewacinema_bucket'
+GS_FILE_OVERWRITE = True
+GS_LOCATION = 'arewacinema/vod'
+GS_AUTH_FILE = os.path.join(PROJECT_ROOT, "arewacinema-65696f642f71.json")
+GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
+    GS_AUTH_FILE)
