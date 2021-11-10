@@ -25,7 +25,7 @@ urlpatterns = [
     path("movie/search/", MovieSearchAPIView.as_view()),
     path("movie/details/<pk>/", MovieDetailsAPIView.as_view()),
     path("movie/update/<pk>/", MovieUpdateAPIView.as_view()),
-    path("movie/delete/<pk>/", MovieUpdateAPIView.as_view()),
+    path("movie/delete/<pk>/", MovieDeleteAPIView.as_view()),
     # path("marchant/list/", MarchantListAPIView.as_view()),
     # path("branch/list/", BranchListAPIView.as_view()),
     path("series/create/", SeriesCreateAPIView.as_view()),
