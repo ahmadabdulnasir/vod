@@ -535,7 +535,25 @@ class PromotionListAPIView(generics.ListAPIView):
     """
     serializer_class = PromotionSerializer
     # permission_classes = [permissions.IsAuthenticated]
-    queryset = Promotion.objects.all()
+    # queryset = Promotion.objects.all()
+    def get_queryset(self, *args, **kwargs):
+        try:
+            qs = Promotion.objects.all()
+            active = self.request.GET.get("active")
+            location = self.request.GET.get("location")
+            status_code = status.HTTP_200_OK
+            if location and location in [ "main_home_slider", "home_slider", "breadcrumb_slider", "login_page" ]:
+                qs = qs.filter(location=location)
+            if active and active == "yes":
+                qs = qs.filter(active=True)
+            if active and active == "no":
+                qs = qs.filter(active=False)
+        except Exception as exp:
+            status_code = status.HTTP_417_EXPECTATION_FAILED
+            raise APIException(
+                detail=f"An API Exception Occured!!!, Error: {exp}", code=status_code
+            )
+        return qs
 
 
 class PromotionDetailsAPIView(generics.RetrieveAPIView):
