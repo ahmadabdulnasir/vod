@@ -28,6 +28,8 @@ from .serializers import (
     SeriesListSerializer,
     # SeriesSeasonSerializer,
     # SeasonEpisodeSerializer,
+    SeriesEpisodeDetailsSerializer,
+    SeriesEpisodeListSerializer,
     PromotionSerializer,
      
 )
@@ -501,6 +503,104 @@ class SeriesDeleteAPIView(generics.DestroyAPIView):
 
 ### ./Series
 
+
+### Series Episode
+
+
+class SeriesEpisodeCreateAPIView(generics.CreateAPIView):
+    """
+        Allow Authenticated User to Create a Series Episode
+    """
+    serializer_class = SeriesEpisodeDetailsSerializer
+
+    permission_classes = [permissions.IsAuthenticated, HasActiveCompany]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        # spam.save()
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        dta = {
+            "detail": "Series Episode Created Successfuly",
+            "data": serializer.data,
+        }
+        return Response(dta, status=status.HTTP_201_CREATED, headers=headers)
+
+    def perform_create(self, serializer):
+        return serializer.save(
+            uploaded_by=self.request.user.profile,
+            company=self.request.user.profile.company,
+        )
+
+
+class SeriesEpisodeListAPIView(generics.ListAPIView):
+    """
+        List all Series Episode
+    """
+    serializer_class = SeriesEpisodeListSerializer
+    # permission_classes = [permissions.IsAuthenticated]
+    queryset = SeriesEpisode.objects.all()
+
+    def get_queryset(self, *args, **kwargs):
+        try:
+            qs = SeriesEpisode.objects.all()
+            status_ = self.request.GET.get("status")
+            series = self.request.GET.get("series")
+            if status_:
+                qs = qs.filter(status=status_)
+            if series:
+                qs = qs.filter(series=series)
+            status_code = status.HTTP_200_OK
+        except Exception as exp:
+            status_code = status.HTTP_417_EXPECTATION_FAILED
+            raise APIException(
+                detail=f"An API Exception Occured!!!, Error: {exp}", code=status_code
+            )
+        return qs
+
+
+class SeriesEpisodeDetailsAPIView(generics.RetrieveAPIView):
+    """
+        Return Details of Series Episode
+    """
+    serializer_class = SeriesEpisodeDetailsSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = SeriesEpisode.objects.all()
+    lookup_field = "pk"
+
+
+class SeriesEpisodeUpdateAPIView(generics.UpdateAPIView):
+    """
+       Allow Updating Series Episode
+    """
+    serializer_class = SeriesEpisodeDetailsSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = SeriesEpisode.objects.all()
+    lookup_field = "pk"
+
+    def perform_update(self, serializer):
+        serializer.save()
+
+
+class SeriesEpisodeDeleteAPIView(generics.DestroyAPIView):
+    """
+        Allow Authenticated User to Delete a Series Episode
+    """
+    serializer_class = SeriesEpisodeDetailsSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = SeriesEpisode.objects.all()
+    lookup_field = "pk"
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        title = f"{instance}"
+        self.perform_destroy(instance)
+        dta = {"detail": f"Series Episode: {title} Delete Success"}
+        return Response(dta, status=status.HTTP_200_OK)
+
+### ./Series Episode
 ## ADS | Promotions
 
 

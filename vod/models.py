@@ -195,6 +195,9 @@ class SeriesEpisode(TimeStampedModel, VODModel):
         }
         return dta
 
+    def series_title(self):
+        return f"{self.series}"
+        
     def __str__(self):
         return self.title
 

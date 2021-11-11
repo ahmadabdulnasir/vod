@@ -206,13 +206,15 @@ class SeriesListSerializer(CustomeSerializer):
 #             "timestamp", 
 #             "updated",
 #             ]
-class SeasonEpisodeSerializer(CustomeSerializer):
+
+class SeriesEpisodeDetailsSerializer(CustomeSerializer):
 
     class Meta:
         model = SeriesEpisode
         fields = [
             "pk", 
             "series",
+            "series_title",
             "title",
             "uid",
             "thumb",
@@ -222,6 +224,25 @@ class SeasonEpisodeSerializer(CustomeSerializer):
             "timestamp", 
             "updated",
             ]
+
+
+class SeriesEpisodeListSerializer(CustomeSerializer):
+
+    class Meta:
+        model = SeriesEpisode
+        fields = [
+            "pk",
+            "series",
+            "series_title",
+            "title",
+            "uid",
+            "thumb",
+            "description",
+            "video",
+            "status",
+            "timestamp",
+            "updated",
+        ]
 
 
 class PromotionSerializer(CustomeSerializer):

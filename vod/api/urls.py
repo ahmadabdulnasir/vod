@@ -6,6 +6,7 @@ from .views import (
     MovieCreateAPIView, MovieDetailsAPIView, MovieListAPIView, 
     MovieSearchAPIView, MovieUpdateAPIView, MovieDeleteAPIView,
     SeriesCreateAPIView, SeriesListAPIView, SeriesDetailsAPIView, SeriesUpdateAPIView, SeriesDeleteAPIView, 
+    SeriesEpisodeCreateAPIView, SeriesEpisodeListAPIView, SeriesEpisodeDetailsAPIView, SeriesEpisodeUpdateAPIView, SeriesEpisodeDeleteAPIView,
     PromotionCreateAPIView, PromotionListAPIView, PromotionDetailsAPIView, PromotionUpdateAPIView, PromotionDeleteAPIView,
     )
 
@@ -34,11 +35,11 @@ urlpatterns = [
     path("series/update/<pk>/", SeriesUpdateAPIView.as_view()),
     path("series/delete/<pk>/", SeriesDeleteAPIView.as_view()),
     # 
-    path("series/episode/create/", SeriesCreateAPIView.as_view()),
-    path("series/episode/list/", SeriesListAPIView.as_view()),
-    path("series/episode/details/<pk>/", SeriesDetailsAPIView.as_view()),
-    path("series/episode/update/<pk>/", SeriesUpdateAPIView.as_view()),
-    path("series/episode/delete/<pk>/", SeriesDeleteAPIView.as_view()),
+    path("series/episode/create/", SeriesEpisodeCreateAPIView.as_view()),
+    path("series/episode/list/", SeriesEpisodeListAPIView.as_view()),
+    path("series/episode/details/<pk>/", SeriesEpisodeDetailsAPIView.as_view()),
+    path("series/episode/update/<pk>/", SeriesEpisodeUpdateAPIView.as_view()),
+    path("series/episode/delete/<pk>/", SeriesEpisodeDeleteAPIView.as_view()),
     # 
     path("promotion/create/", PromotionCreateAPIView.as_view()),
     path("promotion/list/", PromotionListAPIView.as_view()),
