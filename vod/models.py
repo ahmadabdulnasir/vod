@@ -159,9 +159,9 @@ class Series(TimeStampedModel, VODModel):
         return self.episodes.all().count()
 
     def get_episodes(self):
-        dta = {
+        dta = [
             episode.get_form_format() for episode in self.episodes.all().order_by("pk")
-        }
+        ]
         return dta
 
     def __str__(self):
