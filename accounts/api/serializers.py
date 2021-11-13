@@ -24,6 +24,7 @@ class UserProfileSerializer(CustomeSerializer):
             "gender",
             "phone_number",
             "get_email",
+            "user_groups",
             "active",
             "get_films_watched",
             "get_plan",
