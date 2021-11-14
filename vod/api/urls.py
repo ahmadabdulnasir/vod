@@ -8,6 +8,7 @@ from .views import (
     SeriesCreateAPIView, SeriesListAPIView, SeriesDetailsAPIView, SeriesUpdateAPIView, SeriesDeleteAPIView, 
     SeriesEpisodeCreateAPIView, SeriesEpisodeListAPIView, SeriesEpisodeDetailsAPIView, SeriesEpisodeUpdateAPIView, SeriesEpisodeDeleteAPIView,
     PromotionCreateAPIView, PromotionListAPIView, PromotionDetailsAPIView, PromotionUpdateAPIView, PromotionDeleteAPIView,
+    GeneralDashboard, MarchantDashboard,
     )
 
 urlpatterns = [
@@ -46,4 +47,7 @@ urlpatterns = [
     path("promotion/details/<pk>/", PromotionDetailsAPIView.as_view()),
     path("promotion/update/<pk>/", PromotionUpdateAPIView.as_view()),
     path("promotion/delete/<pk>/", PromotionDeleteAPIView.as_view()),
+    # 
+    path("dashboard/general/", GeneralDashboard.as_view()),
+    path("dashboard/marchant/", MarchantDashboard.as_view()),
 ]

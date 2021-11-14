@@ -1,4 +1,5 @@
 from django.contrib.auth import models
+from django.views.generic.base import View
 from core.location.models import LGA, State
 from accounts.models import  UserProfile, Marchant, Store
 from django.shortcuts import get_object_or_404
@@ -726,6 +727,60 @@ class PromotionDeleteAPIView(generics.DestroyAPIView):
         self.perform_destroy(instance)
         dta = {"detail": f"Promotion {title} Delete Success"}
         return Response(dta, status=status.HTTP_200_OK)
-
+## ./ADS | Promotions
 
 ## Dashboard
+
+
+class GeneralDashboard(APIView):
+    """
+        General Dashboard Statistics
+    """
+    permission_classes = [permissions.IsAuthenticated, HasActiveCompany]
+
+    def get(self, request, format="json"):
+        user = request.user
+        profile = user.profile
+        all_movies = Movie.objects.all()
+        all_series = Series.objects.all()
+        total_subscribers = -999
+        total_revenue = 644673.73
+        top_marchants = Marchant.objects.all().values_list("title", flat=True)
+        try:
+            dta = {
+                "total_movies": all_movies.count(),
+                "total_series": all_series.count(),
+                "subscribers": f"{total_subscribers:,.2f}",
+                "total_revenue": f"₦{total_revenue:,.2f}",
+                "top_marchants": top_marchants,
+            }
+            return Response(data=dta, status=status.HTTP_200_OK)
+        except Exception as exp:
+            raise ValidationError({"detail": f"{exp}"})
+
+
+class MarchantDashboard(APIView):
+    """
+        Marchant Dashboard Statistics
+    """
+    permission_classes = [permissions.IsAuthenticated, HasActiveCompany]
+
+    def get(self, request, format="json"):
+        user = request.user
+        profile = user.profile
+        company = profile.company
+        all_movies = Movie.objects.filter(company=company)
+        all_series = Series.objects.filter(company=company)
+        total_subscribers = -999
+        total_revenue = 644673.73
+        try:
+            dta = {
+                "total_movies": all_movies.count(),
+                "total_series": all_series.count(),
+                "subscribers": f"{total_subscribers:,.2f}",
+                "total_revenue": f"₦{total_revenue:,.2f}"
+            }
+            return Response(data=dta, status=status.HTTP_200_OK)
+        except Exception as exp:
+            raise ValidationError({"detail": f"{exp}"})
+## ./Dashboard
