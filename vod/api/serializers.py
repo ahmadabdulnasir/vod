@@ -46,8 +46,8 @@ class GenreSerializer(CustomeSerializer):
 
 
 class MovieDetailsSerializer(CustomeSerializer):
-    # genres = GenreSerializer(read_only=False, many=True)
-    genres = GenreSerializer(many=True)
+    genres = GenreSerializer(read_only=False, many=True)
+    # genres = GenreSerializer(many=True)
 
     def get_or_update_genres(self, genres):
             package_ids = []
