@@ -739,6 +739,22 @@ class GeneralDashboard(APIView):
     permission_classes = [permissions.IsAuthenticated, HasActiveCompany]
 
     def get(self, request, format="json"):
+        import random 
+        common_keys = [
+            "pk",
+            "title",
+            "uid",
+            # "thumb",
+            "get_thumb_url",
+            "description",
+            "get_genres",
+            # "category",
+            "category_title",
+            "status",
+            "access_level",
+            "timestamp",
+            "updated",
+        ]
         user = request.user
         profile = user.profile
         all_movies = Movie.objects.all()
@@ -746,6 +762,19 @@ class GeneralDashboard(APIView):
         total_subscribers = -999
         total_revenue = 644673.73
         top_marchants = Marchant.objects.all().values_list("title", flat=True)
+        top_rated_items_movies = list(all_movies[:2]) #.values(*common_keys)
+        top_rated_items_movies = list(all_series[:2]) #.values(*common_keys)
+        # .extend(all_series[:2])
+        top_rated_items = top_rated_items_movies + top_rated_items_movies
+        # print(all_movies[:2])
+        random.shuffle(top_rated_items)
+        top_rated_items_data = []
+        for item in top_rated_items:
+            spam = { c_k:getattr(item,c_k) for c_k in common_keys }
+            top_rated_items_data.append(spam)
+        # top_rated_items
+            
+        # print(top_rated_items_data)
         try:
             dta = {
                 "total_movies": all_movies.count(),
@@ -753,6 +782,7 @@ class GeneralDashboard(APIView):
                 "subscribers": f"{total_subscribers:,.2f}",
                 "total_revenue": f"₦{total_revenue:,.2f}",
                 "top_marchants": top_marchants,
+                "top_rated_items": top_rated_items_data,
             }
             return Response(data=dta, status=status.HTTP_200_OK)
         except Exception as exp:

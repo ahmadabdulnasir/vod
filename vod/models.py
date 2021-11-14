@@ -86,10 +86,17 @@ class Movie(TimeStampedModel, VODModel):
         verbose_name_plural = 'Movies'
         ordering = ["-timestamp", "title"]
 
+    @property
+    def get_thumb_url(self):
+        if self.thumb:
+            return self.thumb.url
+
+    @property
     def category_title(self):
         if self.category:
             return f"{self.category}"
 
+    @property
     def get_genres(self):
         dta = [g.title for g in self.genres.all()]
         return dta
@@ -147,10 +154,18 @@ class Series(TimeStampedModel, VODModel):
         verbose_name_plural = 'Series'
         ordering = ["-timestamp", "title"]
 
+    @property
+    def get_thumb_url(self):
+        if self.thumb:
+            return self.thumb.url
+        
+    @property
     def category_title(self):
         if self.category:
             return f"{self.category}"
+        
 
+    @property
     def get_genres(self):
         dta = [g.title for g in self.genres.all()]
         return dta

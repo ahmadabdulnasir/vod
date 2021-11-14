@@ -46,7 +46,7 @@ class GenreSerializer(CustomeSerializer):
 
 
 class MovieDetailsSerializer(CustomeSerializer):
-    genres = GenreSerializer(read_only=False, many=True)
+    # genres = GenreSerializer(read_only=False, many=True)
     # genres = GenreSerializer(many=True)
 
     def get_or_update_genres(self, genres):
@@ -117,7 +117,7 @@ class MovieListSerializer(CustomeSerializer):
             "category",
             "category_title",
             # "posters",
-            "video",
+            # "video",
             "status",
             "access_level",
             "timestamp",
