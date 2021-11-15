@@ -53,6 +53,6 @@ if settings.DEBUG:
 # to make sure we capture media files before wildcard (useful in dev env only)
 #urlpatterns += [path("", include(("core.urls", "core"), namespace="core"))]
 
-admin.site.site_header = "VOD"
-admin.site.index_title = "VOD Admin Interface"
-admin.site.site_title = "VOD"
+admin.site.site_header = "ArewaCinema"
+admin.site.index_title = "ArewaCinema Admin Interface"
+admin.site.site_title = "ArewaCinema"

@@ -118,6 +118,8 @@ PROMOTION_LOCATION_CHOICE = (
     ("home_slider", "Home Slider"),
     ("breadcrumb_slider", "Breadcrumb Slider"),
     ("login_page", "Login Page"),
+    ("movie_page", "Movie Page"),
+    ("series_page", "Series Page"),
 )
 
 def boot():

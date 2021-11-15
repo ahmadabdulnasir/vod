@@ -38,6 +38,7 @@ from .serializers import (
 
 from core.permissions.api_permissions import HasActiveCompany
 
+from core.api.pagination import CorePagination
 
 class CategoryCreateAPIView(generics.CreateAPIView):
     """
@@ -320,6 +321,7 @@ class MovieCreateAPIView(APIView):
 class MovieListAPIView(generics.ListAPIView):
     serializer_class = MovieListSerializer
     # permission_classes = [permissions.IsAuthenticated]
+    pagination_class = CorePagination
 
     def get_queryset(self, *args, **kwargs):
         try:
@@ -330,6 +332,7 @@ class MovieListAPIView(generics.ListAPIView):
             for_company = self.request.GET.get("for_company")
             access_level = self.request.GET.get("access_level")
             suggested = self.request.GET.get("suggested")
+            latest = self.request.GET.get("latest")
             if status_:
                 qs = qs.filter(status=status_)
             if for_user and for_user == 'yes' and user.is_authenticated:
@@ -341,6 +344,8 @@ class MovieListAPIView(generics.ListAPIView):
             if suggested and suggested == "yes":
                 pass
                 # qs = qs.filter(access_level=access_level)
+            if latest and latest == "yes":
+                qs = qs.order_by("-timestamp")
            
             status_code = status.HTTP_200_OK
         except Exception as exp:
@@ -354,6 +359,7 @@ class MovieListAPIView(generics.ListAPIView):
 class MovieSearchAPIView(generics.ListAPIView):
     serializer_class = MovieListSerializer
     # permission_classes = [permissions.IsAuthenticated]
+    pagination_class = CorePagination
 
     def get_queryset(self, *args, **kwargs):
         try:
@@ -464,7 +470,8 @@ class SeriesListAPIView(generics.ListAPIView):
     serializer_class = SeriesListSerializer
     # permission_classes = [permissions.IsAuthenticated]
     # queryset = Series.objects.all()
-
+    pagination_class = CorePagination
+    
     def get_queryset(self, *args, **kwargs):
         try:
             user = self.request.user
