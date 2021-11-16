@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 from django.utils.html import format_html
 from django.urls.exceptions import NoReverseMatch
 from django.db import models
+from rest_framework import status
 from core.abstract_models import TimeStampedModel, VODModel
 from core.utils.units import LongUniqueId, getUniqueId
 from core.choices import ACCESS_LEVEL_CHOICE, COMMENT_STATUS_CHOICE, POST_STATUS_CHOICE, PROMOTION_LOCATION_CHOICE, PROMOTION_TYPE_CHOICE
@@ -124,10 +125,20 @@ class Movie(TimeStampedModel, VODModel):
             "uid": self.uid,
             "thumb": self.get_thumb_url,
             # "category_title": self.category_title,
-            # "get_genres": self.get_genres,
+            "get_genres": self.get_genres,
             "status": self.status,
             "access_level": self.access_level,
         }
+        return dta
+
+    def get_related(self):
+        import random
+        """ Return Related Movies Based on the Current Movie"""
+        genres = self.genres.all()
+        related = list(Movie.objects.filter(status="published", genres__in=genres))
+        random.shuffle(related)
+        related = related[:10]
+        dta = [m.get_form_format() for m in related ]
         return dta
 
     def __str__(self):
@@ -214,6 +225,16 @@ class Series(TimeStampedModel, VODModel):
             "status": self.status,
             "access_level": self.access_level,
         }
+        return dta
+
+    def get_related(self):
+        import random
+        """ Return Related Movies Based on the Current Movie"""
+        genres = self.genres.all()
+        related = list(Series.objects.filter(status="published", genres__in=genres))
+        random.shuffle(related)
+        related = related[:10]
+        dta = [m.get_form_format() for m in related]
         return dta
 
     def __str__(self):

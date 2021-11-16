@@ -459,8 +459,6 @@ class UpdateAccountToMarchantAPIView(APIView):
                     "errors": error_list,
                 }
                 raise ValidationError(dta, code=status_code)
-        # profile = get_object_or_404(UserProfile, pk=profile_pk)
-        profile = request.user.profile
         # try:
         profile_serializer = UserProfileSerializer(profile, context={'request': request})
         if not profile.company:
@@ -473,6 +471,7 @@ class UpdateAccountToMarchantAPIView(APIView):
         marchant_data = profile.company
         marchant_data.plan = subscription_plan
         marchant_data.subscribtion_date = today.date()
+        marchant_data.save()
         profile.user_type = "marchant"
         profile.save()
         dta = {

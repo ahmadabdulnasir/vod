@@ -148,7 +148,7 @@ class CategoryHomePageAPIView(APIView):
 
     def get(self, request, format="json"):
         try:
-            active_categories = Category.objects.filter(status=True)
+            active_categories = Category.objects.filter(status=True).order_by("-updated")
             dta = [
                 cat.get_form_format() for cat in active_categories
             ]
