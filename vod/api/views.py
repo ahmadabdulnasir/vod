@@ -396,7 +396,7 @@ class MovieListAPIView(generics.ListAPIView):
                 qs = qs.filter(company=for_company)
             if access_level:
                 qs = qs.filter(access_level=access_level)
-            if suggested and suggested == "yes":
+            if suggested and suggested == "yes" and user.is_authenticated:
                 pass
                 # qs = qs.filter(access_level=access_level)
             if latest and latest == "yes":
@@ -538,6 +538,7 @@ class SeriesListAPIView(generics.ListAPIView):
             for_company = self.request.GET.get("for_company")
             access_level = self.request.GET.get("access_level")
             suggested = self.request.GET.get("suggested")
+            category = self.request.GET.get("category")
             if status_:
                 qs = qs.filter(status=status_)
             if for_user and for_user == 'yes' and user.is_authenticated:
@@ -546,10 +547,12 @@ class SeriesListAPIView(generics.ListAPIView):
                 qs = qs.filter(company=for_company)
             if access_level:
                 qs = qs.filter(access_level=access_level)
-            if suggested and suggested == "yes":
+            if suggested and suggested == "yes" and user.is_authenticated:
                 pass
                 # qs = qs.filter(access_level=access_level)
-
+            if category:
+                qs = qs.filter(category=category)
+                
             status_code = status.HTTP_200_OK
         except Exception as exp:
             status_code = status.HTTP_417_EXPECTATION_FAILED
