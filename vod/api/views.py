@@ -40,6 +40,23 @@ from core.permissions.api_permissions import HasActiveCompany
 
 from core.api.pagination import CorePagination
 
+
+common_movie_series_keys = [
+    "pk",
+    "title",
+    "uid",
+    # "thumb",
+    "get_thumb_url",
+    "description",
+    "get_genres",
+    # "category",
+    "category_title",
+    "status",
+    "access_level",
+    "timestamp",
+    "updated",
+]
+
 class CategoryCreateAPIView(generics.CreateAPIView):
     """
         Allow Authenticated User to Create a Category
@@ -71,6 +88,21 @@ class CategoryListAPIView(generics.ListAPIView):
     serializer_class = CategorySerializer
     # permission_classes = [permissions.IsAuthenticated]
     queryset = Category.objects.all()
+
+    def get_queryset(self, *args, **kwargs):
+        try:
+            user = self.request.user
+            qs = Category.objects.all()
+            status_ = self.request.GET.get("status")
+            if status_:
+                qs = qs.filter(status=status_)
+            status_code = status.HTTP_200_OK
+        except Exception as exp:
+            status_code = status.HTTP_417_EXPECTATION_FAILED
+            raise APIException(
+                detail=f"An API Exception Occured!!!, Error: {exp}", code=status_code
+            )
+        return qs
 
 class CategoryDetailsAPIView(generics.RetrieveAPIView):
     """
@@ -105,6 +137,28 @@ class CategoryDeleteAPIView(generics.DestroyAPIView):
         self.perform_destroy(instance)
         dta = {"detail": f"Category {title} Delete Success"}
         return Response(dta, status=status.HTTP_200_OK)
+
+
+class CategoryHomePageAPIView(APIView):
+    """
+       Return Category with series and movies list for Homepage
+    """
+    serializer_class = CategorySerializer
+    # permission_classes = [permissions.IsAuthenticated, HasActiveCompany]
+
+    def get(self, request, format="json"):
+        try:
+            active_categories = Category.objects.filter(status=True)
+            dta = [
+                cat.get_form_format() for cat in active_categories
+            ]
+            status_code = status.HTTP_200_OK
+            return Response(data=dta, status=status_code)
+        except Exception as exp:
+            status_code = status.HTTP_417_EXPECTATION_FAILED
+            raise APIException(
+                detail=f"An API Exception Occured!!!, Error: {exp}", code=status_code
+            )
 
 
 class GenreCreateAPIView(generics.CreateAPIView):
@@ -333,6 +387,7 @@ class MovieListAPIView(generics.ListAPIView):
             access_level = self.request.GET.get("access_level")
             suggested = self.request.GET.get("suggested")
             latest = self.request.GET.get("latest")
+            category = self.request.GET.get("category")
             if status_:
                 qs = qs.filter(status=status_)
             if for_user and for_user == 'yes' and user.is_authenticated:
@@ -346,6 +401,8 @@ class MovieListAPIView(generics.ListAPIView):
                 # qs = qs.filter(access_level=access_level)
             if latest and latest == "yes":
                 qs = qs.order_by("-timestamp")
+            if category:
+                qs = qs.filter(category=category)
            
             status_code = status.HTTP_200_OK
         except Exception as exp:
@@ -747,21 +804,7 @@ class GeneralDashboard(APIView):
 
     def get(self, request, format="json"):
         import random 
-        common_keys = [
-            "pk",
-            "title",
-            "uid",
-            # "thumb",
-            "get_thumb_url",
-            "description",
-            "get_genres",
-            # "category",
-            "category_title",
-            "status",
-            "access_level",
-            "timestamp",
-            "updated",
-        ]
+        
         user = request.user
         profile = user.profile
         all_movies = Movie.objects.all()
@@ -770,17 +813,16 @@ class GeneralDashboard(APIView):
         total_revenue = 644673.73
         top_marchants = Marchant.objects.all().values_list("title", flat=True)
         top_rated_items_movies = list(all_movies[:2]) #.values(*common_keys)
-        top_rated_items_movies = list(all_series[:2]) #.values(*common_keys)
+        top_rated_items_series = list(all_series[:2]) #.values(*common_keys)
         # .extend(all_series[:2])
-        top_rated_items = top_rated_items_movies + top_rated_items_movies
+        top_rated_items = top_rated_items_movies + top_rated_items_series
         # print(all_movies[:2])
         random.shuffle(top_rated_items)
         top_rated_items_data = []
         for item in top_rated_items:
-            spam = { c_k:getattr(item,c_k) for c_k in common_keys }
+            spam = { c_k:getattr(item,c_k) for c_k in common_movie_series_keys }
             top_rated_items_data.append(spam)
         # top_rated_items
-            
         # print(top_rated_items_data)
         try:
             dta = {

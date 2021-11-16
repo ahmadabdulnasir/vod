@@ -43,6 +43,18 @@ class Category(TimeStampedModel):
         self.title = f"{self.title}".title()
         super(Category, self).save(*args, **kwargs)
 
+    def get_form_format(self):
+        dta = {
+            "pk": self.pk,
+            "title": self.title,
+            "status": self.status,
+        }
+        cat_movies = self.movies.filter(status="published").order_by("-timestamp")[:4]
+        cat_series = self.series.filter(status="published").order_by("-timestamp")[:4]
+        dta["movies"] = [ m.get_form_format() for m in cat_movies ]
+        dta["series"] = [s.get_form_format() for s in cat_series ]
+        return dta
+
     def __str__(self) -> str:
         return f"{self.title}"
 
@@ -105,6 +117,19 @@ class Movie(TimeStampedModel, VODModel):
         dta = [g.get_form_format() for g in self.posters.all()]
         return dta
 
+    def get_form_format(self):
+        dta = {
+            "pk": self.pk,
+            "title": self.title,
+            "uid": self.uid,
+            "thumb": self.get_thumb_url,
+            # "category_title": self.category_title,
+            # "get_genres": self.get_genres,
+            "status": self.status,
+            "access_level": self.access_level,
+        }
+        return dta
+
     def __str__(self):
         return self.title
 
@@ -163,7 +188,6 @@ class Series(TimeStampedModel, VODModel):
     def category_title(self):
         if self.category:
             return f"{self.category}"
-        
 
     @property
     def get_genres(self):
@@ -179,9 +203,21 @@ class Series(TimeStampedModel, VODModel):
         ]
         return dta
 
+    def get_form_format(self):
+        dta = {
+            "pk": self.pk,
+            "title": self.title,
+            "uid": self.uid,
+            "thumb": self.get_thumb_url,
+            # "category_title": self.category_title,
+            # "get_genres": self.get_genres,
+            "status": self.status,
+            "access_level": self.access_level,
+        }
+        return dta
+
     def __str__(self):
         return self.title
-
 
 class SeriesEpisode(TimeStampedModel, VODModel):
     series = models.ForeignKey(Series, on_delete=models.CASCADE, related_name="episodes")
