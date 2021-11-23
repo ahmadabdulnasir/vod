@@ -135,7 +135,9 @@ class Movie(TimeStampedModel, VODModel):
         import random
         """ Return Related Movies Based on the Current Movie"""
         genres = self.genres.all()
-        related = list(Movie.objects.filter(status="published", genres__in=genres))
+        related = list(
+            Movie.objects.filter(status="published", genres__in=genres).exclude(pk=self.pk).distinct()
+            )
         random.shuffle(related)
         related = related[:10]
         dta = [m.get_form_format() for m in related ]
