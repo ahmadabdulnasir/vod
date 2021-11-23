@@ -134,10 +134,13 @@ class Movie(TimeStampedModel, VODModel):
     def get_related(self):
         import random
         """ Return Related Movies Based on the Current Movie"""
-        genres = self.genres.all()
-        related = list(
-            Movie.objects.filter(status="published", genres__in=genres).exclude(pk=self.pk).distinct()
-            )
+        related_by_genre = Movie.objects.filter(status="published", genres__in=self.genres.all())
+        related_by_category = Movie.objects.filter(status="published", category=self.category)
+        related_by_company = Movie.objects.filter(status="published", company=self.company)
+        related = related_by_genre | related_by_category # | related_by_company
+        related = related.exclude(pk=self.pk).distinct()
+        related = list(related)
+        random.shuffle(related)
         random.shuffle(related)
         related = related[:10]
         dta = [m.get_form_format() for m in related ]
@@ -232,8 +235,13 @@ class Series(TimeStampedModel, VODModel):
     def get_related(self):
         import random
         """ Return Related Movies Based on the Current Movie"""
-        genres = self.genres.all()
-        related = list(Series.objects.filter(status="published", genres__in=genres))
+
+        related_by_genre = Series.objects.filter(status="published", genres__in=self.genres.all())
+        related_by_category = Series.objects.filter(status="published", category=self.category)
+        related_by_company = Series.objects.filter(status="published", company=self.company)
+        related = related_by_genre | related_by_category # | related_by_company
+        related = related.exclude(pk=self.pk).distinct()
+        related = list(related)
         random.shuffle(related)
         related = related[:10]
         dta = [m.get_form_format() for m in related]
