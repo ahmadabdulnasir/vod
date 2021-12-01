@@ -838,12 +838,14 @@ class GeneralDashboard(APIView):
         profile = user.profile
         all_movies = Movie.objects.all()
         all_series = Series.objects.all()
-        total_subscribers = -999
+        total_subscribers_users = UserProfile.objects.filter(plan__isnull=False)
+        total_subscribers_marchant = UserProfile.objects.filter(plan__isnull=False)
+        total_subscribers = total_subscribers_users.count() + total_subscribers_marchant.count()
         total_revenue = 644673.73
+        # total_revenue = UserProfile.objects.filter(subscribtion_date__gt=today)
         top_marchants = Marchant.objects.all().values_list("title", flat=True)
         top_rated_items_movies = list(all_movies[:2]) #.values(*common_keys)
         top_rated_items_series = list(all_series[:2]) #.values(*common_keys)
-        # .extend(all_series[:2])
         top_rated_items = top_rated_items_movies + top_rated_items_series
         # print(all_movies[:2])
         random.shuffle(top_rated_items)
