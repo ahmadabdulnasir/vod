@@ -393,6 +393,8 @@ class MovieListAPIView(generics.ListAPIView):
             latest = self.request.GET.get("latest")
             category = self.request.GET.get("category")
             music_only = self.request.GET.get("music_only")
+            movies_only = self.request.GET.get("movies_only")
+            genre_pk = self.request.GET.get("genre")
             if status_:
                 qs = qs.filter(status=status_)
             if for_user and for_user == 'yes' and user.is_authenticated:
@@ -410,6 +412,10 @@ class MovieListAPIView(generics.ListAPIView):
                 qs = qs.filter(category=category)
             if music_only and music_only=="yes":
                 qs = qs.filter(category__title__icontains="music")
+            if movies_only and movies_only == "yes":
+                qs = qs.filter(category__title__icontains="movie")
+            if genre_pk:
+                qs = qs.filter(genres__in=[genre_pk])
             status_code = status.HTTP_200_OK
         except Exception as exp:
             status_code = status.HTTP_417_EXPECTATION_FAILED
@@ -544,12 +550,15 @@ class SeriesListAPIView(generics.ListAPIView):
             for_company = self.request.GET.get("for_company")
             access_level = self.request.GET.get("access_level")
             suggested = self.request.GET.get("suggested")
-            category = self.request.GET.get("category")
             latest = self.request.GET.get("latest")
+            category = self.request.GET.get("category")
+            music_only = self.request.GET.get("music_only")
+            movies_only = self.request.GET.get("movies_only")
+            genre_pk = self.request.GET.get("genre")
             if status_:
                 qs = qs.filter(status=status_)
             if for_user and for_user == 'yes' and user.is_authenticated:
-                qs = qs.filter(created_by=user.profile)
+                qs = qs.filter(uploaded_by=user.profile)
             if for_company:
                 qs = qs.filter(company=for_company)
             if access_level:
@@ -557,10 +566,16 @@ class SeriesListAPIView(generics.ListAPIView):
             if suggested and suggested == "yes" and user.is_authenticated:
                 pass
                 # qs = qs.filter(access_level=access_level)
-            if category:
-                qs = qs.filter(category=category)
             if latest and latest == "yes":
                 qs = qs.order_by("-timestamp")
+            if category:
+                qs = qs.filter(category=category)
+            if music_only and music_only=="yes":
+                qs = qs.filter(category__title__icontains="music")
+            if movies_only and movies_only == "yes":
+                qs = qs.filter(category__title__icontains="movie")
+            if genre_pk:
+                qs = qs.filter(genres__in=[genre_pk])
             status_code = status.HTTP_200_OK
         except Exception as exp:
             status_code = status.HTTP_417_EXPECTATION_FAILED
@@ -752,6 +767,7 @@ class PromotionListAPIView(generics.ListAPIView):
             qs = Promotion.objects.all()
             active = self.request.GET.get("active")
             location = self.request.GET.get("location")
+            type_ = self.request.GET.get("type")
             status_code = status.HTTP_200_OK
             if location and location in [ "main_home_slider", "home_slider", "breadcrumb_slider", "login_page" ]:
                 qs = qs.filter(location=location)
@@ -759,6 +775,8 @@ class PromotionListAPIView(generics.ListAPIView):
                 qs = qs.filter(active=True)
             if active and active == "no":
                 qs = qs.filter(active=False)
+            if type_:
+                qs = qs.filter(type=type_)
         except Exception as exp:
             status_code = status.HTTP_417_EXPECTATION_FAILED
             raise APIException(

@@ -141,7 +141,6 @@ class Movie(TimeStampedModel, VODModel):
         related = related.exclude(pk=self.pk).distinct()
         related = list(related)
         random.shuffle(related)
-        random.shuffle(related)
         related = related[:10]
         dta = [m.get_form_format() for m in related ]
         return dta
@@ -408,5 +407,11 @@ class Promotion(TimeStampedModel):
         self.full_clean()
         super(Promotion, self).save(*args, **kwargs)
 
+    def get_obj_access_level(self):
+        # check conditions
+        if self.content_type and self.object_id:
+            obj = self.content_type.get_object_for_this_type(pk=self.object_id)
+            return f"{obj.access_level}"
+    
     def __str__(self):
         return f"{self.type.title()} Promotion: {self.uid}"
