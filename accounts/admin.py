@@ -8,6 +8,7 @@ class UserProfileAdmin(admin.ModelAdmin):
                     "company", "profile_completed", "plan", "subscribtion_date", "active"]
     list_filter = ["active", "gender",  "user_type", "company", "state"]
     search_fields = ["user__username", "first_name", "last_name", "email"]
+    autocomplete_fields = ["user"]
 
 
 class BranchInline(admin.TabularInline):
