@@ -413,7 +413,8 @@ class MovieListAPIView(generics.ListAPIView):
             if music_only and music_only=="yes":
                 qs = qs.filter(category__title__icontains="music")
             if movies_only and movies_only == "yes":
-                qs = qs.filter(category__title__icontains="movie")
+                #qs = qs.filter(category__title__icontains="movie")
+                qs = qs.exclude(category__title__icontains="music")
             if genre_pk:
                 qs = qs.filter(genres__in=[genre_pk])
             status_code = status.HTTP_200_OK
