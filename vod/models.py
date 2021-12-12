@@ -100,6 +100,10 @@ class Movie(TimeStampedModel, VODModel):
         ordering = ["-timestamp", "title"]
 
     @property
+    def get_data_type(self):
+        return "movie"
+
+    @property
     def get_thumb_url(self):
         if self.thumb:
             return self.thumb.url
@@ -194,6 +198,10 @@ class Series(TimeStampedModel, VODModel):
         verbose_name_plural = 'Series'
         ordering = ["-timestamp", "title"]
 
+    @property
+    def get_data_type(self):
+        return "series"
+        
     @property
     def get_thumb_url(self):
         if self.thumb:

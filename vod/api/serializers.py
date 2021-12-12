@@ -97,6 +97,7 @@ class MovieDetailsSerializer(CustomeSerializer):
             "access_level",
             "get_related",
             # "uploaded_by",
+            "get_data_type",
             "timestamp", 
             "updated",
             ]
@@ -122,6 +123,7 @@ class MovieListSerializer(CustomeSerializer):
             # "video",
             "status",
             "access_level",
+            "get_data_type",
             "timestamp",
             "updated",
             ]
@@ -159,6 +161,7 @@ class SeriesDetailsSerializer(CustomeSerializer):
             "number_of_episodes",
             "get_episodes",
             "get_related",
+            "get_data_type",
             "timestamp",
             "updated",
         ]
@@ -180,6 +183,7 @@ class SeriesListSerializer(CustomeSerializer):
             "status",
             "access_level",
             "number_of_episodes",
+            "get_data_type",
             "timestamp", 
             "updated",
             ]
@@ -243,6 +247,30 @@ class SeriesEpisodeListSerializer(CustomeSerializer):
             "description",
             "video",
             "status",
+            "timestamp",
+            "updated",
+        ]
+
+
+class MovieSeriesListSerializer(CustomeSerializer):
+
+    class Meta:
+        model = Movie
+        fields = [
+            "pk",
+            "title",
+            "uid",
+            "thumb",
+            "description",
+            "genres",
+            "get_genres",
+            "category",
+            "category_title",
+            # "posters",
+            # "video",
+            "status",
+            "access_level",
+            "get_data_type",
             "timestamp",
             "updated",
         ]

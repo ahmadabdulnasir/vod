@@ -1,4 +1,3 @@
-from django.contrib.auth import models
 from django.views.generic.base import View
 from core.location.models import LGA, State
 from accounts.models import  UserProfile, Marchant, Store
@@ -53,6 +52,7 @@ common_movie_series_keys = [
     "category_title",
     "status",
     "access_level",
+    "get_data_type",
     "timestamp",
     "updated",
 ]
@@ -485,7 +485,6 @@ class MovieDeleteAPIView(generics.DestroyAPIView):
 
 ### Series
 
-
 class SeriesCreateAPIView(generics.CreateAPIView):
     """
         Allow Authenticated User to Create a Series
@@ -629,7 +628,6 @@ class SeriesDeleteAPIView(generics.DestroyAPIView):
 
 ### Series Episode
 
-
 class SeriesEpisodeCreateAPIView(generics.CreateAPIView):
     """
         Allow Authenticated User to Create a Series Episode
@@ -728,8 +726,59 @@ class SeriesEpisodeDeleteAPIView(generics.DestroyAPIView):
         return Response(dta, status=status.HTTP_200_OK)
 
 ### ./Series Episode
-## ADS | Promotions
+### Movie - Series Common
 
+class MoviesSeriesSearchAPIView(APIView):
+    """API to search Movies and Series and return Cmmbined Result
+
+    Args:
+        APIView (search_query): Search Query Term
+
+    Raises:
+        APIException: [description]
+
+    Returns:
+        [dict]: [Details of Search and Combined Movies and Series based on the Search Term list based on common keys between the two]
+    """
+    serializer_class = MovieListSerializer
+    # permission_classes = [permissions.IsAuthenticated]
+    pagination_class = CorePagination
+
+    def get(self, request, format="json"):
+        try:
+            movies_qs = Movie.objects.filter(status="published").order_by("-timestamp")
+            series_qs = Series.objects.filter(status="published").order_by("-timestamp")
+            search_query = self.request.GET.get("search_query")
+            movies_qs_combo = movies_qs.filter(
+                title__icontains=search_query) | movies_qs.filter(description__icontains=search_query
+                )
+            series_qs_combo = series_qs.filter(
+                title__icontains=search_query) | series_qs.filter(description__icontains=search_query
+                )
+            # print(series_qs_combo)
+            # complete_qs = movies_qs_combo | series_qs_combo
+            complete_qs = list(movies_qs_combo[:50]) + list(series_qs_combo[:50] )
+
+            egg = []
+            for item in complete_qs:
+                spam = {c_k: getattr(item, c_k) for c_k in common_movie_series_keys}
+                egg.append(spam)
+            status_code = status.HTTP_200_OK
+            dta = {
+                "detail": f"Search Result of: {search_query}",
+                "data": egg
+            }
+            return Response(dta, status=status_code)
+        except Exception as exp:
+            status_code = status.HTTP_417_EXPECTATION_FAILED
+            raise APIException(
+                detail=f"An API Exception Occured!!!, Error: {exp}", code=status_code
+            )
+
+
+### ./Movie - Series Common
+
+## ADS | Promotions
 
 class PromotionCreateAPIView(generics.CreateAPIView):
     """

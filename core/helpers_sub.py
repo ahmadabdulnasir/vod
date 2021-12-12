@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-__author__ = 'Ahmad Abdulnasir Shuaib <me@ahmadabdulnasir.com.ng>'
-__homepage__ = 'https://ahmadabdulnasir.com.ng'
-__copyright__ = 'Copyright (c) 2021, salafi'
+"""
+__author__ = 'Ahmad Abdulnasir Shu'aib <me@ahmadabdulnasir.com.ng>'
+__homepage__ = https://ahmadabdulnasir.com.ng
+__copyright__ = 'Copyright (c) 2019, salafi'
 __version__ = "0.01t"
-
-
+"""
 from uuid import uuid4
 from core.models import SiteInformation, Partner
-# from gallery.models import Image
+from gallery.models import Image
 
 
 # def siteLoginUrl():
@@ -152,20 +152,29 @@ def getSitePartners():
         return []
 
 
+PAYMENT_GATEWAY_KEYS = {
+    "paystack-public-key": "pk_test_56fb985ccde08b20dec70ea03feac02ccdb01036",
+    "paystack-secret-key": "pk_test_56fb985ccde08b20dec70ea03feac02ccdb01036",
+    "paystack-sub-account-id": "ACCT_sk1jwvj306i0xgc",
+    "flutterwave-public-key": "FLWPUBK_TEST-66a316473b102e02094930b48e9673ba-X",
+    "flutterwave-secret-key": "FLWSECK_TEST-86c7e7b7c26b02a6d7fcd620b4a0f99c-X",
+    "flutterwave-sub-account-id": "RS_180EFB5415DAC7FDE74C730D53A2B7EB",
+}
+
 def getPaymentKey(value):
     # value = value+' payment'
     try:
         info = SiteInformation.objects.get(slug=value)
         if not info:
             print("[DEBUG]: Payment Key Not Found, Using Test Key")
-            info = "pk_test_56fb985ccde08b20dec70ea03feac02ccdb01036"
+            info = f"{PAYMENT_GATEWAY_KEYS.get(value)}"
         else:
             info = info.info
             print("[DEBUG]: Payment Key Found", info)
-    except Exception as e:
+    except Exception as exp:
         print("[DEBUG]: Payment Key Not Found Exception, Using Test Key")
-        info = "pk_test_56fb985ccde08b20dec70ea03feac02ccdb01036"
-        print(e)
+        info = f"{PAYMENT_GATEWAY_KEYS.get(value)}"
+        print(exp)
     finally:
         return info
 
@@ -231,7 +240,7 @@ class DaboLinux:
          in primary and secondary schools in Nigeria. Since then it has grown with more 
          features that involve financial managment and tracking as well as easy data accessibility
          by users. The primary goal of building this software is to simplify the traditional methods
-         of storing, managing and processing data in all e-commerce shops.</p>
+         of storing, managing and processing data in all Academia.</p>
         <p>Everything you see here, from the documentation to the code itself,
         was created by the team of <a href="{self.website}" target="_blank">{self.short}</a>. who still maintain the softawre. 
         All issues and bugs concerning this software are to be submitted to 
