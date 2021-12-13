@@ -122,6 +122,13 @@ PROMOTION_LOCATION_CHOICE = (
     ("series_page", "Series Page"),
 )
 
+REVIEW_RATING_CHOICE = (
+    ("1", "1"),
+    ("2", "2"),
+    ("3", "3"),
+    ("4", "4"),
+    ("5", "5"),
+)
 def boot():
     pass
 

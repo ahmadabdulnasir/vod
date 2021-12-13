@@ -9,7 +9,7 @@ from django.db import models
 from rest_framework import status
 from core.abstract_models import TimeStampedModel, VODModel
 from core.utils.units import LongUniqueId, getUniqueId
-from core.choices import ACCESS_LEVEL_CHOICE, COMMENT_STATUS_CHOICE, POST_STATUS_CHOICE, PROMOTION_LOCATION_CHOICE, PROMOTION_TYPE_CHOICE
+from core.choices import ACCESS_LEVEL_CHOICE, COMMENT_STATUS_CHOICE, POST_STATUS_CHOICE, PROMOTION_LOCATION_CHOICE, PROMOTION_TYPE_CHOICE, REVIEW_RATING_CHOICE
 from django.utils.translation import ugettext_lazy as _
 from django.urls import reverse
 from django.utils import timezone
@@ -349,6 +349,7 @@ class Review(TimeStampedModel):
     object_repr = models.CharField(max_length=255, verbose_name=_("object representation"), blank=True, null=True)
     author = models.ForeignKey("accounts.UserProfile", on_delete=models.CASCADE, related_name="reviews")
     body = models.TextField(max_length=255)
+    rate = models.CharField(max_length=1, choices=REVIEW_RATING_CHOICE, help_text="Rating Stars")
     status = models.CharField(max_length=25, choices=COMMENT_STATUS_CHOICE)
 
     class Meta:

@@ -310,6 +310,7 @@ class ReviewModelSerializer(CustomeSerializer):
             "get_data_type",
             "author",
             "body",
+            "rate",
             "status",
             "timestamp",
             "updated",

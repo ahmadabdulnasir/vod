@@ -788,7 +788,7 @@ class MoviesSeriesSearchAPIView(APIView):
             )
 
 
-class MoviesSeriesAddCommentAPIView(APIView):
+class CommentCreateAPIView(APIView):
     """API to add Comment to Movies and Series
     """
     permission_classes = [permissions.IsAuthenticated]
@@ -911,7 +911,7 @@ class CommentDeleteAPIView(generics.DestroyAPIView):
         return Response(dta, status=status.HTTP_200_OK)
 
 
-class MoviesSeriesAddReviewAPIView(APIView):
+class ReviewCreateAPIView(APIView):
     """API to add Review to Movies and Series
     """
     permission_classes = [permissions.IsAuthenticated]
@@ -920,12 +920,14 @@ class MoviesSeriesAddReviewAPIView(APIView):
         content_pk = self.request.POST.get("content_pk")
         target_content = self.request.POST.get("target_content")
         review = self.request.POST.get("review")
+        rate = self.request.POST.get("rate")
         user = request.user
         error_list = []
         required_info = {
             "content_pk": content_pk,
             "target_content": target_content,
             "review": review,
+            "rate": rate,
             # "uploaded_by": request.user.profile,
         }
         for entry in required_info.keys():
@@ -955,6 +957,7 @@ class MoviesSeriesAddReviewAPIView(APIView):
                 object_id=content_pk,
                 author=user.profile,
                 body=review,
+                rate=rate,
                 status="review"
             )
             comment.save()
