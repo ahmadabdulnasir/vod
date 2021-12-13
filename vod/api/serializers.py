@@ -8,6 +8,7 @@ from vod.models import (
     # SeriesSeason,
     # SeasonEpisode, 
     SeriesEpisode,
+    Comment,
     Promotion
 )
 from django.contrib.auth import get_user_model
@@ -271,6 +272,24 @@ class MovieSeriesListSerializer(CustomeSerializer):
             "status",
             "access_level",
             "get_data_type",
+            "timestamp",
+            "updated",
+        ]
+
+
+class CommentModelSerializer(CustomeSerializer):
+
+    class Meta:
+        model = Comment
+        fields = [
+            "pk",
+            "content_type",
+            "object_id",
+            "content_object",
+            "object_repr",
+            "author",
+            "body",
+            "status",
             "timestamp",
             "updated",
         ]

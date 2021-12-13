@@ -1,3 +1,4 @@
+from django.contrib.contenttypes.models import ContentType
 from django.views.generic.base import View
 from core.location.models import LGA, State
 from accounts.models import  UserProfile, Marchant, Store
@@ -10,6 +11,7 @@ from django.contrib.auth.models import Group
 
 from vod.models import (
     Category,
+    Comment,
     Genre,
     Movie,
     MoviePoster,
@@ -20,6 +22,7 @@ from vod.models import (
 
 from .serializers import (
     CategorySerializer,
+    CommentModelSerializer,
     GenreSerializer,
     MovieDetailsSerializer,
     MovieListSerializer,
@@ -56,6 +59,13 @@ common_movie_series_keys = [
     "timestamp",
     "updated",
 ]
+
+TARGET_CONTENT_TYPES = {
+    "movie": Movie, 
+    "series": Series,
+    "episode": SeriesEpisode,
+}
+
 
 class CategoryCreateAPIView(generics.CreateAPIView):
     """
@@ -729,7 +739,7 @@ class SeriesEpisodeDeleteAPIView(generics.DestroyAPIView):
 ### Movie - Series Common
 
 class MoviesSeriesSearchAPIView(APIView):
-    """API to search Movies and Series and return Cmmbined Result
+    """API to search Movies and Series and return Combined Result
 
     Args:
         APIView (search_query): Search Query Term
@@ -775,6 +785,66 @@ class MoviesSeriesSearchAPIView(APIView):
                 detail=f"An API Exception Occured!!!, Error: {exp}", code=status_code
             )
 
+
+class MoviesSeriesAddCommentAPIView(APIView):
+    """API to add Comment to Movies and Series
+    """
+    serializer_class = MovieListSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    pagination_class = CorePagination
+
+    def post(self, request, format="json"):
+        content_pk = self.request.POST.get("content_pk")
+        target_content = self.request.POST.get("target_content")
+        comment = self.request.POST.get("comment")
+        user = request.user
+        error_list = []
+        required_info = {
+            "content_pk": content_pk,
+            "target_content": target_content,
+            "comment": comment,
+            # "uploaded_by": request.user.profile,
+        }
+        for entry in required_info.keys():
+            if not required_info.get(entry):
+                error_list.append(f"Invalid Entry of: {entry}")
+        if error_list:
+            dta = {
+                "detail": "Fail to Add Comment, None or Partial Data Received.",
+                "errors": error_list,
+            }
+            status_code = 406
+            raise ValidationError(dta, code=status_code)
+        if target_content not in ["movie", "series", "seriesepisode"]:
+            dta = {
+                "detail": "Invalid Target Content Type",
+            }
+            status_code = 406
+            raise ValidationError(dta, code=status_code)
+
+        try:
+            # content_type_target = TARGET_CONTENT_TYPES.get(target_content)
+            content_type = ContentType.objects.get(app_label='vod', model='target_content')
+            comment = Comment(
+                content_type=content_type,
+                object_id=content_pk,
+                author=user.profile,
+                body=comment,
+                status="review"
+            )
+            comment.save()
+            comment_serializer = CommentModelSerializer(instance=comment, context={'request': request})
+            status_code = status.HTTP_200_OK
+            dta = {
+                "detail": f"Comment Added Successfully",
+                "data": comment_serializer.data
+            }
+            return Response(dta, status=status_code)
+        except Exception as exp:
+            status_code = status.HTTP_417_EXPECTATION_FAILED
+            raise APIException(
+                detail=f"An API Exception Occured!!!, Error: {exp}", code=status_code
+            )
 
 ### ./Movie - Series Common
 

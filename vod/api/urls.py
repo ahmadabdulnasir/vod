@@ -7,7 +7,7 @@ from .views import (
     MovieSearchAPIView, MovieUpdateAPIView, MovieDeleteAPIView,
     SeriesCreateAPIView, SeriesListAPIView, SeriesDetailsAPIView, SeriesUpdateAPIView, SeriesDeleteAPIView, 
     SeriesEpisodeCreateAPIView, SeriesEpisodeListAPIView, SeriesEpisodeDetailsAPIView, SeriesEpisodeUpdateAPIView, SeriesEpisodeDeleteAPIView,
-    MoviesSeriesSearchAPIView,
+    MoviesSeriesSearchAPIView, MoviesSeriesAddCommentAPIView,
     PromotionCreateAPIView, PromotionListAPIView, PromotionDetailsAPIView, PromotionUpdateAPIView, PromotionDeleteAPIView,
     GeneralDashboard, MarchantDashboard,
     )
@@ -45,6 +45,7 @@ urlpatterns = [
     path("series/episode/delete/<pk>/", SeriesEpisodeDeleteAPIView.as_view()),
     # 
     path("movies-series/search/", MoviesSeriesSearchAPIView.as_view()),
+    path("comment/create/", MoviesSeriesAddCommentAPIView.as_view()),
     # 
     path("promotion/create/", PromotionCreateAPIView.as_view()),
     path("promotion/list/", PromotionListAPIView.as_view()),

@@ -7,8 +7,13 @@ __copyright__ = 'Copyright (c) 2019, salafi'
 __version__ = "0.01t"
 """
 from uuid import uuid4
+
 from core.models import SiteInformation, Partner
-from gallery.models import Image
+try:
+    from gallery.models import Image
+except ImportError as exp:
+    print(exp)
+    pass
 
 
 # def siteLoginUrl():

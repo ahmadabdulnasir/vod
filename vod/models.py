@@ -292,18 +292,11 @@ class SeriesEpisode(TimeStampedModel, VODModel):
 
 # Comments and Reviews
 class Comment(TimeStampedModel):
-    content_type = models.ForeignKey(
-        to="contenttypes.ContentType",
-        on_delete=models.CASCADE,
-        related_name="+",
-        verbose_name=_("content type"),
-    )
-    object_pk = models.BigIntegerField(
-        db_index=True, verbose_name=_("object pk")
-    )
-    object_id = models.BigIntegerField(
-        blank=True, db_index=True, null=True, verbose_name=_("object id")
-    )
+    limit = models.Q(app_label='vod', model='movie') | models.Q(app_label='vod', model='series') | models.Q(app_label='vod', model='seriesepisode')
+    content_type = models.ForeignKey(ContentType, limit_choices_to=limit,
+                                    blank=True, null=True, on_delete=models.CASCADE)
+    object_id = models.BigIntegerField(verbose_name=_("PK of Movie, Serie or Series Episode"), blank=True, null=True,)
+    content_object = GenericForeignKey('content_type', 'object_id')
     object_repr = models.CharField(max_length=255, verbose_name=_("object representation"), blank=True, null=True)
     author = models.ForeignKey("accounts.UserProfile", on_delete=models.CASCADE, related_name="comments")
     body = models.TextField(max_length=255)
@@ -319,7 +312,8 @@ class Comment(TimeStampedModel):
         app_label, model = self.content_type.app_label, self.content_type.model
         viewname = "admin:%s_%s_change" % (app_label, model)
         try:
-            args = [self.object_pk] if self.object_id is None else [self.object_id]
+            # args = [self.object_pk] if self.object_id is None else [self.object_id]
+            args = self.object_id
             link = urlresolvers.reverse(viewname, args=args)
         except NoReverseMatch:
             return self.object_repr

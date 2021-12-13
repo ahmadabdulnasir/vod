@@ -143,7 +143,8 @@ class SeriesEpisodeAdmin(admin.ModelAdmin):
 class CommentAdmin(admin.ModelAdmin):
     readonly_fields = [
         "author", "body",
-        "content_type", "object_pk", 
+        "content_type", 
+        # "object_pk", 
         "object_id", "object_repr",
     ]
     list_display = ["author", "resource_url", "status", "timestamp", "updated"]
