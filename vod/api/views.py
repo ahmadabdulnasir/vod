@@ -15,6 +15,7 @@ from vod.models import (
     Genre,
     Movie,
     MoviePoster,
+    Review,
     Series,
     SeriesEpisode,
     Promotion
@@ -27,6 +28,7 @@ from .serializers import (
     MovieDetailsSerializer,
     MovieListSerializer,
     MoviePosterSerializer,
+    ReviewModelSerializer,
     SeriesDetailsSerializer,
     SeriesListSerializer,
     # SeriesSeasonSerializer,
@@ -789,9 +791,7 @@ class MoviesSeriesSearchAPIView(APIView):
 class MoviesSeriesAddCommentAPIView(APIView):
     """API to add Comment to Movies and Series
     """
-    serializer_class = MovieListSerializer
     permission_classes = [permissions.IsAuthenticated]
-    pagination_class = CorePagination
 
     def post(self, request, format="json"):
         content_pk = self.request.POST.get("content_pk")
@@ -824,7 +824,9 @@ class MoviesSeriesAddCommentAPIView(APIView):
 
         try:
             # content_type_target = TARGET_CONTENT_TYPES.get(target_content)
-            content_type = ContentType.objects.get(app_label='vod', model='target_content')
+            # print(target_content)
+            content_type = ContentType.objects.get(app_label='vod', model=target_content)
+            # print(content_type)
             comment = Comment(
                 content_type=content_type,
                 object_id=content_pk,
@@ -845,6 +847,193 @@ class MoviesSeriesAddCommentAPIView(APIView):
             raise APIException(
                 detail=f"An API Exception Occured!!!, Error: {exp}", code=status_code
             )
+
+
+class CommentListAPIView(generics.ListAPIView):
+    """
+        List all Comments based on Query Params
+    """
+    serializer_class = CommentModelSerializer
+    # permission_classes = [permissions.IsAuthenticated]
+    pagination_class = CorePagination
+
+    def get_queryset(self, *args, **kwargs):
+        try:
+            user = self.request.user
+            qs = Comment.objects.all()
+            status_ = self.request.GET.get("status")
+            for_user = self.request.GET.get("for_user")
+            content_pk = self.request.GET.get("content_pk")
+            target_content = self.request.GET.get("target_content")
+            if status_:
+                qs = qs.filter(status=status_)
+            if for_user and for_user == 'yes' and user.is_authenticated:
+                qs = qs.filter(author=user.profile)
+            if content_pk and target_content and target_content in ["movie", "series", "seriesepisode"]:
+                target_content_type = ContentType.objects.get(app_label='vod', model=target_content)
+                qs = qs.filter(content_type=target_content_type, object_id=target_content)
+            status_code = status.HTTP_200_OK
+        except Exception as exp:
+            status_code = status.HTTP_417_EXPECTATION_FAILED
+            raise APIException(
+                detail=f"An API Exception Occured!!!, Error: {exp}", code=status_code
+            )
+        return qs
+
+
+class CommentUpdateAPIView(generics.UpdateAPIView):
+    """
+       Allow Updating Comment
+    """
+    serializer_class = CommentModelSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Comment.objects.all()
+    lookup_field = "pk"
+
+    def perform_update(self, serializer):
+        serializer.save()
+
+
+class CommentDeleteAPIView(generics.DestroyAPIView):
+    """
+        Allow Authenticated User to Delete a Comment
+    """
+    serializer_class = CommentModelSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Comment.objects.all()
+    lookup_field = "pk"
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        title = f"{instance}"
+        self.perform_destroy(instance)
+        dta = {"detail": f"Comment: {title} Delete Success"}
+        return Response(dta, status=status.HTTP_200_OK)
+
+
+class MoviesSeriesAddReviewAPIView(APIView):
+    """API to add Review to Movies and Series
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, format="json"):
+        content_pk = self.request.POST.get("content_pk")
+        target_content = self.request.POST.get("target_content")
+        review = self.request.POST.get("review")
+        user = request.user
+        error_list = []
+        required_info = {
+            "content_pk": content_pk,
+            "target_content": target_content,
+            "review": review,
+            # "uploaded_by": request.user.profile,
+        }
+        for entry in required_info.keys():
+            if not required_info.get(entry):
+                error_list.append(f"Invalid Entry of: {entry}")
+        if error_list:
+            dta = {
+                "detail": "Fail to Add Review, None or Partial Data Received.",
+                "errors": error_list,
+            }
+            status_code = 406
+            raise ValidationError(dta, code=status_code)
+        if target_content not in ["movie", "series", "seriesepisode"]:
+            dta = {
+                "detail": "Invalid Target Content Type",
+            }
+            status_code = 406
+            raise ValidationError(dta, code=status_code)
+
+        try:
+            # content_type_target = TARGET_CONTENT_TYPES.get(target_content)
+            # print(target_content)
+            content_type = ContentType.objects.get(app_label='vod', model=target_content)
+            # print(content_type)
+            comment = Review(
+                content_type=content_type,
+                object_id=content_pk,
+                author=user.profile,
+                body=review,
+                status="review"
+            )
+            comment.save()
+            comment_serializer = ReviewModelSerializer(instance=comment, context={'request': request})
+            status_code = status.HTTP_200_OK
+            dta = {
+                "detail": f"Review Added Successfully",
+                "data": comment_serializer.data
+            }
+            return Response(dta, status=status_code)
+        except Exception as exp:
+            status_code = status.HTTP_417_EXPECTATION_FAILED
+            raise APIException(
+                detail=f"An API Exception Occured!!!, Error: {exp}", code=status_code
+            )
+
+
+class ReviewListAPIView(generics.ListAPIView):
+    """
+        List all Reviews based on Query Params
+    """
+    serializer_class = ReviewModelSerializer
+    # permission_classes = [permissions.IsAuthenticated]
+    pagination_class = CorePagination
+
+    def get_queryset(self, *args, **kwargs):
+        try:
+            user = self.request.user
+            qs = Review.objects.all()
+            status_ = self.request.GET.get("status")
+            for_user = self.request.GET.get("for_user")
+            content_pk = self.request.GET.get("content_pk")
+            target_content = self.request.GET.get("target_content")
+            if status_:
+                qs = qs.filter(status=status_)
+            if for_user and for_user == 'yes' and user.is_authenticated:
+                qs = qs.filter(author=user.profile)
+            if content_pk and target_content and target_content in ["movie", "series", "seriesepisode"]:
+                target_content_type = ContentType.objects.get(app_label='vod', model=target_content)
+                qs = qs.filter(content_type=target_content_type, object_id=target_content)
+            status_code = status.HTTP_200_OK
+        except Exception as exp:
+            status_code = status.HTTP_417_EXPECTATION_FAILED
+            raise APIException(
+                detail=f"An API Exception Occured!!!, Error: {exp}", code=status_code
+            )
+        return qs
+
+
+class ReviewUpdateAPIView(generics.UpdateAPIView):
+    """
+       Allow Updating Review
+    """
+    serializer_class = ReviewModelSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Review.objects.all()
+    lookup_field = "pk"
+
+    def perform_update(self, serializer):
+        serializer.save()
+
+
+class ReviewDeleteAPIView(generics.DestroyAPIView):
+    """
+        Allow Authenticated User to Delete a Review
+    """
+    serializer_class = ReviewModelSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Review.objects.all()
+    lookup_field = "pk"
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        title = f"{instance}"
+        self.perform_destroy(instance)
+        dta = {"detail": f"Review: {title} Delete Success"}
+        return Response(dta, status=status.HTTP_200_OK)
+
+
 
 ### ./Movie - Series Common
 

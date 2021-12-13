@@ -275,6 +275,10 @@ class SeriesEpisode(TimeStampedModel, VODModel):
         verbose_name_plural = 'Series Episodes'
         ordering = ["-timestamp", "title"]
 
+    @property
+    def get_data_type(self):
+        return "series episode"
+
     def get_form_format(self):
         dta = {
             "pk": self.pk,
@@ -308,40 +312,40 @@ class Comment(TimeStampedModel):
         verbose_name_plural = 'Comments'
         ordering = ["-updated"]
 
-    def resource_url(self):
-        app_label, model = self.content_type.app_label, self.content_type.model
-        viewname = "admin:%s_%s_change" % (app_label, model)
-        try:
-            # args = [self.object_pk] if self.object_id is None else [self.object_id]
-            args = self.object_id
-            link = urlresolvers.reverse(viewname, args=args)
-        except NoReverseMatch:
-            return self.object_repr
-        else:
-            return format_html('<a href="{}">{}</a>', link, self.object_repr)
-
     def save(self, *args, **kwargs):
         ct = ContentType.objects.get_for_id(self.content_type.pk)
         obj = ct.get_object_for_this_type(pk=self.object_id)
         self.object_repr = f"{obj}"
         super(Comment, self).save(*args, **kwargs)
 
+    def get_data_type(self):
+        ct = ContentType.objects.get_for_id(self.content_type.pk)
+        obj = ct.get_object_for_this_type(pk=self.object_id)
+        return obj.get_data_type
+
+    def resource_url(self):
+        app_label, model = self.content_type.app_label, self.content_type.model
+        viewname = "admin:%s_%s_change" % (app_label, model)
+        try:
+            # args = [self.object_pk] if self.object_id is None else [self.object_id]
+            args = [self.object_id]
+            link = urlresolvers.reverse(viewname, args=args)
+        except NoReverseMatch:
+            return self.object_repr
+        else:
+            return format_html('<a href="{}">{}</a>', link, self.object_repr)
+    
+
     def __str__(self):
         return f"{self.author} Comment on: {self.object_repr}"
 
 class Review(TimeStampedModel):
-    content_type = models.ForeignKey(
-        to="contenttypes.ContentType",
-        on_delete=models.CASCADE,
-        related_name="+",
-        verbose_name=_("content type"),
-    )
-    object_pk = models.BigIntegerField(
-        db_index=True, verbose_name=_("object pk")
-    )
-    object_id = models.BigIntegerField(
-        blank=True, db_index=True, null=True, verbose_name=_("object id")
-    )
+    limit = models.Q(app_label='vod', model='movie') | models.Q(
+        app_label='vod', model='series') | models.Q(app_label='vod', model='seriesepisode')
+    content_type = models.ForeignKey(ContentType, limit_choices_to=limit,
+                                     blank=True, null=True, on_delete=models.CASCADE)
+    object_id = models.BigIntegerField(verbose_name=_("PK of Movie, Serie or Series Episode"), blank=True, null=True,)
+    content_object = GenericForeignKey('content_type', 'object_id')
     object_repr = models.CharField(max_length=255, verbose_name=_("object representation"), blank=True, null=True)
     author = models.ForeignKey("accounts.UserProfile", on_delete=models.CASCADE, related_name="reviews")
     body = models.TextField(max_length=255)
@@ -352,22 +356,28 @@ class Review(TimeStampedModel):
         verbose_name_plural = 'Reviews'
         ordering = ["-updated"]
 
+    def save(self, *args, **kwargs):
+        ct = ContentType.objects.get_for_id(self.content_type.pk)
+        obj = ct.get_object_for_this_type(pk=self.object_id)
+        self.object_repr = f"{obj}"
+        super(Review, self).save(*args, **kwargs)
+
+    def get_data_type(self):
+        ct = ContentType.objects.get_for_id(self.content_type.pk)
+        obj = ct.get_object_for_this_type(pk=self.object_id)
+        return obj.get_data_type
+
     def resource_url(self):
         app_label, model = self.content_type.app_label, self.content_type.model
         viewname = "admin:%s_%s_change" % (app_label, model)
         try:
-            args = [self.object_pk] if self.object_id is None else [self.object_id]
+            args = [self.object_id]
             link = urlresolvers.reverse(viewname, args=args)
         except NoReverseMatch:
             return self.object_repr
         else:
             return format_html('<a href="{}">{}</a>', link, self.object_repr)
 
-    def save(self, *args, **kwargs):
-        ct = ContentType.objects.get_for_id(self.content_type.pk)
-        obj = ct.get_object_for_this_type(pk=self.object_id)
-        self.object_repr = f"{obj}"
-        super(Review, self).save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.author} Review on: {self.object_repr}"

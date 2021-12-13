@@ -7,7 +7,8 @@ from .views import (
     MovieSearchAPIView, MovieUpdateAPIView, MovieDeleteAPIView,
     SeriesCreateAPIView, SeriesListAPIView, SeriesDetailsAPIView, SeriesUpdateAPIView, SeriesDeleteAPIView, 
     SeriesEpisodeCreateAPIView, SeriesEpisodeListAPIView, SeriesEpisodeDetailsAPIView, SeriesEpisodeUpdateAPIView, SeriesEpisodeDeleteAPIView,
-    MoviesSeriesSearchAPIView, MoviesSeriesAddCommentAPIView,
+    MoviesSeriesSearchAPIView, MoviesSeriesAddCommentAPIView, CommentListAPIView, CommentUpdateAPIView, CommentDeleteAPIView,
+    MoviesSeriesAddReviewAPIView, ReviewListAPIView, ReviewUpdateAPIView, ReviewDeleteAPIView,
     PromotionCreateAPIView, PromotionListAPIView, PromotionDetailsAPIView, PromotionUpdateAPIView, PromotionDeleteAPIView,
     GeneralDashboard, MarchantDashboard,
     )
@@ -46,6 +47,13 @@ urlpatterns = [
     # 
     path("movies-series/search/", MoviesSeriesSearchAPIView.as_view()),
     path("comment/create/", MoviesSeriesAddCommentAPIView.as_view()),
+    path("comment/list/", CommentListAPIView.as_view()),
+    path("comment/update/<pk>/", CommentUpdateAPIView.as_view()),
+    path("comment/delete/<pk>/", CommentDeleteAPIView.as_view()),
+    path("review/create/", MoviesSeriesAddReviewAPIView.as_view()),
+    path("review/list/", ReviewListAPIView.as_view()),
+    path("review/update/<pk>/", ReviewUpdateAPIView.as_view()),
+    path("review/delete/<pk>/", ReviewDeleteAPIView.as_view()),
     # 
     path("promotion/create/", PromotionCreateAPIView.as_view()),
     path("promotion/list/", PromotionListAPIView.as_view()),

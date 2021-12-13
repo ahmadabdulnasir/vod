@@ -4,6 +4,7 @@ from vod.models import (
     Genre, 
     Movie,
     MoviePoster,
+    Review,
     Series, 
     # SeriesSeason,
     # SeasonEpisode, 
@@ -285,8 +286,28 @@ class CommentModelSerializer(CustomeSerializer):
             "pk",
             "content_type",
             "object_id",
-            "content_object",
+            # "content_object",
             "object_repr",
+            "get_data_type",
+            "author",
+            "body",
+            "status",
+            "timestamp",
+            "updated",
+        ]
+
+
+class ReviewModelSerializer(CustomeSerializer):
+
+    class Meta:
+        model = Review
+        fields = [
+            "pk",
+            "content_type",
+            "object_id",
+            # "content_object",
+            "object_repr",
+            "get_data_type",
             "author",
             "body",
             "status",
