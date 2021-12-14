@@ -570,7 +570,9 @@ class SeriesListAPIView(generics.ListAPIView):
             if status_:
                 qs = qs.filter(status=status_)
             if for_user and for_user == 'yes' and user.is_authenticated:
+                print("for user checked")
                 qs = qs.filter(uploaded_by=user.profile)
+                print(qs)
             if for_company:
                 qs = qs.filter(company=for_company)
             if access_level:
