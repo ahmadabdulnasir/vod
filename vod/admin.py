@@ -66,8 +66,14 @@ class MoviePosterAdmin(admin.ModelAdmin):
     list_filter = ('timestamp', 'updated', 'company',)
 
 
+class SeriesEpisodeInline(admin.StackedInline):
+    model = SeriesEpisode
+    extra = 0
+    readonly_fields = ("uid",)
+
 @admin.register(Series)
 class SeriesAdmin(admin.ModelAdmin):
+    inlines = (SeriesEpisodeInline,)
     list_display = (
         'title',
         # 'uid',
