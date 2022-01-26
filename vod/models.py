@@ -257,6 +257,7 @@ class Series(TimeStampedModel, VODModel):
     def __str__(self):
         return self.title
 
+
 class SeriesEpisode(TimeStampedModel, VODModel):
     series = models.ForeignKey(Series, on_delete=models.CASCADE, related_name="episodes")
     title = models.CharField(max_length=250)
@@ -335,6 +336,8 @@ class Comment(TimeStampedModel):
         else:
             return format_html('<a href="{}">{}</a>', link, self.object_repr)
     
+    def author_title(self):
+        return f"{self.author}"
 
     def __str__(self):
         return f"{self.author} Comment on: {self.object_repr}"

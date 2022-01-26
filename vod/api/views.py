@@ -867,13 +867,21 @@ class CommentListAPIView(generics.ListAPIView):
             for_user = self.request.GET.get("for_user")
             content_pk = self.request.GET.get("content_pk")
             target_content = self.request.GET.get("target_content")
+            # print(content_pk)
+            # print(target_content)
+            allowed_target_content =  ["movie", "series", "seriesepisode"]
             if status_:
                 qs = qs.filter(status=status_)
             if for_user and for_user == 'yes' and user.is_authenticated:
                 qs = qs.filter(author=user.profile)
-            if content_pk and target_content and target_content in ["movie", "series", "seriesepisode"]:
+            if content_pk and target_content and target_content in allowed_target_content:
                 target_content_type = ContentType.objects.get(app_label='vod', model=target_content)
-                qs = qs.filter(content_type=target_content_type, object_id=target_content)
+                # print(target_content_type)
+                qs = qs.filter(content_type=target_content_type, object_id=content_pk)
+            if target_content and target_content not in allowed_target_content:
+                raise APIException(
+                    detail=f"Unknown target_content: {target_content}", code=status.HTTP_417_EXPECTATION_FAILED
+                )
             status_code = status.HTTP_200_OK
         except Exception as exp:
             status_code = status.HTTP_417_EXPECTATION_FAILED

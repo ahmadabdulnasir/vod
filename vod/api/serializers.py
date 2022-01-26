@@ -309,6 +309,7 @@ class ReviewModelSerializer(CustomeSerializer):
             "object_repr",
             "get_data_type",
             "author",
+            "author_title",
             "body",
             "rate",
             "status",
