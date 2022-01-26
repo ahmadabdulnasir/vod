@@ -382,7 +382,9 @@ class Review(TimeStampedModel):
         else:
             return format_html('<a href="{}">{}</a>', link, self.object_repr)
 
-
+    def author_title(self):
+        return f"{self.author}"
+        
     def __str__(self):
         return f"{self.author} Review on: {self.object_repr}"
 

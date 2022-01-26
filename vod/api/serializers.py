@@ -290,6 +290,7 @@ class CommentModelSerializer(CustomeSerializer):
             "object_repr",
             "get_data_type",
             "author",
+            "author_title",
             "body",
             "status",
             "timestamp",
