@@ -24,7 +24,7 @@ class MainPageCreateAPIView(generics.CreateAPIView):
         Allow Authenticated User to Create a MainPage
     """
     serializer_class = MainPageDetailsSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
 
     def create(self, request, *args, **kwargs):
         try:
@@ -83,7 +83,7 @@ class MainPageUpdateAPIView(generics.UpdateAPIView):
        Allow Updating MainPage
     """
     serializer_class = MainPageDetailsSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
     queryset = MainPage.objects.all()
     lookup_field = "slug"
 
@@ -93,7 +93,7 @@ class MainPageDeleteAPIView(generics.DestroyAPIView):
         Allow Authenticated User to Delete a MainPage
     """
     serializer_class = MainPageDetailsSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
     queryset = MainPage.objects.all()
     lookup_field = "slug"
 
@@ -110,7 +110,7 @@ class SiteInformationCreateAPIView(generics.CreateAPIView):
         Allow Authenticated User to Create a SiteInformation
     """
     serializer_class = SiteInformationDetailsSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
 
     def create(self, request, *args, **kwargs):
         try:
@@ -159,7 +159,7 @@ class SiteInformationDetailsAPIView(generics.RetrieveAPIView):
        Return Details of SiteInformation
     """
     serializer_class = SiteInformationDetailsSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
     queryset = SiteInformation.objects.all()
     lookup_field = "slug"
 
@@ -169,7 +169,7 @@ class SiteInformationUpdateAPIView(generics.UpdateAPIView):
        Allow Updating SiteInformation
     """
     serializer_class = SiteInformationDetailsSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
     queryset = SiteInformation.objects.all()
     lookup_field = "slug"
 
@@ -179,7 +179,7 @@ class SiteInformationDeleteAPIView(generics.DestroyAPIView):
         Allow Authenticated User to Delete a SiteInformation
     """
     serializer_class = SiteInformationDetailsSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
     queryset = SiteInformation.objects.all()
     lookup_field = "slug"
 
