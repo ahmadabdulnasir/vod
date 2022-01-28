@@ -7,7 +7,6 @@ from rest_framework import generics, permissions, status
 from rest_framework.exceptions import APIException, ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.contrib.auth.models import Group
 
 from vod.models import (
     Category,

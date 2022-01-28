@@ -25,9 +25,10 @@ urlpatterns = [
     # path("", include(("accounts.urls", "accounts"), namespace="accounts")),
     path("accounts/api/", include("accounts.api.urls")),
     path("vod/api/", include("vod.api.urls")),
+    path("core/api/", include("core.api.urls")),
     #path("audience/", include(("audience.urls", "audience"), namespace="audience")),
     # path("finance/", include(("finance.urls", "finance"), namespace="finance")),
-    #url(r"^ckeditor/", include("ckeditor_uploader.urls")),
+    path("ckeditor/", include("ckeditor_uploader.urls")),
     # path("", include("accounts.urls")),
 ]
 

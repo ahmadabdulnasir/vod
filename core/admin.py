@@ -35,7 +35,7 @@ class SiteInformationAdmin(admin.ModelAdmin):
 
 
 # Register your models here.
-admin.site.register(HomePageSlider, SliderAdmin)
-admin.site.register(Partner)
 admin.site.register(MainPage, MainPageAdmin)
+# admin.site.register(HomePageSlider, SliderAdmin)
+# admin.site.register(Partner)
 admin.site.register(SiteInformation, SiteInformationAdmin)

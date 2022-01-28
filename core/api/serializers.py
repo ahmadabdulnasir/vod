@@ -24,3 +24,4 @@ class CustomeSerializer(serializers.ModelSerializer):
 
     def get_updated(self, obj):
         return f"{obj.updated:%Y-%m-%d %H:%M:%S %p}"
+
