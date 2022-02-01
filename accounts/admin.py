@@ -33,7 +33,7 @@ class SubscriptionPlanAdmin(admin.ModelAdmin):
 
 
 @admin.register(PasswordResetTokens)
-class PasswordResetTokensAdmin(SimpleHistoryAdmin):
+class PasswordResetTokensAdmin(admin.ModelAdmin):
     list_display = (
         "user",
         "fullname",

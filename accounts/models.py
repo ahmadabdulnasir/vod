@@ -14,6 +14,9 @@ from django.urls import reverse
 from django.core.validators import MinValueValidator
 from core.location.models import State, LGA
 from core.utils.helpers import get_duration_as_days
+
+from core.utils.units import LongUniqueId, genserial
+
 # Create your models here.
 
 
