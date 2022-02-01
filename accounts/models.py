@@ -285,3 +285,86 @@ class SubscriptionPlan(TimeStampedModel):
 
     def __str__(self):
         return f"{self.name} (₦{self.price}/{self.duration})"
+        
+
+
+class PasswordResetTokens(TimeStampedModel):
+    """ 
+        Model for the storing Password Reset Tokens
+    """
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, related_name="password_reset_tokens", on_delete=models.CASCADE
+    )
+    token = models.CharField(max_length=10, default=genserial, unique=True)
+    active = models.BooleanField(default=True)
+    sent_count = models.PositiveIntegerField(default=0)
+    #history = HistoricalRecords(bases=[TimeStampedModel])
+
+    class Meta:
+        verbose_name = "Password Reset Token"
+        verbose_name_plural = "Passwords Reset Tokens"
+        ordering = ("-updated", )
+        # unique_together = ("user", "active",)
+
+    @property
+    def first_name(self):
+        return f"{self.user.first_name}"
+
+    @property
+    def last_name(self):
+        return f"{self.user.last_name}"
+
+    @property
+    def fullname(self):
+        return f"{self.user.get_full_name()}"
+
+    @property
+    def username(self):
+        return f"{self.user.username}"
+
+    @property
+    def last_login(self):
+        return f"{self.user.u.last_login}"
+
+    def get_email(self):
+        return self.user.email
+
+    def audits(self):
+        dta = self.history.all().order_by('-history_date')[:2].values()
+        return dta
+
+    def revisions(self):
+        return self.history.count()
+
+    def email_user(self):
+        subject = "PASSWORD RESET | AREWA CINEMA"
+        signature = "ArewaCinema"
+        html_message = render_to_string(
+            template_name="core/accounts/password_reset_mail_template.html", 
+            context={
+                "subject": subject,
+                "details": self,
+                "signature": signature,
+            }
+        )
+        msg = strip_tags(html_message)
+
+        try:
+            status = send_mail(
+                subject=subject,
+                message=msg,
+                html_message=html_message,
+                from_email=settings.SERVER_EMAIL,
+                recipient_list=[f"{self.user.email}",],
+                fail_silently=False,
+            )
+            self.sent_count += 1
+            self.save()
+        except Exception as exp:
+            print(exp)
+            status = 0
+        return status
+
+    def __str__(self):
+        return f"{self.fullname}"
+

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import UserProfile, Marchant, Store, SubscriptionPlan
+from .models import UserProfile, Marchant, Store, SubscriptionPlan, PasswordResetTokens
 
 # Register your models here.
 @admin.register(UserProfile)
@@ -31,3 +31,17 @@ class SubscriptionPlanAdmin(admin.ModelAdmin):
     list_display = ["name", "price", "duration", "plan_type", "active", "updated"]
     list_filter = ["active", "plan_type", "duration", "timestamp", "updated"]
 
+
+@admin.register(PasswordResetTokens)
+class PasswordResetTokensAdmin(SimpleHistoryAdmin):
+    list_display = (
+        "user",
+        "fullname",
+        "get_email",
+        "sent_count",
+        "active",
+        "timestamp",
+        "updated",
+    )
+    list_filter = ("active", "timestamp", "updated", )
+    autocomplete_fields = ["user"]

@@ -197,6 +197,90 @@ class ChangePassword(APIView):
         finally:
             return JsonResponse(response)
 
+
+
+class ResetPassword(APIView):
+    """Allow a User to reset their Login Password
+    """
+    # permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, format=None):
+        token = request.POST.get("token")
+        new_password_1 = request.POST.get("new_password_1")
+        new_password_2 = request.POST.get("new_password_2")
+        reset = None
+        if (
+            not token
+            or not new_password_1
+            or not new_password_2
+        ):
+            dta = {
+                "detail": "Please Provide : token, new_password_1 and new_password_2", "code": 400
+            }
+            raise ValidationError(dta)
+        try:
+            reset = PasswordResetTokens.objects.get(token=token, active=True)
+            if reset and reset.active:
+                user = reset.user
+                user.set_password(new_password_1)
+                user.save()
+                dta = {"detail": "Password changed Successfully"}
+                status_code = 200
+                reset.active = False
+                reset.save()
+            else:
+                dta = {
+                    "detail": "Password cannot be changed. Expired Token!!!",
+                }
+                status_code = 400
+        except PasswordResetTokens.DoesNotExist as exp:
+            raise ValidationError(
+                {
+                    "details": "Invalid Token!!!"
+                }
+            )
+        except Exception as exp:
+            print("here")
+            dta = {"detail": f"Client Error: {exp}"}
+            status_code = 400
+        finally:
+            return Response(data=dta, status=status_code)
+
+    def get(self, request, format="json"):
+        username = request.GET.get("username")
+        email = request.GET.get("email")
+        if ( not username and not email):
+            dta = {
+                "detail": "Please Provide one of : username or email",
+            }
+            raise ValidationError(dta)
+        status_code = 200
+        try:
+            user = User.objects.get(username=username)
+            reset, created = PasswordResetTokens.objects.get_or_create(user=user,active=True)
+            dta = {"detail": "An OTP Code was sent to your registered Email"}
+            if not created:
+                reset.email_user()
+        except User.objects.DoesNotExist as exp:
+            print(exp)
+            try:
+                user = User.objects.get(email=email)
+                reset, created = PasswordResetTokens.objects.get_or_create(
+                    user=user, active=True
+                )
+            except User.objects.DoesNotExist as exp:
+                print(exp)
+                dta = {"detail": f"Client Error: {exp}"}
+                status_code = 400
+        except Exception as exp:
+            dta = {"detail": f"Client Error: {exp}"}
+            status_code = 400
+        finally:
+            return Response(data=dta, status=status_code)
+
+
+
+
 class ProfileCreateAPIView(generics.CreateAPIView):
     """
         Allows Creation of Profile  to User

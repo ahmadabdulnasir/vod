@@ -1,9 +1,10 @@
 from django.urls import path
 
 from .views import (
-    ChangePassword,
-    CreateAccountAPIView,
     CustomObtainAuthToken,
+    ChangePassword,
+    ResetPassword,
+    CreateAccountAPIView,
     ProfileCreateAPIView,
     UsersProfileListAPIView,
     ProfileDetailsAPIView,
@@ -29,6 +30,7 @@ from .views import (
 urlpatterns = [
     path("jwt/", CustomObtainAuthToken.as_view()),
     path("change-password/", ChangePassword.as_view()),
+    path("reset-password/", ResetPassword.as_view()),
     path("create-user/", CreateAccountAPIView.as_view()),
     path("create/profile/", ProfileCreateAPIView.as_view()),
     path("list/profile/", UsersProfileListAPIView.as_view()),
