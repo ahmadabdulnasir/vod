@@ -1,6 +1,6 @@
 from django.contrib.auth import models
 from core.location.models import LGA, State
-from accounts.models import  SubscriptionPlan, UserProfile, Marchant, Store
+from accounts.models import  SubscriptionPlan, UserProfile, Marchant, Store, PasswordResetTokens
 from django.contrib.auth import authenticate, get_user_model
 from django.db.utils import IntegrityError
 from django.http import JsonResponse
@@ -268,6 +268,9 @@ class ResetPassword(APIView):
                 reset, created = PasswordResetTokens.objects.get_or_create(
                     user=user, active=True
                 )
+                dta = {"detail": "An OTP Code was sent to your registered Email"}
+                if not created:
+                    reset.email_user()
             except User.objects.DoesNotExist as exp:
                 print(exp)
                 dta = {"detail": f"Client Error: {exp}"}
