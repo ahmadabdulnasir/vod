@@ -131,6 +131,21 @@ class Movie(TimeStampedModel, VODModel):
         dta = [g.get_form_format() for g in self.posters.all()]
         return dta
 
+    def get_rating(self):
+        try:
+            qs = Review.objects.all()
+            target_content_type = ContentType.objects.get(app_label='vod', model="movie")
+            dta = qs.filter(content_type=target_content_type, object_id=self.pk)
+            dta_count = dta.count()
+            # print(dta_count)
+            dta_dum  = sum(map(int, dta.values_list("rate", flat=True)))
+            # print(dta_dum)
+            rate = dta_dum/dta_count
+        except Exception as exp:
+            # print(exp)
+            rate = 0
+        return rate
+
     def get_form_format(self):
         dta = {
             "pk": self.pk,
@@ -243,6 +258,21 @@ class Series(TimeStampedModel, VODModel):
         ]
         return dta
 
+    def get_rating(self):
+        try:
+            qs = Review.objects.all()
+            target_content_type = ContentType.objects.get(app_label='vod', model="series")
+            dta = qs.filter(content_type=target_content_type, object_id=self.pk)
+            dta_count = dta.count()
+            # print(dta_count)
+            dta_dum = sum(map(int, dta.values_list("rate", flat=True)))
+            # print(dta_dum)
+            rate = dta_dum/dta_count
+        except Exception as exp:
+            # print(exp)
+            rate = 0
+        return rate
+
     def get_form_format(self):
         dta = {
             "pk": self.pk,
@@ -296,6 +326,21 @@ class SeriesEpisode(TimeStampedModel, VODModel):
     @property
     def get_data_type(self):
         return "series episode"
+
+    def get_rating(self):
+        try:
+            qs = Review.objects.all()
+            target_content_type = ContentType.objects.get(app_label='vod', model="seriesepisode")
+            dta = qs.filter(content_type=target_content_type, object_id=self.pk)
+            dta_count = dta.count()
+            # print(dta_count)
+            dta_dum = sum(map(int, dta.values_list("rate", flat=True)))
+            # print(dta_dum)
+            rate = dta_dum/dta_count
+        except Exception as exp:
+            # print(exp)
+            rate = 0
+        return rate
 
     def get_form_format(self):
         dta = {
