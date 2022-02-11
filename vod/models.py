@@ -7,6 +7,7 @@ from django.utils.html import format_html
 from django.urls.exceptions import NoReverseMatch
 from django.db import models
 from rest_framework import status
+from accounts.models import Cast
 from core.abstract_models import TimeStampedModel, VODModel
 from core.utils.units import LongUniqueId, getUniqueId
 from core.choices import ACCESS_LEVEL_CHOICE, COMMENT_STATUS_CHOICE, POST_STATUS_CHOICE, PROMOTION_LOCATION_CHOICE, PROMOTION_TYPE_CHOICE, REVIEW_RATING_CHOICE
@@ -85,6 +86,7 @@ class Movie(TimeStampedModel, VODModel):
     thumb = models.ImageField(upload_to=movie_thumb_locations)
     description = models.TextField()
     genres = models.ManyToManyField(Genre, blank=True,)
+    casts = models.ManyToManyField(Cast, blank=True,)
     category = models.ForeignKey(Category, blank=True, null=True, on_delete=models.SET_NULL, related_name="movies")
     # posters = models.ManyToManyField(Poster, blank=True,)
     video = models.FileField(upload_to=movie_locations, blank=True, null=True)
@@ -116,6 +118,11 @@ class Movie(TimeStampedModel, VODModel):
     @property
     def get_genres(self):
         dta = [g.title for g in self.genres.all()]
+        return dta
+
+    @property
+    def get_casts(self):
+        dta = self.casts.all().values("pk", "fullname", "nickname")
         return dta
         
     def get_posters(self):
@@ -187,6 +194,7 @@ class Series(TimeStampedModel, VODModel):
     thumb = models.ImageField()
     description = models.TextField()
     genres = models.ManyToManyField(Genre, blank=True,)
+    casts = models.ManyToManyField(Cast, blank=True,)
     category = models.ForeignKey(Category, blank=True, null=True, on_delete=models.SET_NULL, related_name="series")
     # posters = models.ManyToManyField(Poster)
     status = models.CharField(max_length=25, choices=POST_STATUS_CHOICE)
@@ -217,6 +225,11 @@ class Series(TimeStampedModel, VODModel):
         dta = [g.title for g in self.genres.all()]
         return dta
 
+    @property
+    def get_casts(self):
+        dta = self.casts.all().values("pk", "fullname", "nickname")
+        return dta
+        
     def number_of_episodes(self):
         return self.episodes.all().count()
 
@@ -433,3 +446,5 @@ class Promotion(TimeStampedModel):
     
     def __str__(self):
         return f"{self.type.title()} Promotion: {self.uid}"
+
+

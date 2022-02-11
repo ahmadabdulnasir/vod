@@ -16,7 +16,9 @@ from core.location.models import State, LGA
 from core.utils.helpers import get_duration_as_days
 
 from core.utils.units import LongUniqueId, genserial
-
+from django.utils.html import strip_tags
+from django.template.loader import render_to_string
+from django.core.mail import send_mail
 # Create your models here.
 
 
@@ -26,6 +28,9 @@ def user_image_location(instance, filename):
 
 def marchant_image_location(instance, filename):
     return f"marchants/{instance.title}/logo/{filename}"
+
+def cast_image_location(instance, filename):
+    return f"cast/{instance.fullname}/images/{filename}"
 
 class UserProfile(TimeStampedModel):
     user = models.OneToOneField(
@@ -371,3 +376,20 @@ class PasswordResetTokens(TimeStampedModel):
     def __str__(self):
         return f"{self.fullname}"
 
+
+class Cast(TimeStampedModel):
+    user = models.OneToOneField(UserProfile, on_delete=models.SET_NULL, blank=True, null=True, related_name="cast_profile")
+    fullname = models.CharField(max_length=100)
+    nickname = models.CharField(max_length=20, blank=True, null=True)
+    gender = models.CharField(max_length=15, choices=GENDER_CHOICE,)
+    image = models.ImageField(upload_to=cast_image_location, blank=True, null=True,)
+    bio = models.TextField(blank=True, null=True)
+    active = models.BooleanField(default=True)
+
+    class Meta:
+        verbose_name = "Cast Profile"
+        verbose_name_plural = "Casts Profiles"
+        ordering = ["-updated", "fullname",]
+
+    def __str__(self) -> str:
+        return f"{self.fullname}"
