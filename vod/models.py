@@ -88,6 +88,8 @@ class Movie(TimeStampedModel, VODModel):
     genres = models.ManyToManyField(Genre, blank=True,)
     casts = models.ManyToManyField(Cast, blank=True,)
     category = models.ForeignKey(Category, blank=True, null=True, on_delete=models.SET_NULL, related_name="movies")
+    release_year = models.PositiveIntegerField()
+    running_time = models.CharField(max_length=20,blank=True, null=True)
     # posters = models.ManyToManyField(Poster, blank=True,)
     video = models.FileField(upload_to=movie_locations, blank=True, null=True)
     video_link = models.URLField(blank=True, null=True)
@@ -196,6 +198,8 @@ class Series(TimeStampedModel, VODModel):
     genres = models.ManyToManyField(Genre, blank=True,)
     casts = models.ManyToManyField(Cast, blank=True,)
     category = models.ForeignKey(Category, blank=True, null=True, on_delete=models.SET_NULL, related_name="series")
+    release_year = models.PositiveIntegerField()
+    running_time = models.CharField(max_length=20, blank=True, null=True)
     # posters = models.ManyToManyField(Poster)
     status = models.CharField(max_length=25, choices=POST_STATUS_CHOICE)
     access_level = models.CharField(max_length=20, choices=ACCESS_LEVEL_CHOICE)
@@ -229,7 +233,7 @@ class Series(TimeStampedModel, VODModel):
     def get_casts(self):
         dta = self.casts.all().values("pk", "fullname", "nickname")
         return dta
-        
+
     def number_of_episodes(self):
         return self.episodes.all().count()
 

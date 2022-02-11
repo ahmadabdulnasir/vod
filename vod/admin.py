@@ -39,6 +39,8 @@ class MovieAdmin(admin.ModelAdmin):
     inlines = (MoviePosterInline,)
     list_display = (
         'title',
+        'release_year',
+        'access_level',
         # 'uid',
         # 'thumb',
         # 'description',
@@ -49,7 +51,7 @@ class MovieAdmin(admin.ModelAdmin):
         'timestamp',
         'updated',
     )
-    list_filter = ('timestamp', 'updated', 'company', 'category')
+    list_filter = ('timestamp', 'updated', 'company', 'category', "release_year", "access_level")
     search_fields = ("title", "description")
     date_hierarchy = "timestamp"
 
@@ -76,6 +78,7 @@ class SeriesAdmin(admin.ModelAdmin):
     inlines = (SeriesEpisodeInline,)
     list_display = (
         'title',
+        'release_year',
         # 'uid',
         'category',
         'status',
@@ -85,7 +88,7 @@ class SeriesAdmin(admin.ModelAdmin):
         'timestamp',
         'updated',
     )
-    list_filter = ('timestamp', 'updated', 'access_level', 'company', 'category')
+    list_filter = ('timestamp', 'updated', 'access_level', 'company', 'category', "release_year")
     search_fields = ("title",)
     date_hierarchy = "timestamp"
 
