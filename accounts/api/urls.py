@@ -23,6 +23,13 @@ from .views import (
     SubscriptionPlanDetailsAPIView,
     SubscriptionPlanUpdateAPIView,
     SubscriptionPlanDeleteAPIView,
+    #
+    CastCreateAPIView,
+    CastListAPIView,
+    CastSearchAPIView,
+    CastDetailsAPIView,
+    CastUpdateAPIView,
+    CastDeleteAPIView,
     
 )
 
@@ -50,4 +57,11 @@ urlpatterns = [
     path("subscription-plan/details/<pk>/", SubscriptionPlanDetailsAPIView.as_view()),
     path("subscription-plan/update/<pk>/", SubscriptionPlanUpdateAPIView.as_view()),
     path("subscription-plan/delete/<pk>/", SubscriptionPlanDeleteAPIView.as_view()),
+    #
+    path("cast/create/", CastCreateAPIView.as_view()),
+    path("cast/list/", CastListAPIView.as_view()),
+    path("cast/search/", CastSearchAPIView.as_view()),
+    path("cast/details/<pk>/", CastDetailsAPIView.as_view()),
+    path("cast/update/<pk>/", CastUpdateAPIView.as_view()),
+    path("cast/delete/<pk>/", CastDeleteAPIView.as_view()),
 ]

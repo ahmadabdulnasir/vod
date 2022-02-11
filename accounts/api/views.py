@@ -1,6 +1,6 @@
 from django.contrib.auth import models
 from core.location.models import LGA, State
-from accounts.models import  SubscriptionPlan, UserProfile, Marchant, Store, PasswordResetTokens
+from accounts.models import  Cast, SubscriptionPlan, UserProfile, Marchant, Store, PasswordResetTokens
 from django.contrib.auth import authenticate, get_user_model
 from django.db.utils import IntegrityError
 from django.http import JsonResponse
@@ -18,6 +18,9 @@ from .serializers import (
     SubscriptionPlanSerializer,
     UserProfileListSerializer,
     UserProfileSerializer, 
+    CastDetailsSerializer,
+    CastListSerializer,
+
 )
 
 from core.utils.varname.helpers import Wrapper
@@ -166,7 +169,6 @@ class CustomObtainAuthToken(ObtainAuthToken):
             return JsonResponse(data)
 
 
-
 class ChangePassword(APIView):
     # permission_classes = [permissions.IsAuthenticated]
     def post(self, request, format=None):
@@ -196,7 +198,6 @@ class ChangePassword(APIView):
             response = {"detail": f"Client Error: {exp}", "code": 400}
         finally:
             return JsonResponse(response)
-
 
 
 class ResetPassword(APIView):
@@ -282,8 +283,6 @@ class ResetPassword(APIView):
             return Response(data=dta, status=status_code)
 
 
-
-
 class ProfileCreateAPIView(generics.CreateAPIView):
     """
         Allows Creation of Profile  to User
@@ -304,6 +303,7 @@ class ProfileCreateAPIView(generics.CreateAPIView):
             return Response(dta, status=status.HTTP_201_CREATED, headers=headers)
         except Exception as exp:
             raise ValidationError({"detail": [f"Client Error: {exp}"]})
+
 
 class UsersProfileListAPIView(generics.ListAPIView):
     serializer_class = UserProfileListSerializer
@@ -763,3 +763,127 @@ class SubscriptionPlanDeleteAPIView(generics.DestroyAPIView):
         self.perform_destroy(instance)
         dta = {"detail": f"Plan: {title} Delete Success"}
         return Response(dta, status=status.HTTP_200_OK)
+
+
+# cast
+class CastCreateAPIView(generics.CreateAPIView):
+    """
+        Allow Authenticated User to Create a Cast
+    """
+    serializer_class = CastDetailsSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        try:
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            dta = {
+                "detail": "Cast Created Success",
+                "data": serializer.data,
+            }
+            return Response(dta, status=status.HTTP_201_CREATED, headers=headers)
+        except Exception as exp:
+            raise ValidationError({"detail": f"Error: {exp}"})
+
+    def perform_create(self, serializer):
+        return serializer.save()
+
+
+class CastListAPIView(generics.ListAPIView):
+    """
+       List All Cast
+    """
+    serializer_class = CastListSerializer
+    # permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self, *args, **kwargs):
+        try:
+            qs = Cast.objects.all()
+            active = self.request.GET.get("active")
+            if active and active == 'yes':
+                qs = qs.filter(active=True)
+            if active and active == 'no':
+                qs = qs.filter(active=False)
+            
+            status_code = status.HTTP_200_OK
+        except Exception as exp:
+            status_code = status.HTTP_417_EXPECTATION_FAILED
+            raise APIException(
+                detail=f"An API Exception Occured!!!, Error: {exp}", code=status_code
+            )
+        return qs
+
+class CastSearchAPIView(generics.ListAPIView):
+    """
+       List All Cast based on search
+    """
+    serializer_class = CastListSerializer
+    # permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self, *args, **kwargs):
+        try:
+            qs = Cast.objects.all()
+            search_query = self.request.GET.get("search_query")
+            if search_query:
+                fullname_qs = qs.filter(fullname__icontains=search_query)
+                nickname_qs = qs.filter(nickname__icontains=search_query)
+                qs = fullname_qs | nickname_qs
+            else:
+                qs = None
+            
+            status_code = status.HTTP_200_OK
+        except Exception as exp:
+            status_code = status.HTTP_417_EXPECTATION_FAILED
+            raise APIException(
+                detail=f"An API Exception Occured!!!, Error: {exp}", code=status_code
+            )
+        return qs
+
+
+class CastDetailsAPIView(generics.RetrieveAPIView):
+    """
+       Return Details of Cast
+    """
+    serializer_class = CastDetailsSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Cast.objects.all()
+    lookup_field = "pk"
+
+
+class CastUpdateAPIView(generics.UpdateAPIView):
+    """
+       Allow Updating Cast
+    """
+    serializer_class = CastDetailsSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Cast.objects.all()
+    lookup_field = "pk"
+
+    def perform_update(self, serializer):
+        serializer.save()
+        dta = {
+            "detail": "Update Success",
+            "data": serializer.data,
+        }
+        return Response(dta, status=status.HTTP_200_OK)
+
+
+class CastDeleteAPIView(generics.DestroyAPIView):
+    """
+        Allow Authenticated User to Delete a Cast
+    """
+    serializer_class = CastDetailsSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Cast.objects.all()
+    lookup_field = "pk"
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        title = f"{instance}"
+        self.perform_destroy(instance)
+        dta = {"detail": f"Cast: {title} Delete Success"}
+        return Response(dta, status=status.HTTP_200_OK)
+
+# ./cast

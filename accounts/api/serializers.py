@@ -1,5 +1,5 @@
 from core.api.serializers import CustomeSerializer
-from accounts.models import UserProfile, Marchant, Store, SubscriptionPlan
+from accounts.models import UserProfile, Marchant, Store, SubscriptionPlan, Cast
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
@@ -125,6 +125,42 @@ class SubscriptionPlanSerializer(CustomeSerializer):
             "price",
             "duration",
             "plan_type",
+            "active",
+            "timestamp",
+            "updated",
+        ]
+
+
+class CastDetailsSerializer(CustomeSerializer):
+
+    class Meta:
+        model = Cast
+        fields = [
+            "pk",
+            "user",
+            "fullname",
+            "nickname",
+            "gender",
+            "image",
+            "bio",
+            "active",
+            "timestamp",
+            "updated",
+        ]
+
+
+class CastListSerializer(CustomeSerializer):
+
+    class Meta:
+        model = Cast
+        fields = [
+            "pk",
+            "user",
+            "fullname",
+            "nickname",
+            "gender",
+            "image",
+            # "bio",
             "active",
             "timestamp",
             "updated",
