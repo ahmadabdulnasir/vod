@@ -847,7 +847,7 @@ class CastDetailsAPIView(generics.RetrieveAPIView):
        Return Details of Cast
     """
     serializer_class = CastDetailsSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
     queryset = Cast.objects.all()
     lookup_field = "pk"
 
