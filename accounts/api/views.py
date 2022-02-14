@@ -280,6 +280,13 @@ class ResetPassword(APIView):
             dta = {"detail": f"Client Error: {exp}"}
             status_code = 400
         finally:
+            if not user.email:
+                print("no email")
+                raise ValidationError(
+                    {
+                        "details": f"User: {user} has no email Address"
+                    }
+                )
             return Response(data=dta, status=status_code)
 
 

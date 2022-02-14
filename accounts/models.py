@@ -19,6 +19,7 @@ from core.utils.units import LongUniqueId, genserial
 from django.utils.html import strip_tags
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
+from django.core.exceptions import ValidationError
 # Create your models here.
 
 
@@ -345,6 +346,9 @@ class PasswordResetTokens(TimeStampedModel):
         return self.history.count()
 
     def email_user(self):
+        # if not self.user.email:
+        #     print("no email")
+        #     raise Exception(f"User: {self.user} has no email Address")
         subject = "PASSWORD RESET | AREWA CINEMA"
         signature = "ArewaCinema"
         html_message = render_to_string(
@@ -358,12 +362,13 @@ class PasswordResetTokens(TimeStampedModel):
         msg = strip_tags(html_message)
 
         try:
+            # print("email: ", self.user.email)
             status = send_mail(
                 subject=subject,
                 message=msg,
                 html_message=html_message,
                 from_email=settings.SERVER_EMAIL,
-                recipient_list=[f"{self.user.email}",],
+                recipient_list=[self.user.email,],
                 fail_silently=False,
             )
             self.sent_count += 1
@@ -371,7 +376,10 @@ class PasswordResetTokens(TimeStampedModel):
         except Exception as exp:
             print(exp)
             status = 0
-        return status
+            # raise ValidationError(f"User: {self.user} has no email Address")
+        finally:
+            return status
+
 
     def __str__(self):
         return f"{self.fullname}"
