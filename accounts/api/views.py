@@ -260,8 +260,8 @@ class ResetPassword(APIView):
             user = User.objects.get(username=username)
             reset, created = PasswordResetTokens.objects.get_or_create(user=user,active=True)
             dta = {"detail": "An OTP Code was sent to your registered Email"}
-            if not created:
-                reset.email_user()
+            # if not created:
+            reset.email_user()
         except User.objects.DoesNotExist as exp:
             print(exp)
             try:
@@ -270,8 +270,8 @@ class ResetPassword(APIView):
                     user=user, active=True
                 )
                 dta = {"detail": "An OTP Code was sent to your registered Email"}
-                if not created:
-                    reset.email_user()
+                # if not created:
+                reset.email_user()
             except User.objects.DoesNotExist as exp:
                 print(exp)
                 dta = {"detail": f"Client Error: {exp}"}
