@@ -48,37 +48,6 @@ class GenreSerializer(CustomeSerializer):
 
 
 class MovieDetailsSerializer(CustomeSerializer):
-    # genres = GenreSerializer(read_only=False, many=True)
-    # genres = GenreSerializer(many=True)
-
-    # def get_or_update_genres(self, genres):
-    #         package_ids = []
-    #         # for package in packages:
-    #         #     # package_instance, created = Genre.objects.update_or_create(pk=package.get('id'), defaults=package)
-    #         #     package_instance, created = Genre.objects.update_or_create(pk=package.get('pk'), defaults=package)
-    #         #     package_ids.append(package_instance.pk)
-    #         # return package_ids
-    #         genres_pk = [genre.get("pk") for genre in genres]
-    #         spam = Genre.objects.filter(pk__in=genres_pk)
-    #         return spam
-
-
-    # def update(self, instance, validated_data):
-    #     # genres = validated_data.pop('genres', [])
-    #     genres = validated_data.pop('genres_pk', [])
-    #     print(genres)
-    #     instance.genres.set(self.get_or_update_genres(genres))
-    #     # fields = ['order_id', 'is_cod']
-    #     # for field in fields:
-    #     #     try:
-    #     #         setattr(instance, field, validated_data[field])
-    #     #     except KeyError:  # validated_data may not contain all fields during HTTP PATCH
-    #     #         pass
-    #     # try:
-    #     print("Update Movie")
-
-    #     instance.save()
-    #     return instance
         
     class Meta:
         model = Movie
@@ -97,8 +66,9 @@ class MovieDetailsSerializer(CustomeSerializer):
             "category_title",
             "video",
             "video_link",
-            "get_rating",
             "status",
+            "get_rating",
+            "get_casts",
             "access_level",
             "get_related",
             # "uploaded_by",
@@ -128,8 +98,9 @@ class MovieListSerializer(CustomeSerializer):
             "category_title",
             # "posters",
             # "video",
-            "get_rating",
             "status",
+            "get_rating",
+            # "get_casts",
             "access_level",
             "get_data_type",
             "timestamp",
@@ -166,8 +137,9 @@ class SeriesDetailsSerializer(CustomeSerializer):
             "get_genres",
             "category",
             "category_title",
-            "get_rating",
             "status",
+            "get_rating",
+            "get_casts",
             "access_level",
             "number_of_episodes",
             "get_episodes",
@@ -195,6 +167,8 @@ class SeriesListSerializer(CustomeSerializer):
             "category_title",
             "get_rating",
             "status",
+            "get_rating",
+            # "get_casts",
             "access_level",
             "number_of_episodes",
             "get_data_type",
@@ -202,31 +176,6 @@ class SeriesListSerializer(CustomeSerializer):
             "updated",
             ]
 
-
-
-
-# class SeriesSeasonSerializer(CustomeSerializer):
-
-#     class Meta:
-#         model = SeriesSeason
-#         fields = [
-#             "pk", 
-#             "title",
-#             "timestamp", 
-#             "updated",
-#             ]
-
-
-# class SeasonEpisodeSerializer(CustomeSerializer):
-
-#     class Meta:
-#         model = SeasonEpisode
-#         fields = [
-#             "pk", 
-#             "title",
-#             "timestamp", 
-#             "updated",
-#             ]
 
 class SeriesEpisodeDetailsSerializer(CustomeSerializer):
 
@@ -242,6 +191,7 @@ class SeriesEpisodeDetailsSerializer(CustomeSerializer):
             "description",
             "video",
             "get_rating",
+            # "get_casts",
             "status",
             "timestamp", 
             "updated",
