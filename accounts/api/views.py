@@ -255,24 +255,27 @@ class ResetPassword(APIView):
                 "detail": "Please Provide one of : username or email",
             }
             raise ValidationError(dta)
+        dta_success = {"detail": "An OTP Code was sent to your registered Email"}
+        dta_error = {"detail": "An Error Occured"}
+        user = None
         status_code = 200
         try:
             user = User.objects.get(username=username)
             reset, created = PasswordResetTokens.objects.get_or_create(user=user,active=True)
-            dta = {"detail": "An OTP Code was sent to your registered Email"}
+            dta = dta_success
             # if not created:
             reset.email_user()
-        except User.objects.DoesNotExist as exp:
+        except User.DoesNotExist as exp:
             print(exp)
             try:
                 user = User.objects.get(email=email)
                 reset, created = PasswordResetTokens.objects.get_or_create(
                     user=user, active=True
                 )
-                dta = {"detail": "An OTP Code was sent to your registered Email"}
+                dta = dta_success
                 # if not created:
                 reset.email_user()
-            except User.objects.DoesNotExist as exp:
+            except User.DoesNotExist as exp:
                 print(exp)
                 dta = {"detail": f"Client Error: {exp}"}
                 status_code = 400
@@ -280,8 +283,8 @@ class ResetPassword(APIView):
             dta = {"detail": f"Client Error: {exp}"}
             status_code = 400
         finally:
-            if not user.email:
-                print("no email")
+            if user and not user.email:
+                print("No email")
                 raise ValidationError(
                     {
                         "details": f"User: {user} has no email Address"
