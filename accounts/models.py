@@ -320,8 +320,9 @@ class PasswordResetTokens(TimeStampedModel):
         # unique_together = ("user", "active",)
 
     def save(self, *args, **kwargs):
+        now = timezone.now()
         if not self.expired_time:
-            self.expired_time = self.timestamp + timedelta(days=1, hours=2)
+            self.expired_time = now + timedelta(hours=12)
         super(PasswordResetTokens, self).save(*args, **kwargs)
 
     @property
