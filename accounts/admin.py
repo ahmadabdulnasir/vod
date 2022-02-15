@@ -40,6 +40,7 @@ class PasswordResetTokensAdmin(admin.ModelAdmin):
         "get_email",
         "sent_count",
         "active",
+        # "get_expired",
         "timestamp",
         "updated",
     )

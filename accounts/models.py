@@ -20,6 +20,9 @@ from django.utils.html import strip_tags
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from django.core.exceptions import ValidationError
+from django.utils import timezone
+from datetime import timedelta
+
 # Create your models here.
 
 
@@ -307,6 +310,7 @@ class PasswordResetTokens(TimeStampedModel):
     token = models.CharField(max_length=10, default=genserial, unique=True)
     active = models.BooleanField(default=True)
     sent_count = models.PositiveIntegerField(default=0)
+    expired_time = models.DateTimeField()
     #history = HistoricalRecords(bases=[TimeStampedModel])
 
     class Meta:
@@ -314,6 +318,11 @@ class PasswordResetTokens(TimeStampedModel):
         verbose_name_plural = "Passwords Reset Tokens"
         ordering = ("-updated", )
         # unique_together = ("user", "active",)
+
+    def save(self, *args, **kwargs):
+        if not self.expired_time:
+            self.expired_time = self.timestamp + timedelta(days=1, hours=2)
+        super(PasswordResetTokens, self).save(*args, **kwargs)
 
     @property
     def first_name(self):
@@ -344,6 +353,15 @@ class PasswordResetTokens(TimeStampedModel):
 
     def revisions(self):
         return self.history.count()
+
+    def get_expired(self):
+        now = timezone.now()
+        if now > self.expired_time:
+            expired_time = "Expired"
+        else:
+            expired_time = self.expired_time
+        # obj.starts += timedelta(days=1, hours=2)
+        return expired_time
 
     def email_user(self):
         # if not self.user.email:
