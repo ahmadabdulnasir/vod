@@ -25,6 +25,7 @@ from .serializers import (
 
 from core.utils.varname.helpers import Wrapper
 from django.utils import timezone
+from django.core.validators import validate_email
 
 User = get_user_model()
 
@@ -267,31 +268,40 @@ class ResetPassword(APIView):
             reset.email_user()
         except User.DoesNotExist as exp:
             print("Username: ", exp)
-            # try:
-            print("Using Email: ", email)
-            user = User.objects.get(email=email)
-            reset, created = PasswordResetTokens.objects.get_or_create(
-                user=user, active=True
-            )
-            dta = dta_success
-            # if not created:
-            reset.email_user()
-            # except User.DoesNotExist as exp:
-            #     print("Email: ", exp)
-            #     dta = {"detail": f"Client Error: {exp}"}
-            #     status_code = 400
-        # except Exception as exp:
-        #     dta = {"detail": f"Client Error: {exp}"}
-        #     status_code = 400
-        # finally:
-        #     if user and not user.email:
-        #         print("No email")
-        #         raise ValidationError(
-        #             {
-        #                 "details": f"User: {user} has no email Address"
-        #             }
-        #         )
-        return Response(data=dta, status=status_code)
+            try:
+                print("Using Email: ", email)
+                try:
+                    validate_email(email)
+                except ValidationError as exp:
+                    print("bad email, details:", exp)
+                    raise ValidationError(
+                        {
+                            "details": f"Invalid Email: {email}"
+                        }
+                    )
+                user = User.objects.get(email=email)
+                reset, created = PasswordResetTokens.objects.get_or_create(
+                    user=user, active=True
+                )
+                dta = dta_success
+                # if not created:
+                reset.email_user()
+            except User.DoesNotExist as exp:
+                print("Email: ", exp)
+                dta = {"detail": f"Client Error: {exp}"}
+                status_code = 400
+        except Exception as exp:
+            dta = {"detail": f"Client Error: {exp}"}
+            status_code = 400
+        finally:
+            if user and not user.email:
+                print("No email")
+                raise ValidationError(
+                    {
+                        "details": f"User: {user} has no email Address"
+                    }
+                )
+            return Response(data=dta, status=status_code)
 
 
 class ProfileCreateAPIView(generics.CreateAPIView):
