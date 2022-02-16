@@ -273,7 +273,7 @@ class ResetPassword(APIView):
                 try:
                     validate_email(email)
                 except ValidationError as exp:
-                    print("bad email, details:", exp)
+                    print("Bad email: ", exp)
                     raise ValidationError(
                         {
                             "details": f"Invalid Email: {email}"
