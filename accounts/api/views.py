@@ -268,6 +268,7 @@ class ResetPassword(APIView):
         except User.DoesNotExist as exp:
             print("Username: ", exp)
             # try:
+            print("Using Email: ", email)
             user = User.objects.get(email=email)
             reset, created = PasswordResetTokens.objects.get_or_create(
                 user=user, active=True
