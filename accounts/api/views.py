@@ -279,13 +279,14 @@ class ResetPassword(APIView):
                             "details": f"Invalid Email: {email}"
                         }
                     )
-                user = User.objects.get(email=email)
-                reset, created = PasswordResetTokens.objects.get_or_create(
-                    user=user, active=True
-                )
-                dta = dta_success
-                # if not created:
-                reset.email_user()
+                else:
+                    user = User.objects.get(email=email)
+                    reset, created = PasswordResetTokens.objects.get_or_create(
+                        user=user, active=True
+                    )
+                    dta = dta_success
+                    # if not created:
+                    reset.email_user()
             except User.DoesNotExist as exp:
                 print("Email: ", exp)
                 dta = {"detail": f"Client Error: {exp}"}
