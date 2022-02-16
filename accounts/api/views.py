@@ -266,31 +266,31 @@ class ResetPassword(APIView):
             # if not created:
             reset.email_user()
         except User.DoesNotExist as exp:
-            print(exp)
-            try:
-                user = User.objects.get(email=email)
-                reset, created = PasswordResetTokens.objects.get_or_create(
-                    user=user, active=True
-                )
-                dta = dta_success
-                # if not created:
-                reset.email_user()
-            except User.DoesNotExist as exp:
-                print(exp)
-                dta = {"detail": f"Client Error: {exp}"}
-                status_code = 400
-        except Exception as exp:
-            dta = {"detail": f"Client Error: {exp}"}
-            status_code = 400
-        finally:
-            if user and not user.email:
-                print("No email")
-                raise ValidationError(
-                    {
-                        "details": f"User: {user} has no email Address"
-                    }
-                )
-            return Response(data=dta, status=status_code)
+            print("Username: ", exp)
+            # try:
+            user = User.objects.get(email=email)
+            reset, created = PasswordResetTokens.objects.get_or_create(
+                user=user, active=True
+            )
+            dta = dta_success
+            # if not created:
+            reset.email_user()
+            # except User.DoesNotExist as exp:
+            #     print("Email: ", exp)
+            #     dta = {"detail": f"Client Error: {exp}"}
+            #     status_code = 400
+        # except Exception as exp:
+        #     dta = {"detail": f"Client Error: {exp}"}
+        #     status_code = 400
+        # finally:
+        #     if user and not user.email:
+        #         print("No email")
+        #         raise ValidationError(
+        #             {
+        #                 "details": f"User: {user} has no email Address"
+        #             }
+        #         )
+        return Response(data=dta, status=status_code)
 
 
 class ProfileCreateAPIView(generics.CreateAPIView):
