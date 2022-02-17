@@ -15,7 +15,7 @@ def updatePasswordResets(qs):
     return status
 
 
-class Job(QuarterHourlyJob):
+class Job(HourlyJob):
     help = "Update Password Reset Tokens daily"
 
     def execute(self):
