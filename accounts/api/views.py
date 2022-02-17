@@ -256,15 +256,16 @@ class ResetPassword(APIView):
                 "detail": "Please Provide one of : username or email",
             }
             raise ValidationError(dta)
-        try:
-            validate_email(email)
-        # except ValidationError as exp:
-        except Exception as exp:
-            print("Bad email: ", exp)
-            dta = {
-                "details": f"Invalid Email: {email}"
-            }
-            return Response(data=dta, status=400)
+        if email:
+            try:
+                validate_email(email)
+            # except ValidationError as exp:
+            except Exception as exp:
+                print("Bad email: ", exp)
+                dta = {
+                    "details": f"Invalid Email: {email}"
+                }
+                return Response(data=dta, status=400)
         dta_success = {"detail": "An OTP Code was sent to your registered Email"}
         dta_error = {"detail": "An Error Occured"}
         user = None
