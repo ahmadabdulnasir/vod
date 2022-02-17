@@ -3,7 +3,7 @@
 from accounts.models import PasswordResetTokens
 from django.core.mail import send_mail
 from django.utils import timezone
-from django_extensions.management.jobs import DailyJob, QuarterHourlyJob
+from django_extensions.management.jobs import DailyJob, QuarterHourlyJob, HourlyJob
 from django.conf import settings
 
 def updatePasswordResets(qs):
@@ -15,7 +15,7 @@ def updatePasswordResets(qs):
     return status
 
 
-class Job(DailyJob):
+class Job(QuarterHourlyJob):
     help = "Update Password Reset Tokens daily"
 
     def execute(self):
