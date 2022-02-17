@@ -73,7 +73,7 @@ class MainPageDetailsAPIView(generics.RetrieveAPIView):
        Return Details of MainPage
     """
     serializer_class = MainPageDetailsSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
     queryset = MainPage.objects.all()
     lookup_field = "slug"
 
