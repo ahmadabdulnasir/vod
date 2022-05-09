@@ -80,7 +80,8 @@ class CreateAccountAPIView(APIView):
                 raise ValidationError({"detail": f"{username} Already Exist Error: {exp}"})
             
             #  check for duplicate email
-            user_with_email = User.objects.filter(email=email).exists() or UserProfile.objects.filter(email=email).exists()
+            user_with_email = User.objects.filter(email=email).exists() 
+            # or UserProfile.objects.filter(email=email).exists()
             if user_with_email:
                 user.delete()
                 raise ValidationError({"detail": f"User with email: {email} Already Exist!"})

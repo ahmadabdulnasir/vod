@@ -1,0 +1,10 @@
+[Unit]
+Description=arewacinema gunicorn daemon
+
+[Service]
+Type=simple
+User=arewacinema
+ExecStart=/home/arewacinema/video_on_demand/start.arewacinema.sh
+
+[Install]
+WantedBy=multi-user.target

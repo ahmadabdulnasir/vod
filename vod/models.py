@@ -14,6 +14,8 @@ from core.choices import ACCESS_LEVEL_CHOICE, COMMENT_STATUS_CHOICE, POST_STATUS
 from django.utils.translation import ugettext_lazy as _
 from django.urls import reverse
 from django.utils import timezone
+from django.db.models import Sum, Avg
+
 # Create your models here.
 
 def movie_locations(instance, filename):
@@ -138,11 +140,14 @@ class Movie(TimeStampedModel, VODModel):
             dta = qs.filter(content_type=target_content_type, object_id=self.pk)
             dta_count = dta.count()
             # print(dta_count)
-            dta_dum  = sum(map(int, dta.values_list("rate", flat=True)))
+            # dta_dum  = sum(map(int, dta.values_list("rate", flat=True)))
+            # dta_dum = dta.aggregate(Sum('rate'))
+            dta_dum = dta.aggregate(Avg('rate'))
             # print(dta_dum)
-            rate = dta_dum/dta_count
+            # rate = dta_dum.get("rate__sum", 1)/dta_count
+            rate = dta_dum.get("rate__avg", 1) #/dta_count
         except Exception as exp:
-            # print(exp)
+            print(exp)
             rate = 0
         return rate
 
@@ -263,11 +268,9 @@ class Series(TimeStampedModel, VODModel):
             qs = Review.objects.all()
             target_content_type = ContentType.objects.get(app_label='vod', model="series")
             dta = qs.filter(content_type=target_content_type, object_id=self.pk)
-            dta_count = dta.count()
-            # print(dta_count)
-            dta_dum = sum(map(int, dta.values_list("rate", flat=True)))
-            # print(dta_dum)
-            rate = dta_dum/dta_count
+            # dta_count = dta.count()
+            dta_dum = dta.aggregate(Avg('rate'))
+            rate = dta_dum.get("rate__avg", 0)
         except Exception as exp:
             # print(exp)
             rate = 0

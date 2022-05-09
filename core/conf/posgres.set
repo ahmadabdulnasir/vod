@@ -1,0 +1,7 @@
+#sudo -u postgres  psql
+CREATE DATABASE voddb;
+CREATE USER vod WITH password 'Pass@1234';
+ALTER ROLE vod SET client_encoding TO 'utf8';
+ALTER ROLE vod SET default_transaction_isolation TO 'read committed';
+ALTER ROLE vod SET timezone TO 'GMT+1';
+GRANT ALL PRIVILEGES ON DATABASE voddb TO vod;

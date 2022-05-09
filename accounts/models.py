@@ -48,7 +48,7 @@ class UserProfile(TimeStampedModel):
     last_name = models.CharField(max_length=50, blank=True, null=True,)
     gender = models.CharField(max_length=15, choices=GENDER_CHOICE, default="others")
     phone_number = models.CharField(max_length=15, blank=True, null=True,)
-    email = models.EmailField(max_length=50)
+    # email = models.EmailField(max_length=50)
     DOB = models.DateField(help_text="Date of Birth", blank=True, null=True,)
     address = models.CharField(max_length=100, blank=True, null=True)
     # lga = models.ForeignKey(LGA, blank=True, null=True, on_delete=models.SET_NULL, related_name="users")
@@ -98,7 +98,7 @@ class UserProfile(TimeStampedModel):
         return k
 
     def get_email(self):
-        return f"{self.email}"
+        return f"{self.user.email}"
 
     def get_films_watched(self):
         return 13
